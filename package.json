@@ -1,0 +1,31 @@
+{
+  "name": "cityteam-checkins",
+  "version": "2.0.0-alpha1",
+  "description": "CityTeam Guests Checkin Application",
+  "main": "dist/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigmcc/cityteam-checkins.git"
+  },
+  "keywords": [
+    "cityteam",
+    "guests",
+    "bootstrap",
+    "express",
+    "graphile-migrate",
+    "javascript",
+    "node",
+    "postgres",
+    "sequelize",
+    "typescript"
+  ],
+  "author": "craigmcc",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/craigmcc/cityteam-checkins/issues"
+  },
+  "homepage": "https://github.com/craigmcc/cityteam-checkins#readme"
+}

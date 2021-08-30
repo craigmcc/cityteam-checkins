@@ -1,0 +1,10 @@
+.env.*
+.nyc_output
+.idea/
+.migraterc
+backup/
+dist/
+log/
+node_modules/
+test/database.sqlite
+client/.eslintcache

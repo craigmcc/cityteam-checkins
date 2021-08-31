@@ -12,6 +12,7 @@ export const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : "productio
 // Internal Modules ----------------------------------------------------------
 
 import Database from "./models/Database";
+import ExpressApplication from "./routers/ExpressApplication";
 import logger from "./util/ServerLogger";
 
 // Document Database Configuration -------------------------------------------
@@ -26,10 +27,11 @@ logger.info({
 // Configure and Start Server ------------------------------------------------
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
-
-logger.info({
-    context: "Startup",
-    msg: "Express server started",
-    mode: NODE_ENV,
-    port: `${port}`,
+ExpressApplication.listen(port, () => {
+    logger.info({
+        context: "Startup",
+        msg: "Server started",
+        mode: NODE_ENV,
+        port: `${port}`,
+    });
 });

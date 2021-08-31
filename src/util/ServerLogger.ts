@@ -9,7 +9,6 @@ import rfs = require("rotating-file-stream");
 // Internal Modules ----------------------------------------------------------
 
 import {nowLocalISO} from "./Timestamps";
-import path from "path";
 
 // Public Objects -----------------------------------------------------------
 

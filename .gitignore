@@ -1,4 +1,4 @@
-.env.*
+.env*
 .nyc_output
 .idea/
 .migraterc

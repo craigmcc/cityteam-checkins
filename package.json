@@ -4,7 +4,18 @@
   "description": "CityTeam Guests Checkin Application",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "develop:dev": "concurrently \"npm:server:build:watch\" \"npm:start:dev\"",
+    "develop:prod": "concurrently \"npm:server:build:watch\" \"npm:start:prod\"",
+    "run": "cross-env NODE_ENV=production node dist/server.js",
+    "run:dev": "cross-env NODE_ENV=development node dist/server.js",
+    "run:prod": "cross-env NODE_ENV=production node dist/server.js",
+    "server:build": "tsc",
+    "server:build:watch": "tsc --watch --preserveWatchOutput",
+    "start:dev": "cross-env NODE_ENV=development nodemon dist/server.js",
+    "start:prod": "cross-env NODE_ENV=production nodemon dist/server.js",
+    "test": "cross-env NODE_ENV=test mocha -r ts-node/register src/**/*.test.ts",
+    "test:watch": "cross-env NODE_ENV=test mocha --watch -r ts-node/register src/**/*.test.ts",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -27,5 +38,23 @@
   "bugs": {
     "url": "https://github.com/craigmcc/cityteam-checkins/issues"
   },
-  "homepage": "https://github.com/craigmcc/cityteam-checkins#readme"
+  "homepage": "https://github.com/craigmcc/cityteam-checkins#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "custom-env": "^2.0.1",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "pino": "^6.13.1",
+    "rotating-file-stream": "^2.1.5",
+    "sequelize": "^6.6.5",
+    "sequelize-typescript": "^2.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^6.2.1",
+    "nodemon": "^2.0.12",
+    "sqlite3": "^4.2.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
+  }
 }

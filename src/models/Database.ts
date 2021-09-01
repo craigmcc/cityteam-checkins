@@ -4,6 +4,8 @@
 
 // External Modules ----------------------------------------------------------
 
+const customEnv = require("custom-env");
+customEnv.env(true);
 import {Sequelize} from "sequelize-typescript";
 
 // Internal Modules ----------------------------------------------------------
@@ -17,9 +19,8 @@ import User from "./User";
 const DATABASE_URL: string = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
     : "undefined";
-const NODE_ENV = process.env.NODE_ENV;
 
-export const Database = ((NODE_ENV !== "test")
+export const Database = DATABASE_URL
         ? new Sequelize(DATABASE_URL, {
             logging: false,
             pool: {
@@ -34,7 +35,7 @@ export const Database = ((NODE_ENV !== "test")
             logging: false,
             storage: "./test/database.sqlite"
         })
-);
+;
 
 Database.addModels([
     AccessToken,

@@ -14,7 +14,7 @@ import {FindOptions} from "sequelize";
  * Append standard pagination query parameters (if present), and return the
  * updated options.
  */
-export const appendPagination = (options: FindOptions, query: any): FindOptions => {
+export const appendPaginationOptions = (options: FindOptions, query: any): FindOptions => {
     if (query.limit) {
         let value = parseInt(query.limit, 10);
         if (isNaN(value)) {

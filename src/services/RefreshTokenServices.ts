@@ -12,7 +12,7 @@ import AbstractServices from "./AbstractServices";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
-import {appendPagination} from "../util/QueryParameters";
+import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
 
 // Public Objects ------------------------------------------------------------
@@ -22,14 +22,14 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
     // Standard CRUD Methods -------------------------------------------------
 
     public async all(query?: any): Promise<RefreshToken[]> {
-        const options: FindOptions = appendQuery({
+        const options: FindOptions = this.appendMatchOptions({
             order: SortOrder.REFRESH_TOKENS,
         }, query);
         return await RefreshToken.findAll(options);
     }
 
     public async find(tokenId: number, query?: any): Promise<RefreshToken> {
-        const options: FindOptions = appendQuery({
+        const options: FindOptions = appendIncludeOptions({
             where: { id: tokenId }
         }, query);
         const results = await RefreshToken.findAll(options);
@@ -109,7 +109,7 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
     // Model-Specific Methods ------------------------------------------------
 
     public async exact(token: string, query?: any): Promise<RefreshToken> {
-        const options = appendQuery({
+        const options = appendIncludeOptions({
             where: {
                 token: token,
             }
@@ -135,17 +135,36 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
         }
     }
 
+    // Public Helpers --------------------------------------------------------
+
+    /**
+     * Supported match query parameters:
+     * * active                         Select unexpired tokens
+     */
+    public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
+        options = appendIncludeOptions(options, query);
+        if (!query) {
+            return options;
+        }
+        const where: any = options.where ? options.where : {};
+        if ("" === query.active) {
+            where.expires = {[Op.gte]: Date.now()};
+        }
+        return options;
+    }
+
+
 }
 
 export default new RefreshTokenServices();
 
 // Private Objects -----------------------------------------------------------
 
-const appendQuery = (options: FindOptions, query?: any): FindOptions => {
+const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions => {
     if (!query) {
         return options;
     }
-    options = appendPagination(options, query);
+    options = appendPaginationOptions(options, query);
     const include: Includeable[] = [];
     if ("" === query.withUser) {
         include.push(User);

@@ -9,12 +9,14 @@ import {FindOptions, Includeable, Op, ValidationError, WhereOptions} from "seque
 // Internal Modules ----------------------------------------------------------
 
 import AbstractServices from "./AbstractServices";
+import AccessTokenServices from "./AccessTokenServices";
+import RefreshTokenServices from "./RefreshTokenServices";
 import AccessToken from "../models/AccessToken";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import {hashPassword} from "../oauth/OAuthUtils";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
-import {appendPagination} from "../util/QueryParameters";
+import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
 
 // Public Objects ------------------------------------------------------------
@@ -24,7 +26,7 @@ class UserServices extends AbstractServices<User> {
     // Standard CRUD Methods -------------------------------------------------
 
     public async all(query?: any): Promise<User[]> {
-        const options: FindOptions = appendMatch({
+        const options: FindOptions = this.appendMatchOptions({
             order: SortOrder.USERS,
         }, query);
         const results = await User.findAll(options);
@@ -35,7 +37,7 @@ class UserServices extends AbstractServices<User> {
     }
 
     public async find(userId: number, query?: any): Promise<User> {
-        const options: FindOptions = appendQuery({
+        const options: FindOptions = appendIncludeOptions({
             where: { id: userId }
         }, query);
         const results = await User.findAll(options);
@@ -138,14 +140,15 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.accessTokens"
             );
         }
-        const options: FindOptions = appendQuery({
+        const options: FindOptions = AccessTokenServices.appendMatchOptions({
             order: SortOrder.ACCESS_TOKENS,
+            where: { userId: userId },
         }, query);
         return await user.$get("accessTokens", options);
     }
 
     public async exact(username: string, query?: any): Promise<User> {
-        const options = appendQuery({
+        const options = appendIncludeOptions({
             where: {
                 username: username,
             }
@@ -168,10 +171,36 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.accessTokens"
             );
         }
-        const options: FindOptions = appendQuery({
+        const options: FindOptions = RefreshTokenServices.appendMatchOptions({
             order: SortOrder.REFRESH_TOKENS,
+            where: { userId: userId },
         }, query);
         return await user.$get("refreshTokens", options);
+    }
+
+    // Public Helpers --------------------------------------------------------
+
+    /*
+     * Supported match query parameters:
+     * * active                         Select active Users
+     * * username=pattern               Select usernames matching pattern
+     */
+    public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
+        options = appendIncludeOptions(options, query);
+        if (!query) {
+            return options;
+        }
+        const where: any = options.where ? options.where : {};
+        if ("" === query.active) {
+            where.active = true;
+        }
+        if (query.username) {
+            where.username = {[Op.iLike]: `%${query.username}%`}
+        }
+        if (Object.keys(where).length > 0) {
+            options.where = where;
+        }
+        return options;
     }
 
 }
@@ -180,26 +209,11 @@ export default new UserServices();
 
 // Private Objects -----------------------------------------------------------
 
-const appendMatch = (options: FindOptions, query?: any): FindOptions => {
-    options = appendQuery(options, query);
-    const where: WhereOptions = {};
-    if ("" === query.active) {
-        where.active = true;
-    }
-    if (query.username) {
-        where.username = {[Op.iLike]: `%${query.username}%`}
-    }
-    if (Object.keys(where).length > 0) {
-        options.where = where;
-    }
-    return options;
-}
-
-const appendQuery = (options: FindOptions, query?: any): FindOptions => {
+const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions => {
     if (!query) {
         return options;
     }
-    options = appendPagination(options, query);
+    options = appendPaginationOptions(options, query);
     const include: Includeable[] = [];
     if ("" === query.withAccessTokens) {
         include.push(AccessToken);

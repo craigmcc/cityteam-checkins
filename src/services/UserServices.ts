@@ -156,7 +156,7 @@ class UserServices extends AbstractServices<User> {
         const results = await User.findAll(options);
         if (results.length !== 1) {
             throw new NotFound(
-                `token: Missing User '${username}'`,
+                `username: Missing User '${username}'`,
                 "UserServices.exact"
             );
         }

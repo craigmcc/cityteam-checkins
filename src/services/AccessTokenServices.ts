@@ -43,7 +43,7 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
         }
     }
 
-    public async insert(accessToken: AccessToken): Promise<AccessToken> {
+    public async insert(accessToken: Partial<AccessToken>): Promise<AccessToken> {
         try {
             return await AccessToken.create(accessToken, {
                 fields: FIELDS,
@@ -77,7 +77,7 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
         return removed;
     }
 
-    public async update(tokenId: number, accessToken: AccessToken): Promise<AccessToken> {
+    public async update(tokenId: number, accessToken: Partial<AccessToken>): Promise<AccessToken> {
         try {
             accessToken.id = tokenId; // No cheating
             const result = await AccessToken.update(accessToken, {

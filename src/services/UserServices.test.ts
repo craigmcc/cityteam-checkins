@@ -4,8 +4,6 @@
 
 // External Modules ----------------------------------------------------------
 
-import {NotFound} from "../util/HttpErrors";
-
 const chai = require("chai");
 const expect = chai.expect;
 
@@ -13,6 +11,7 @@ const expect = chai.expect;
 
 import UserServices from "./UserServices";
 import User from "../models/User";
+import {NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupUser} from "../util/TestUtils";
 
@@ -169,6 +168,64 @@ describe("UserServices Functional Tests", () => {
 
     })
 
+    describe("exact()", () => {
+
+        it("should fail on invalid username", async () => {
+            const INVALID_USERNAME = "abra cadabra";
+            try {
+                await UserServices.exact(INVALID_USERNAME);
+                expect.fail("Should have thrown NotFound");
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect((error as Error).message).to.include
+                    (`username: Missing User '${INVALID_USERNAME}'`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+        })
+
+        it("should pass on included children", async () => {
+            try {
+                const originals = await UserServices.all({
+                    withAccessTokens: "",
+                    withRefreshTokens: "",
+                });
+                originals.forEach(async original => {
+                    const user = await UserServices.exact(original.username);
+                    expect(user.accessTokens).to.exist;
+                    if (user.username === SeedData.USERNAME_SUPERUSER) {
+                        expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
+                    } else {
+                        expect(user.accessTokens.length).to.equal(0);
+                    }
+                    expect(user.refreshTokens).to.exist;
+                    if (user.username === SeedData.USERNAME_SUPERUSER) {
+                        expect(user.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
+                    } else {
+                        expect(user.refreshTokens.length).to.equal(0);
+                    }
+                })
+            } catch (error) {
+                expect.fail(`Should not have thrown '${error}'`);
+            }
+        })
+
+        it("should pass on valid usernames", async () => {
+            try {
+                const users = await UserServices.all();
+                users.forEach(async (user) => {
+                    // @ts-ignore
+                    const found = await UserServices.exact(user.username);
+                    expect(found.id).to.equal(user.id);
+                })
+            } catch (error) {
+                expect.fail(`Should not have thrown '${error}'`);
+            }
+        })
+
+    })
+
     describe("find()", () => {
 
         it("should fail on invalid ID", async () => {
@@ -228,57 +285,31 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("exact()", () => {
+    describe("insert()", () => {
 
-        it("should fail on invalid username", async () => {
-            const INVALID_USERNAME = "abra cadabra";
-            try {
-                await UserServices.exact(INVALID_USERNAME);
-                expect.fail("Should have thrown NotFound");
-            } catch (error) {
-                if (error instanceof NotFound) {
-                    expect((error as Error).message).to.include
-                        (`username: Missing User '${INVALID_USERNAME}'`);
-                } else {
-                    expect.fail(`Should not have thrown '${error}'`);
-                }
+        it("should pass on valid input data", async () => {
+            const INPUT: Partial<User> = {
+                active: true,
+                name: "Inserted User",
+                password: "insertedpassword",
+                scope: "superuser",
+                username: "inserted",
             }
-        })
-
-        it("should pass on included children", async () => {
             try {
-                const originals = await UserServices.all({
-                    withAccessTokens: "",
-                    withRefreshTokens: "",
-                });
-                originals.forEach(async original => {
-                    const user = await UserServices.exact(original.username);
-                    expect(user.accessTokens).to.exist;
-                    if (user.username === SeedData.USERNAME_SUPERUSER) {
-                        expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
-                    } else {
-                        expect(user.accessTokens.length).to.equal(0);
-                    }
-                    expect(user.refreshTokens).to.exist;
-                    if (user.username === SeedData.USERNAME_SUPERUSER) {
-                        expect(user.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
-                    } else {
-                        expect(user.refreshTokens.length).to.equal(0);
-                    }
-                })
-            } catch (error) {
-                expect.fail(`Should not have thrown '${error}'`);
-            }
-        })
 
-        it("should pass on valid usernames", async () => {
-            try {
-                const users = await UserServices.all();
-                users.forEach(async (user) => {
-                    // @ts-ignore
-                    const found = await UserServices.exact(user.username);
-                    expect(found.id).to.equal(user.id);
-                })
+                const inserted = await UserServices.insert(INPUT);
+                expect(inserted.id).to.exist;
+                expect(inserted.active).to.equal(INPUT.active);
+                expect(inserted.name).to.equal(INPUT.name);
+                expect(inserted.password).to.not.equal(INPUT.password); // It was hashed
+                expect(inserted.scope).to.equal(INPUT.scope);
+                expect(inserted.username).to.equal(INPUT.username);
+
+                const found = await User.findByPk(inserted.id);
+                expect(found).to.exist;
+                // @ts-ignore
+                expect(found.name).to.equal(INPUT.name);
+
             } catch (error) {
                 expect.fail(`Should not have thrown '${error}'`);
             }

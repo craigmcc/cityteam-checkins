@@ -34,7 +34,7 @@ abstract class AbstractServices<M extends Model> {
      *
      * @param model Model to be inserted
      */
-    public abstract insert(model: M): Promise<M>;
+    public abstract insert(model: Partial<M>): Promise<M>;
 
     /**
      * <p>Remove the model with the specified id, and return the
@@ -51,7 +51,7 @@ abstract class AbstractServices<M extends Model> {
      * @param id ID of the model to update
      * @param model Model containing updated values
      */
-    public abstract update(id: number, model: M): Promise<M>
+    public abstract update(id: number, model: Partial<M>): Promise<M>
 
 }
 

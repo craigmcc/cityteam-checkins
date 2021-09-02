@@ -52,7 +52,13 @@ class UserServices extends AbstractServices<User> {
         }
     }
 
-    public async insert(user: User): Promise<User> {
+    public async insert(user: Partial<User>): Promise<User> {
+        if (!user.password) {
+            throw new BadRequest(
+                `password: Is required`,
+                "UserServices.insert"
+            );
+        }
         const newUser: Partial<User> = {
             ...user,
             password: await hashPassword(user.password),
@@ -93,7 +99,7 @@ class UserServices extends AbstractServices<User> {
         return removed;
     }
 
-    public async update(userId: number, user: User): Promise<User> {
+    public async update(userId: number, user: Partial<User>): Promise<User> {
         const oldUser: Partial<User> = {
             ...user,
         }

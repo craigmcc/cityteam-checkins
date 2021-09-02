@@ -43,9 +43,9 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
         }
     }
 
-    public async insert(refreshToken: Partial<RefreshToken>): Promise<RefreshToken> {
+    public async insert(refreshToken: RefreshToken): Promise<RefreshToken> {
         try {
-            return await RefreshToken.create(refreshToken, {
+            return await refreshToken.save({
                 fields: FIELDS,
             });
         } catch (error) {
@@ -77,7 +77,7 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
         return removed;
     }
 
-    public async update(tokenId: number, refreshToken: Partial<RefreshToken>): Promise<RefreshToken> {
+    public async update(tokenId: number, refreshToken: RefreshToken): Promise<RefreshToken> {
         try {
             refreshToken.id = tokenId; // No cheating
             const result = await RefreshToken.update(refreshToken, {

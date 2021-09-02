@@ -33,7 +33,6 @@ describe("UserServices Functional Tests", () => {
             const NOW = new Date().getTime();
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const results = await UserServices.accessTokens(user.id, {
                     active: "",
                 });
@@ -49,7 +48,6 @@ describe("UserServices Functional Tests", () => {
         it("should pass on all AccessTokens", async () => {
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const results = await UserServices.accessTokens(user.id);
                 expect(results.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 results.forEach(result => {
@@ -65,9 +63,7 @@ describe("UserServices Functional Tests", () => {
             const OFFSET = 1;
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const accessTokens = await UserServices.accessTokens(user.id);
-                // @ts-ignore
                 const paginateds = await UserServices.accessTokens(user.id, {
                     limit: LIMIT,
                     offset: OFFSET,
@@ -215,7 +211,6 @@ describe("UserServices Functional Tests", () => {
             try {
                 const users = await UserServices.all();
                 users.forEach(async (user) => {
-                    // @ts-ignore
                     const found = await UserServices.exact(user.username);
                     expect(found.id).to.equal(user.id);
                 })
@@ -250,7 +245,6 @@ describe("UserServices Functional Tests", () => {
                     withRefreshTokens: "",
                 });
                 originals.forEach(async original => {
-                    // @ts-ignore
                     const user = await UserServices.find(original.id);
                     expect(user.accessTokens).to.exist;
                     if (user.username === SeedData.USERNAME_SUPERUSER) {
@@ -274,7 +268,6 @@ describe("UserServices Functional Tests", () => {
             try {
                 const users = await UserServices.all();
                 users.forEach(async (user) => {
-                    // @ts-ignore
                     const found = await UserServices.find(user.id);
                     expect(found.id).to.equal(user.id);
                 })
@@ -288,20 +281,20 @@ describe("UserServices Functional Tests", () => {
     describe("insert()", () => {
 
         it("should pass on valid input data", async () => {
-            const INPUT: Partial<User> = {
+            const INPUT = new User({
                 active: true,
                 name: "Inserted User",
                 password: "insertedpassword",
                 scope: "superuser",
                 username: "inserted",
-            }
+            });
             try {
 
                 const inserted = await UserServices.insert(INPUT);
                 expect(inserted.id).to.exist;
                 expect(inserted.active).to.equal(INPUT.active);
                 expect(inserted.name).to.equal(INPUT.name);
-                expect(inserted.password).to.not.equal(INPUT.password); // It was hashed
+                expect(inserted.password).to.equal(""); // It was redacted
                 expect(inserted.scope).to.equal(INPUT.scope);
                 expect(inserted.username).to.equal(INPUT.username);
 
@@ -323,7 +316,6 @@ describe("UserServices Functional Tests", () => {
             const NOW = new Date().getTime();
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const results = await UserServices.refreshTokens(user.id, {
                     active: "",
                 });
@@ -339,7 +331,6 @@ describe("UserServices Functional Tests", () => {
         it("should pass on all RefreshTokens", async () => {
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const results = await UserServices.refreshTokens(user.id);
                 expect(results.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 results.forEach(result => {
@@ -355,9 +346,7 @@ describe("UserServices Functional Tests", () => {
             const OFFSET = 1;
             try {
                 const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
-                // @ts-ignore
                 const refreshTokens = await UserServices.refreshTokens(user.id);
-                // @ts-ignore
                 const paginateds = await UserServices.refreshTokens(user.id, {
                     limit: LIMIT,
                     offset: OFFSET,

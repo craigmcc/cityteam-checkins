@@ -21,7 +21,6 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
 
     // Standard CRUD Methods -------------------------------------------------
 
-    // NOTE - should not be used
     public async all(query?: any): Promise<AccessToken[]> {
         const options: FindOptions = this.appendMatchOptions({
             order: SortOrder.ACCESS_TOKENS,
@@ -150,6 +149,9 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
         const where: any = options.where ? options.where : {};
         if ("" === query.active) {
             where.expires = {[Op.gte]: Date.now()};
+        }
+        if (Object.keys(where).length > 0) {
+            options.where = where;
         }
         return options;
     }

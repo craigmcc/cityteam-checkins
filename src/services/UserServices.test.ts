@@ -27,31 +27,31 @@ describe("UserServices Functional Tests", () => {
 
     // Test Methods --------------------------------------------------------
 
-    describe("accessTokens()", () => {
+    describe("UserServices.accessTokens()", () => {
 
         it("should pass on active AccessTokens", async () => {
 
             const NOW = new Date().getTime();
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const INPUT = await lookupUser(SeedData.USERNAME_SUPERUSER);
 
-            const results = await UserServices.accessTokens(user.id, {
+            const OUTPUTS = await UserServices.accessTokens(INPUT.id, {
                 active: "",
             });
-            results.forEach(result => {
-                expect(result.expires.getTime()).to.be.greaterThanOrEqual(NOW);
-                expect(result.userId).to.equal(user.id);
+            OUTPUTS.forEach(OUTPUT => {
+                expect(OUTPUT.expires.getTime()).to.be.greaterThanOrEqual(NOW);
+                expect(OUTPUT.userId).to.equal(INPUT.id);
             });
 
         })
 
         it("should pass on all AccessTokens", async () => {
 
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const INPUT = await lookupUser(SeedData.USERNAME_SUPERUSER);
 
-            const results = await UserServices.accessTokens(user.id);
-            expect(results.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
-            results.forEach(result => {
-                expect(result.userId).to.equal(user.id);
+            const OUTPUTS = await UserServices.accessTokens(INPUT.id);
+            expect(OUTPUTS.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
+            OUTPUTS.forEach(result => {
+                expect(result.userId).to.equal(INPUT.id);
             });
 
         })
@@ -77,14 +77,14 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("all()", () => {
+    describe("UserServices.all()", () => {
 
         it("should pass on active Users", async () => {
 
-            const results: User[] = await UserServices.all({ active: "" });
-            results.forEach(result => {
-                if (!result.active) {
-                    expect.fail(`User '${result.username}' was not active, should have been skipped`);
+            const OUTPUTS = await UserServices.all({ active: "" });
+            OUTPUTS.forEach(OUTPUT => {
+                if (!OUTPUT.active) {
+                    expect.fail(`User '${OUTPUT.username}' was not active, should have been skipped`);
                 }
             })
 
@@ -92,29 +92,29 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on all Users", async () => {
 
-            const results = await UserServices.all();
-            expect(results.length).equals(SeedData.USERS.length);
+            const OUTPUTS = await UserServices.all();
+            expect(OUTPUTS.length).equals(SeedData.USERS.length);
 
         })
 
         it("should pass on included children", async () => {
 
-            const users = await UserServices.all({
+            const OUTPUTS = await UserServices.all({
                 withAccessTokens: "",
                 withRefreshTokens: "",
             });
-            users.forEach(user => {
-                expect(user.accessTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
-                    expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
+            OUTPUTS.forEach(OUTPUT => {
+                expect(OUTPUT.accessTokens).to.exist;
+                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                    expect(OUTPUT.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 } else {
-                    expect(user.accessTokens.length).to.equal(0);
+                    expect(OUTPUT.accessTokens.length).to.equal(0);
                 }
-                expect(user.refreshTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
-                    expect(user.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
+                expect(OUTPUT.refreshTokens).to.exist;
+                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                    expect(OUTPUT.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 } else {
-                    expect(user.refreshTokens.length).to.equal(0);
+                    expect(OUTPUT.refreshTokens.length).to.equal(0);
                 }
             })
 
@@ -153,7 +153,7 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("exact()", () => {
+    describe("UserServices.exact()", () => {
 
         it("should fail on invalid username", async () => {
 
@@ -209,7 +209,7 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("find()", () => {
+    describe("UserServices.find()", () => {
 
         it("should fail on invalid ID", async () => {
 
@@ -231,23 +231,24 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const originals = await UserServices.all({
+            const INPUTS = await UserServices.all({
                 withAccessTokens: "",
                 withRefreshTokens: "",
             });
-            originals.forEach(async original => {
-                const user = await UserServices.find(original.id);
-                expect(user.accessTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
-                    expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
+
+            INPUTS.forEach(async INPUT => {
+                const OUTPUT = await UserServices.find(INPUT.id);
+                expect(OUTPUT.accessTokens).to.exist;
+                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                    expect(OUTPUT.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 } else {
-                    expect(user.accessTokens.length).to.equal(0);
+                    expect(OUTPUT.accessTokens.length).to.equal(0);
                 }
-                expect(user.refreshTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
-                    expect(user.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
+                expect(OUTPUT.refreshTokens).to.exist;
+                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                    expect(OUTPUT.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 } else {
-                    expect(user.refreshTokens.length).to.equal(0);
+                    expect(OUTPUT.refreshTokens.length).to.equal(0);
                 }
             })
 
@@ -255,18 +256,19 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on valid IDs", async () => {
 
-            const users = await UserServices.all();
-            users.forEach(async (user) => {
-                const found = await UserServices.find(user.id);
-                expect(found.id).to.equal(user.id);
-                expect(found.password).to.equal("");
+            const INPUTS = await UserServices.all();
+
+            INPUTS.forEach(async (INPUT) => {
+                const OUTPUT = await UserServices.find(INPUT.id);
+                expect(OUTPUT.id).to.equal(INPUT.id);
+                expect(OUTPUT.password).to.equal("");
             })
 
         })
 
     })
 
-    describe("insert()", () => {
+    describe("UserServices.insert()", () => {
 
         it("should fail on duplicate data", async () => { // TODO - weirdness
 
@@ -336,7 +338,7 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("refreshTokens()", () => {
+    describe("UserServices.refreshTokens()", () => {
 
         it("should pass on active RefreshTokens", async () => {
 
@@ -385,7 +387,7 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("remove()", () => {
+    describe("UserServices.remove()", () => {
 
         it("should fail on invalid ID", async () => {
 
@@ -425,7 +427,7 @@ describe("UserServices Functional Tests", () => {
 
     })
 
-    describe("update()", () => {
+    describe("UserServices.update()", () => {
 
         it("should fail on duplicate username", async () => {
 

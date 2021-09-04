@@ -169,7 +169,7 @@ const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions =>
         return options;
     }
     options = appendPaginationOptions(options, query);
-    const include: Includeable[] = [];
+    const include: any = options.include ? options.include : [];
     if ("" === query.withUser) {
         include.push(User);
     }

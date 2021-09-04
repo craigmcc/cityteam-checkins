@@ -187,19 +187,19 @@ CREATE UNIQUE INDEX uk_users_username ON public.users USING btree (username);
 
 
 --
--- Name: access_tokens fk_access_tokens_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: access_tokens access_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.access_tokens
-    ADD CONSTRAINT fk_access_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT access_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- Name: refresh_tokens fk_refresh_tokens_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: refresh_tokens refresh_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.refresh_tokens
-    ADD CONSTRAINT fk_refresh_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id);
+    ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

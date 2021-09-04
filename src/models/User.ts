@@ -49,7 +49,7 @@ class User extends AbstractModel<User> {
     @Column({
         allowNull: false,
         field: "name",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "name: Is required",
@@ -61,7 +61,7 @@ class User extends AbstractModel<User> {
     @Column({
         allowNull: false,
         field: "password",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "password: Is required",
@@ -76,7 +76,7 @@ class User extends AbstractModel<User> {
     @Column({
         allowNull: false,
         field: "scope",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "scope: Is required",
@@ -88,7 +88,7 @@ class User extends AbstractModel<User> {
     @Column({
         allowNull: false,
         field: "username",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "username: Is required",

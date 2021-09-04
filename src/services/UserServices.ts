@@ -40,6 +40,17 @@ class UserServices extends AbstractServices<User> {
         const options: FindOptions = appendIncludeOptions({
             where: { id: userId }
         }, query);
+        const result = await User.findByPk(userId, options);
+        if (result) {
+            result.password = "";
+            return result;
+        } else {
+            throw new NotFound(
+                `userId: Missing User ${userId}`,
+                "UserServices.find"
+            );
+        }
+/*
         const results = await User.findAll(options);
         if (results.length === 1) {
             results[0].password = "";
@@ -50,18 +61,19 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.find"
             );
         }
+*/
     }
 
-    public async insert(user: User): Promise<User> {
+    public async insert(user: any): Promise<User> {
         if (!user.password) {
             throw new BadRequest(
                 `password: Is required`,
                 "UserServices.insert"
             );
         }
-        user.password = await hashPassword(user.password);
+        user.password = await hashPassword(user.password); // TODO - leaked back to caller
         try {
-            const inserted = await user.save({
+            const inserted = await User.create(user, {
                 fields: FIELDS,
             });
             inserted.password = "";
@@ -96,30 +108,27 @@ class UserServices extends AbstractServices<User> {
         return removed;
     }
 
-    public async update(userId: number, user: User): Promise<User> {
-        const oldUser: Partial<User> = {
-            ...user,
-        }
-        if (oldUser.password && (oldUser.password.length > 0)) {
-            oldUser.password = await hashPassword(oldUser.password);
+    public async update(userId: number, user: any): Promise<User> {
+        if (user.password && (user.password.length > 0)) {
+            user.password = await hashPassword(user.password); // TODO - leaked back to caller
         } else {
-            delete oldUser.password;
+            delete user.password;
         }
         try {
-            oldUser.id = userId; // No cheating
-            const result = await User.update(oldUser, {
+            const found = await User.findByPk(userId);
+            if (!found) {
+                throw new NotFound(`userId: Missing User ${userId}`);
+            }
+            user.id = userId; // No cheating
+            const result = await User.update(user, {
                 fields: FIELDS_WITH_ID,
                 where: { id: userId }
             });
-            if (result[0] < 1) {
-                throw new NotFound(
-                    `userId: Missing User ${userId}`,
-                    "UserServices.update"
-                );
-            }
-            return this.find(userId);
+            return await this.find(userId);
         } catch (error) {
-            if (error instanceof ValidationError) {
+            if (error instanceof NotFound) {
+                throw error;
+            } else if (error instanceof ValidationError) {
                 throw new BadRequest(
                     error,
                     "UserServices.update"

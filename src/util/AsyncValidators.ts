@@ -26,7 +26,7 @@ export const validateUserUsernameUnique
                 username: user.username,
             }
         }
-        if (user.id) {
+        if (user.id && (user.id > 0)) {
             options.where.id = { [Op.ne]: user.id }
         }
         const results: User[] = await User.findAll(options);

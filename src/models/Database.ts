@@ -16,9 +16,11 @@ import User from "./User";
 
 // Configure Database Instance ----------------------------------------------
 
-const DATABASE_URL: string = process.env.DATABASE_URL
+const DATABASE_URL = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-    : "undefined";
+    : undefined;
+
+//console.log(`DATABASE URL ${DATABASE_URL} NODE_ENV ${process.env.NODE_ENV}`);
 
 export const Database = DATABASE_URL
         ? new Sequelize(DATABASE_URL, {

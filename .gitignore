@@ -1,7 +1,7 @@
 .env*
 .nyc_output
 .idea/
-.migraterc
+.migraterc*
 backup/
 dist/
 log/

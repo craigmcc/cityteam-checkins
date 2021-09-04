@@ -92,7 +92,9 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
             }
             return this.find(tokenId);
         } catch (error) {
-            if (error instanceof ValidationError) {
+            if (error instanceof NotFound) {
+                throw error;
+            } else if (error instanceof ValidationError) {
                 throw new BadRequest(
                     error,
                     "RefreshTokenServices.update"
@@ -149,6 +151,9 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
         const where: any = options.where ? options.where : {};
         if ("" === query.active) {
             where.expires = {[Op.gte]: Date.now()};
+        }
+        if (Object.keys(where).length > 0) {
+            options.where = where;
         }
         return options;
     }

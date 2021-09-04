@@ -444,7 +444,7 @@ describe("UserServices Functional Tests", () => {
                 expect.fail("Should have thrown BadRequest");
             } catch (error) {
                 if (error instanceof BadRequest) {
-                    expect((error as Error).message).to.include
+                    expect(error.message).to.include
                         (`username: Username '${INPUT.username}' is already in use`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
@@ -470,7 +470,7 @@ describe("UserServices Functional Tests", () => {
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
-                    expect((error as Error).message).to.include
+                    expect(error.message).to.include
                         (`userId: Missing User ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);

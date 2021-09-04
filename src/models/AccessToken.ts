@@ -10,12 +10,21 @@ import {BelongsTo, Column, DataType, ForeignKey, Table} from "sequelize-typescri
 
 import AbstractModel from "./AbstractModel";
 import User from "./User";
+import {validateAccessTokenTokenUnique} from "../util/AsyncValidators";
+import {BadRequest} from "../util/HttpErrors";
 
 // Public Objects ------------------------------------------------------------
 
 @Table({
     modelName: "accessToken",
     tableName: "access_tokens",
+    validate: {
+        isTokenUnique: async function(this: AccessToken): Promise<void> {
+            if (!(await validateAccessTokenTokenUnique(this))) {
+                throw new BadRequest(`token: Token '${this.token}' is already in use`);
+            }
+        }
+    }
 })
 class AccessToken extends AbstractModel<AccessToken> {
 

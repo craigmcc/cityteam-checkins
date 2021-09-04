@@ -92,7 +92,9 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
             }
             return this.find(tokenId);
         } catch (error) {
-            if (error instanceof ValidationError) {
+            if (error instanceof NotFound) {
+                throw error;
+            } else if (error instanceof ValidationError) {
                 throw new BadRequest(
                     error,
                     "AccessTokenServices.update"

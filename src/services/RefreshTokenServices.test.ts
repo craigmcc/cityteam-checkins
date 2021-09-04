@@ -1,6 +1,6 @@
-// AccessTokenServices.test --------------------------------------------------
+// RefreshTokenServices.test -------------------------------------------------
 
-// Functional tests for AccessTokenServices.
+// Functional tests for RefreshTokenServices.
 
 // External Modules ----------------------------------------------------------
 
@@ -11,14 +11,14 @@ const expect = chai.expect;
 
 // Internal Modules ----------------------------------------------------------
 
-import AccessTokenServices from "./AccessTokenServices";
+import RefreshTokenServices from "./RefreshTokenServices";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupUser} from "../util/TestUtils";
 
 // Test Specifications -------------------------------------------------------
 
-describe("AccessTokenServices Functional Tests", () => {
+describe("RefreshTokenServices Functional Tests", () => {
 
     // Test Hooks -----------------------------------------------------------
 
@@ -28,31 +28,31 @@ describe("AccessTokenServices Functional Tests", () => {
 
     // Test Methods --------------------------------------------------------
 
-    describe("AccessTokenServices.all()", () => {
+    describe("RefreshTokenServices.all()", () => {
 
-        it("should pass on active AccessTokens", async () => {
+        it("should pass on active RefreshTokens", async () => {
 
             const NOW = new Date();
 
-            const OUTPUTS = await AccessTokenServices.all({ active: "" });
+            const OUTPUTS = await RefreshTokenServices.all({ active: "" });
             OUTPUTS.forEach(OUTPUT => {
                 if (OUTPUT.expires < NOW) {
-                    expect.fail(`AccessToken '${OUTPUT.token}' was not active, should have been skipped`);
+                    expect.fail(`RefreshToken '${OUTPUT.token}' was not active, should have been skipped`);
                 }
             })
 
         })
 
-        it("should pass on all AccessTokens", async () => {
+        it("should pass on all RefreshTokens", async () => {
 
-            const OUTPUTS = await AccessTokenServices.all();
-            expect(OUTPUTS.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
+            const OUTPUTS = await RefreshTokenServices.all();
+            expect(OUTPUTS.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
 
         })
 
         it("should pass on included children", async () => {
 
-            const OUTPUTS = await AccessTokenServices.all({
+            const OUTPUTS = await RefreshTokenServices.all({
                 withUser: "",
             });
             OUTPUTS.forEach(OUTPUT => {
@@ -62,12 +62,12 @@ describe("AccessTokenServices Functional Tests", () => {
 
         })
 
-        it("should pass on paginated AccessTokens", async () => {
+        it("should pass on paginated RefreshTokens", async () => {
 
             const LIMIT = 1;
             const OFFSET = 1;
 
-            const OUTPUTS = await AccessTokenServices.all({
+            const OUTPUTS = await RefreshTokenServices.all({
                 limit: LIMIT,
                 offset: OFFSET,
             });
@@ -78,19 +78,19 @@ describe("AccessTokenServices Functional Tests", () => {
 
     })
 
-    describe("AccessTokenServices.exact()", () => {
+    describe("RefreshTokenServices.exact()", () => {
 
         it("should fail on invalid token", async () => {
 
             const INVALID_TOKEN = "abra cadabra";
 
             try {
-                await AccessTokenServices.exact(INVALID_TOKEN);
+                await RefreshTokenServices.exact(INVALID_TOKEN);
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect((error as Error).message).to.include
-                        (`token: Missing AccessToken '${INVALID_TOKEN}'`);
+                    (`token: Missing RefreshToken '${INVALID_TOKEN}'`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
                 }
@@ -101,10 +101,10 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const INPUTS = await AccessTokenServices.all();
+            const INPUTS = await RefreshTokenServices.all();
 
             INPUTS.forEach(async INPUT => {
-                const OUTPUT = await AccessTokenServices.exact(INPUT.token, {
+                const OUTPUT = await RefreshTokenServices.exact(INPUT.token, {
                     withUser: "",
                 });
                 expect(OUTPUT.user).to.exist;
@@ -115,13 +115,13 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on valid tokens", async () => {
 
-            const INPUTS = await AccessTokenServices.all();
+            const INPUTS = await RefreshTokenServices.all();
 
             INPUTS.forEach(async INPUT => {
-                const OUTPUT = await AccessTokenServices.exact(INPUT.token);
+                const OUTPUT = await RefreshTokenServices.exact(INPUT.token);
                 expect(OUTPUT.id).to.equal(INPUT.id);
+                expect(OUTPUT.accessToken).to.equal(INPUT.accessToken);
                 expect(OUTPUT.expires).to.equal(INPUT.expires);
-                expect(OUTPUT.scope).to.equal(INPUT.scope);
                 expect(OUTPUT.token).to.equal(INPUT.token);
                 expect(OUTPUT.user).to.not.exist;
             });
@@ -130,19 +130,19 @@ describe("AccessTokenServices Functional Tests", () => {
 
     })
 
-    describe("AccessTokenServices.find()", () => {
+    describe("RefreshTokenServices.find()", () => {
 
         it("should fail on invalid ID", async () => {
 
             const INVALID_ID = -1;
 
             try {
-                await AccessTokenServices.find(INVALID_ID);
+                await RefreshTokenServices.find(INVALID_ID);
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect((error as Error).message).to.include
-                        (`tokenId: Missing AccessToken ${INVALID_ID}`);
+                    (`tokenId: Missing RefreshToken ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
                 }
@@ -152,10 +152,10 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const INPUTS = await AccessTokenServices.all();
+            const INPUTS = await RefreshTokenServices.all();
 
             INPUTS.forEach(async INPUT => {
-                const OUTPUT = await AccessTokenServices.find(INPUT.id, {
+                const OUTPUT = await RefreshTokenServices.find(INPUT.id, {
                     withUser: "",
                 });
                 expect(OUTPUT.user).to.exist;
@@ -166,13 +166,13 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on valid IDs", async () => {
 
-            const INPUTS = await AccessTokenServices.all();
+            const INPUTS = await RefreshTokenServices.all();
 
             INPUTS.forEach(async INPUT => {
-                const OUTPUT = await AccessTokenServices.find(INPUT.id);
+                const OUTPUT = await RefreshTokenServices.find(INPUT.id);
                 expect(OUTPUT.id).to.equal(INPUT.id);
+                expect(OUTPUT.accessToken).to.equal(INPUT.accessToken);
                 expect(OUTPUT.expires).to.equal(INPUT.expires);
-                expect(OUTPUT.scope).to.equal(INPUT.scope);
                 expect(OUTPUT.token).to.equal(INPUT.token);
                 expect(OUTPUT.userId).to.equal(INPUT.userId);
             });
@@ -181,20 +181,20 @@ describe("AccessTokenServices Functional Tests", () => {
 
     })
 
-    describe("AccessTokenServices.insert()", () => {
+    describe("RefreshTokenServices.insert()", () => {
 
         it("should fail on duplicate data", async () => {
 
-            const EXISTING = await AccessTokenServices.all();
+            const EXISTING = await RefreshTokenServices.all();
             const INPUT = {
+                accessToken: "newaccesstoken",
                 expires: new Date(),
-                scope: "newscope",
                 token: EXISTING[0].token,
                 userId: EXISTING[0].userId,
             }
 
             try {
-                const OUTPUT = await AccessTokenServices.insert(INPUT);
+                const OUTPUT = await RefreshTokenServices.insert(INPUT);
                 expect.fail(`Should have thrown BadRequest`);
             } catch (error) {
                 if (error instanceof BadRequest) {
@@ -211,7 +211,7 @@ describe("AccessTokenServices Functional Tests", () => {
             const INPUT = {};
 
             try {
-                await AccessTokenServices.insert(INPUT);
+                await RefreshTokenServices.insert(INPUT);
                 expect.fail(`Should have thrown BadRequest`);
             } catch (error) {
                 if (error instanceof BadRequest) {
@@ -227,16 +227,16 @@ describe("AccessTokenServices Functional Tests", () => {
 
             const USER = await lookupUser(SeedData.USERNAME_SUPERUSER);
             const INPUT = {
+                accessToken: "newaccesstoken",
                 expires: new Date(),
-                scope: "newscope",
                 token: "inserted token value",
                 userId: USER.id,
             }
 
-            const OUTPUT = await AccessTokenServices.insert(INPUT);
+            const OUTPUT = await RefreshTokenServices.insert(INPUT);
             expect(OUTPUT.id).to.exist;
+            expect(OUTPUT.accessToken).to.equal(INPUT.accessToken);
             expect(OUTPUT.expires).to.exist; // Clock skew
-            expect(OUTPUT.scope).to.equal(INPUT.scope);
             expect(OUTPUT.token).to.equal(INPUT.token);
             expect(OUTPUT.userId).to.equal(INPUT.userId);
 
@@ -246,19 +246,19 @@ describe("AccessTokenServices Functional Tests", () => {
 
     // TODO - purge()
 
-    describe("AccessTokenServices.remove()", () => {
+    describe("RefreshTokenServices.remove()", () => {
 
         it("should fail on invalid ID", async () => {
 
             const INVALID_ID = -1;
 
             try {
-                await AccessTokenServices.remove(INVALID_ID);
+                await RefreshTokenServices.remove(INVALID_ID);
                 expect.fail(`Should have thrown NotFound`);
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect((error as Error).message).to.include
-                    (`tokenId: Missing AccessToken ${INVALID_ID}`);
+                    (`tokenId: Missing RefreshToken ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
                 }
@@ -268,16 +268,16 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on valid input", async () => {
 
-            const INPUT = await AccessTokenServices.all();
-            const OUTPUT = await AccessTokenServices.remove(INPUT[0].id);
+            const INPUT = await RefreshTokenServices.all();
+            const OUTPUT = await RefreshTokenServices.remove(INPUT[0].id);
             expect(OUTPUT.id).to.equal(INPUT[0].id);
 
             try {
-                await AccessTokenServices.remove(INPUT[0].id);
+                await RefreshTokenServices.remove(INPUT[0].id);
                 expect.fail(`Should have thrown NotFound after remove`);
             } catch (error) {
                 if (error instanceof NotFound) {
-                    expect(error.message).to.include(`tokenId: Missing AccessToken ${INPUT[0].id}`);
+                    expect(error.message).to.include(`tokenId: Missing RefreshToken ${INPUT[0].id}`);
                 } else {
                     expect.fail(`Should have thrown NotFound`);
                 }
@@ -287,20 +287,20 @@ describe("AccessTokenServices Functional Tests", () => {
 
     })
 
-    describe("AccessTokenServices.update()", () => {
+    describe("RefreshTokenServices.update()", () => {
 
         it("should fail on duplicate token", async () => {
 
-            const ORIGINAL = await AccessTokenServices.all();
+            const ORIGINAL = await RefreshTokenServices.all();
             const INPUT = {
+                accessToken: ORIGINAL[0].accessToken,
                 expires: ORIGINAL[0].expires,
-                scope: ORIGINAL[0].scope,
                 token: ORIGINAL[1].token,
                 userId: ORIGINAL[0].userId,
             }
 
             try {
-                await AccessTokenServices.update(ORIGINAL[0].id, INPUT);
+                await RefreshTokenServices.update(ORIGINAL[0].id, INPUT);
                 expect.fail(`Should have thrown BadRequest`);
             } catch (error) {
                 if (error instanceof BadRequest) {
@@ -316,21 +316,21 @@ describe("AccessTokenServices Functional Tests", () => {
         it("should fail on invalid ID", async () => {
 
             const INVALID_ID = -1;
-            const ORIGINAL = await AccessTokenServices.all();
+            const ORIGINAL = await RefreshTokenServices.all();
             const INPUT = {
+                accessToken: ORIGINAL[0].accessToken,
                 expires: ORIGINAL[0].expires,
-                scope: ORIGINAL[0].scope,
                 token: ORIGINAL[0].token + " UPDATED",
                 userId: ORIGINAL[0].userId,
             }
 
             try {
-                await AccessTokenServices.update(INVALID_ID, INPUT);
+                await RefreshTokenServices.update(INVALID_ID, INPUT);
                 expect.fail(`Should have thrown NotFound`);
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect(error.message).to.include
-                    (`tokenId: Missing AccessToken ${INVALID_ID}`);
+                    (`tokenId: Missing RefreshToken ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
                 }

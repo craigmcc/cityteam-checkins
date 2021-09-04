@@ -21,6 +21,7 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
 
     // Standard CRUD Methods -------------------------------------------------
 
+    // NOTE - should not be used
     public async all(query?: any): Promise<AccessToken[]> {
         const options: FindOptions = this.appendMatchOptions({
             order: SortOrder.ACCESS_TOKENS,

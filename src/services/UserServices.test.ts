@@ -165,7 +165,7 @@ describe("UserServices Functional Tests", () => {
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect((error as Error).message).to.include
-                    (`username: Missing User '${INVALID_USERNAME}'`);
+                        (`username: Missing User '${INVALID_USERNAME}'`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
                 }

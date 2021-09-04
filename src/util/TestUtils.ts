@@ -17,8 +17,6 @@ import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
 
-export const USER_SUPERUSER_USERNAME = "superuser";
-
 export const lookupUser = async (username: string): Promise<User> => {
     const result = await User.findOne({
         where: { username: username }
@@ -39,7 +37,7 @@ export const loadTestData = async (): Promise<void> => {
 
     // Load OAuth Related Tables (top-down order)
     await loadUsers(SeedData.USERS);
-    const userSuperuser = await lookupUser(USER_SUPERUSER_USERNAME);
+    const userSuperuser = await lookupUser(SeedData.USERNAME_SUPERUSER);
     await loadAccessTokens(userSuperuser, SeedData.ACCESS_TOKENS_SUPERUSER);
     await loadRefreshTokens(userSuperuser, SeedData.REFRESH_TOKENS_SUPERUSER);
 

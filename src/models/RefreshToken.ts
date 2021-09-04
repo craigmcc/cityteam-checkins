@@ -22,7 +22,7 @@ class RefreshToken extends AbstractModel<RefreshToken> {
     @Column({
         allowNull: false,
         field: "access_token",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "accessToken: Is required",
@@ -46,7 +46,7 @@ class RefreshToken extends AbstractModel<RefreshToken> {
     @Column({
         allowNull: false,
         field: "token",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "token: Is required",
@@ -55,7 +55,13 @@ class RefreshToken extends AbstractModel<RefreshToken> {
     })
     token!: string;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
     user!: User;
 
     @ForeignKey(() => User)

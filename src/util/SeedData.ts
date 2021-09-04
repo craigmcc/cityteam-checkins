@@ -51,6 +51,7 @@ export const REFRESH_TOKENS_SUPERUSER: Partial<RefreshToken>[] = [
 // *** Users ***
 
 export const USERNAME_SUPERUSER = "superuser";
+export const USERNAME_FIRST_ADMIN = "firstadmin";
 
 export const USERS: Partial<User>[] = [
     {
@@ -58,7 +59,7 @@ export const USERS: Partial<User>[] = [
         name: "First Facility Admin",
         password: "firstadmin",
         scope: "first:admin",
-        username: "firstadmin",
+        username: USERNAME_FIRST_ADMIN,
     },
     {
         active: true,
@@ -86,7 +87,7 @@ export const USERS: Partial<User>[] = [
         name: "Superuser User",
         password: "superuser",
         scope: "superuser",
-        username: "superuser",
+        username: USERNAME_SUPERUSER,
     }
 ];
 

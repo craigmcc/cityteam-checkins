@@ -34,7 +34,7 @@ class AccessToken extends AbstractModel<AccessToken> {
     @Column({
         allowNull: false,
         field: "scope",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "scope: Is required",
@@ -46,7 +46,7 @@ class AccessToken extends AbstractModel<AccessToken> {
     @Column({
         allowNull: false,
         field: "token",
-        type: DataType.STRING,
+        type: DataType.TEXT,
         validate: {
             notNull: {
                 msg: "token: Is required",
@@ -55,7 +55,13 @@ class AccessToken extends AbstractModel<AccessToken> {
     })
     token!: string
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, {
+        foreignKey: {
+            allowNull: false,
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+    })
     user!: User;
 
     @ForeignKey(() => User)

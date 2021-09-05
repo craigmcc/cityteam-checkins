@@ -29,7 +29,7 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
     }
 
     public async find(tokenId: number, query?: any): Promise<RefreshToken> {
-        const options: FindOptions = appendIncludeOptions({
+        const options: FindOptions = this.appendIncludeOptions({
             where: { id: tokenId }
         }, query);
         const results = await RefreshToken.findAll(options);
@@ -111,7 +111,7 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
     // Model-Specific Methods ------------------------------------------------
 
     public async exact(token: string, query?: any): Promise<RefreshToken> {
-        const options = appendIncludeOptions({
+        const options = this.appendIncludeOptions({
             where: {
                 token: token,
             }
@@ -140,11 +140,30 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
     // Public Helpers --------------------------------------------------------
 
     /**
+     * Supported include query parameters:
+     * * withUser                       Include parent User
+     */
+    public appendIncludeOptions(options: FindOptions, query?: any): FindOptions {
+        if (!query) {
+            return options;
+        }
+        options = appendPaginationOptions(options, query);
+        const include: any = options.include ? options.include : [];
+        if ("" === query.withUser) {
+            include.push(User);
+        }
+        if (include.length > 0) {
+            options.include = include;
+        }
+        return options;
+    }
+
+    /**
      * Supported match query parameters:
      * * active                         Select unexpired tokens
      */
     public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
-        options = appendIncludeOptions(options, query);
+        options = this.appendIncludeOptions(options, query);
         if (!query) {
             return options;
         }
@@ -164,21 +183,6 @@ class RefreshTokenServices extends AbstractServices<RefreshToken> {
 export default new RefreshTokenServices();
 
 // Private Objects -----------------------------------------------------------
-
-const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions => {
-    if (!query) {
-        return options;
-    }
-    options = appendPaginationOptions(options, query);
-    const include: any = options.include ? options.include : [];
-    if ("" === query.withUser) {
-        include.push(User);
-    }
-    if (include.length > 0) {
-        options.include = include;
-    }
-    return options;
-}
 
 const FIELDS = [
     "accessToken",

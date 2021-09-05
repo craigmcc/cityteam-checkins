@@ -37,7 +37,7 @@ class UserServices extends AbstractServices<User> {
     }
 
     public async find(userId: number, query?: any): Promise<User> {
-        const options: FindOptions = appendIncludeOptions({
+        const options: FindOptions = this.appendIncludeOptions({
             where: { id: userId }
         }, query);
         const result = await User.findByPk(userId, options);
@@ -160,7 +160,7 @@ class UserServices extends AbstractServices<User> {
     }
 
     public async exact(username: string, query?: any): Promise<User> {
-        const options = appendIncludeOptions({
+        const options = this.appendIncludeOptions({
             where: {
                 username: username,
             }
@@ -192,13 +192,36 @@ class UserServices extends AbstractServices<User> {
 
     // Public Helpers --------------------------------------------------------
 
+    /**
+     * Supported include query parameters:
+     * * withAccessTokens               Include child AccessTokens
+     * * withRefreshTokens              Include child RefreshTokens
+     */
+    public appendIncludeOptions(options: FindOptions, query?: any): FindOptions {
+        if (!query) {
+            return options;
+        }
+        options = appendPaginationOptions(options, query);
+        const include: any = options.include ? options.include : [];
+        if ("" === query.withAccessTokens) {
+            include.push(AccessToken);
+        }
+        if ("" === query.withRefreshTokens) {
+            include.push(RefreshToken);
+        }
+        if (include.length > 0) {
+            options.include = include;
+        }
+        return options;
+    }
+
     /*
      * Supported match query parameters:
      * * active                         Select active Users
      * * username=pattern               Select usernames matching pattern
      */
     public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
-        options = appendIncludeOptions(options, query);
+        options = this.appendIncludeOptions(options, query);
         if (!query) {
             return options;
         }
@@ -220,24 +243,6 @@ class UserServices extends AbstractServices<User> {
 export default new UserServices();
 
 // Private Objects -----------------------------------------------------------
-
-const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions => {
-    if (!query) {
-        return options;
-    }
-    options = appendPaginationOptions(options, query);
-    const include: any = options.include ? options.include : [];
-    if ("" === query.withAccessTokens) {
-        include.push(AccessToken);
-    }
-    if ("" === query.withRefreshTokens) {
-        include.push(RefreshToken);
-    }
-    if (include.length > 0) {
-        options.include = include;
-    }
-    return options;
-}
 
 const FIELDS = [
     "active",

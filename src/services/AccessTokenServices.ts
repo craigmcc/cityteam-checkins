@@ -29,7 +29,7 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
     }
 
     public async find(tokenId: number, query?: any): Promise<AccessToken> {
-        const options: FindOptions = appendIncludeOptions({
+        const options: FindOptions = this.appendIncludeOptions({
             where: { id: tokenId }
         }, query);
         const results = await AccessToken.findAll(options);
@@ -111,7 +111,7 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
     // Model-Specific Methods ------------------------------------------------
 
     public async exact(token: string, query?: any): Promise<AccessToken> {
-        const options = appendIncludeOptions({
+        const options = this.appendIncludeOptions({
             where: {
                 token: token,
             }
@@ -140,11 +140,30 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
     // Public Helpers --------------------------------------------------------
 
     /**
+     * Supported include query parameters:
+     * * withUser                       Include parent User
+     */
+    public appendIncludeOptions(options: FindOptions, query?: any): FindOptions {
+        if (!query) {
+            return options;
+        }
+        options = appendPaginationOptions(options, query);
+        const include: any = options.include ? options.include : [];
+        if ("" === query.withUser) {
+            include.push(User);
+        }
+        if (include.length > 0) {
+            options.include = include;
+        }
+        return options;
+    }
+
+    /**
      * Supported match query parameters:
      * * active                         Select unexpired tokens
      */
     public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
-        options = appendIncludeOptions(options, query);
+        options = this.appendIncludeOptions(options, query);
         if (!query) {
             return options;
         }
@@ -163,21 +182,6 @@ class AccessTokenServices extends AbstractServices<AccessToken> {
 export default new AccessTokenServices();
 
 // Private Objects -----------------------------------------------------------
-
-const appendIncludeOptions = (options: FindOptions, query?: any): FindOptions => {
-    if (!query) {
-        return options;
-    }
-    options = appendPaginationOptions(options, query);
-    const include: any = options.include ? options.include : [];
-    if ("" === query.withUser) {
-        include.push(User);
-    }
-    if (include.length > 0) {
-        options.include = include;
-    }
-    return options;
-}
 
 const FIELDS = [
     "expires",

@@ -1,5 +1,5 @@
---! Previous: sha1:c90910e00ba697b0e44d8deaf0862334107b77c2
---! Hash: sha1:e3256a21e9ff3eea58b19c451e3ec9ab706b37e9
+--! Previous: sha1:383a30f958d7433b9b8861d5ac11f094f13ab977
+--! Hash: sha1:6112bca18db9e35616eae5e69ba63022852fcdfc
 --! Message: create-access-tokens
 
 -- Create access_tokens table
@@ -17,9 +17,8 @@ CREATE TABLE access_tokens (
 );
 
 -- Create unique index
-CREATE UNIQUE INDEX uk_access_tokens_token
-    ON access_tokens (token);
+CREATE UNIQUE INDEX access_tokens_token_key ON access_tokens (token);
 
 -- Create foreign key constraint
-ALTER TABLE access_tokens ADD CONSTRAINT fk_access_tokens_user_id
-  FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE access_tokens ADD CONSTRAINT access_tokens_user_id_fkey
+    FOREIGN KEY (user_id) REFERENCES users (id);

@@ -54,6 +54,45 @@ ALTER SEQUENCE public.access_tokens_id_seq OWNED BY public.access_tokens.id;
 
 
 --
+-- Name: facilities; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.facilities (
+    id integer NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    address1 text,
+    address2 text,
+    city text,
+    email text,
+    name text NOT NULL,
+    phone text,
+    scope text NOT NULL,
+    state text,
+    zipcode text
+);
+
+
+--
+-- Name: facilities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.facilities_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: facilities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.facilities_id_seq OWNED BY public.facilities.id;
+
+
+--
 -- Name: refresh_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -128,6 +167,13 @@ ALTER TABLE ONLY public.access_tokens ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: facilities id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.facilities ALTER COLUMN id SET DEFAULT nextval('public.facilities_id_seq'::regclass);
+
+
+--
 -- Name: refresh_tokens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -150,6 +196,14 @@ ALTER TABLE ONLY public.access_tokens
 
 
 --
+-- Name: facilities facilities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.facilities
+    ADD CONSTRAINT facilities_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -166,24 +220,31 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: uk_access_tokens_token; Type: INDEX; Schema: public; Owner: -
+-- Name: access_tokens_token_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX uk_access_tokens_token ON public.access_tokens USING btree (token);
-
-
---
--- Name: uk_refresh_tokens_token; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX uk_refresh_tokens_token ON public.refresh_tokens USING btree (token);
+CREATE UNIQUE INDEX access_tokens_token_key ON public.access_tokens USING btree (token);
 
 
 --
--- Name: uk_users_username; Type: INDEX; Schema: public; Owner: -
+-- Name: facilities_name_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX uk_users_username ON public.users USING btree (username);
+CREATE UNIQUE INDEX facilities_name_key ON public.facilities USING btree (name);
+
+
+--
+-- Name: refresh_tokens_token_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX refresh_tokens_token_key ON public.refresh_tokens USING btree (token);
+
+
+--
+-- Name: users_username_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX users_username_key ON public.users USING btree (username);
 
 
 --
@@ -191,7 +252,7 @@ CREATE UNIQUE INDEX uk_users_username ON public.users USING btree (username);
 --
 
 ALTER TABLE ONLY public.access_tokens
-    ADD CONSTRAINT access_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT access_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -199,7 +260,7 @@ ALTER TABLE ONLY public.access_tokens
 --
 
 ALTER TABLE ONLY public.refresh_tokens
-    ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

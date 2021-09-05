@@ -13,6 +13,10 @@ export const ACCESS_TOKENS: Order = [
     [ "token", "ASC" ],
 ];
 
+export const FACILITIES: Order = [
+    [ "name", "ASC" ],
+]
+
 export const REFRESH_TOKENS: Order = [
     [ "userId", "ASC" ],
     [ "token", "ASC" ],

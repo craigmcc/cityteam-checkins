@@ -13,6 +13,7 @@ import {Op} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Facility from "../models/Facility";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 
@@ -31,6 +32,44 @@ export const validateAccessTokenTokenUnique
             options.where.id = { [Op.ne]: accessToken.id }
         }
         const results = await AccessToken.findAll(options);
+        return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateFacilityNameUnique
+    = async (facility: Facility): Promise<boolean> =>
+{
+    if (facility) {
+        let options: any = {
+            where: {
+                name: facility.name,
+            }
+        }
+        if (facility.id && (facility.id > 0)) {
+            options.where.id = { [Op.ne]: facility.id }
+        }
+        const results = await Facility.findAll(options);
+        return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateFacilityScopeUnique
+    = async (facility: Facility): Promise<boolean> =>
+{
+    if (facility) {
+        let options: any = {
+            where: {
+                scope: facility.scope,
+            }
+        }
+        if (facility.id && (facility.id > 0)) {
+            options.where.id = { [Op.ne]: facility.id }
+        }
+        const results = await Facility.findAll(options);
         return (results.length === 0);
     } else {
         return true;

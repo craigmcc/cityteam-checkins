@@ -234,6 +234,13 @@ CREATE UNIQUE INDEX facilities_name_key ON public.facilities USING btree (name);
 
 
 --
+-- Name: facilities_scope_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX facilities_scope_key ON public.facilities USING btree (scope);
+
+
+--
 -- Name: refresh_tokens_token_key; Type: INDEX; Schema: public; Owner: -
 --
 

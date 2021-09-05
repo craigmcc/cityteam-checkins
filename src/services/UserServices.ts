@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import {FindOptions, Includeable, Op, ValidationError, WhereOptions} from "sequelize";
+import {FindOptions, Op, ValidationError} from "sequelize";
 
 // Internal Modules ----------------------------------------------------------
 
@@ -50,18 +50,6 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.find"
             );
         }
-/*
-        const results = await User.findAll(options);
-        if (results.length === 1) {
-            results[0].password = "";
-            return results[0];
-        } else {
-            throw new NotFound(
-                `userId: Missing User ${userId}`,
-                "UserServices.find"
-            );
-        }
-*/
     }
 
     public async insert(user: any): Promise<User> {

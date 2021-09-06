@@ -9,8 +9,6 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AbstractServices from "./AbstractServices";
-import AccessTokenServices from "./AccessTokenServices";
-import RefreshTokenServices from "./RefreshTokenServices";
 import AccessToken from "../models/AccessToken";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
@@ -140,7 +138,7 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.accessTokens"
             );
         }
-        const options: FindOptions = AccessTokenServices.appendMatchOptions({
+        const options: FindOptions = this.appendAccessTokenMatchOptions({
             order: SortOrder.ACCESS_TOKENS,
             where: { userId: userId },
         }, query);
@@ -171,7 +169,7 @@ class UserServices extends AbstractServices<User> {
                 "UserServices.accessTokens"
             );
         }
-        const options: FindOptions = RefreshTokenServices.appendMatchOptions({
+        const options: FindOptions = this.appendRefreshTokenMatchOptions({
             order: SortOrder.REFRESH_TOKENS,
             where: { userId: userId },
         }, query);
@@ -219,6 +217,84 @@ class UserServices extends AbstractServices<User> {
         }
         if (query.username) {
             where.username = {[Op.iLike]: `%${query.username}%`}
+        }
+        if (Object.keys(where).length > 0) {
+            options.where = where;
+        }
+        return options;
+    }
+
+    // Private Helpers -------------------------------------------------------
+
+    /**
+     * Supported include query parameters for AccessTokens:
+     * * withUser                       Include parent User
+     */
+    public appendAccessTokenIncludeOptions(options: FindOptions, query?: any): FindOptions {
+        if (!query) {
+            return options;
+        }
+        options = appendPaginationOptions(options, query);
+        const include: any = options.include ? options.include : [];
+        if ("" === query.withUser) {
+            include.push(User);
+        }
+        if (include.length > 0) {
+            options.include = include;
+        }
+        return options;
+    }
+
+    /**
+     * Supported match query parameters for AccessTokens:
+     * * active                         Select unexpired tokens
+     */
+    public appendAccessTokenMatchOptions(options: FindOptions, query?: any): FindOptions {
+        options = this.appendAccessTokenIncludeOptions(options, query);
+        if (!query) {
+            return options;
+        }
+        const where: any = options.where ? options.where : {};
+        if ("" === query.active) {
+            where.expires = {[Op.gte]: Date.now()};
+        }
+        if (Object.keys(where).length > 0) {
+            options.where = where;
+        }
+        return options;
+    }
+
+    /**
+     * Supported include query parameters for RefreshTokens:
+     * * withUser                       Include parent User
+     */
+    public appendRefreshTokenIncludeOptions(options: FindOptions, query?: any): FindOptions {
+        if (!query) {
+            return options;
+        }
+        options = appendPaginationOptions(options, query);
+        const include: any = options.include ? options.include : [];
+        if ("" === query.withUser) {
+            include.push(User);
+        }
+        if (include.length > 0) {
+            options.include = include;
+        }
+        return options;
+    }
+
+    /**
+     * Supported match query parameters for RefreshTokens:
+     * * active                         Select unexpired tokens
+     */
+    public appendRefreshTokenMatchOptions(options: FindOptions, query?: any): FindOptions {
+        options = this.appendRefreshTokenIncludeOptions(options, query);
+        if (!query) {
+            return options;
+        }
+        const where: any = options.where ? options.where : {};
+        if ("" === query.active) {
+            where.expires = {[Op.gte]: Date.now()};
         }
         if (Object.keys(where).length > 0) {
             options.where = where;

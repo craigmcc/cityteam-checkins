@@ -8,7 +8,13 @@ import {Request, Response, Router} from "express";
 
 // Internal Modules ----------------------------------------------------------
 
-// import {requireAdmin, requireRegular, requireSuperuser} from "../oauth/OAuthMiddleware";
+import {
+    requireAdmin,
+    requireAny,
+    requireNone,
+    requireRegular,
+    requireSuperuser
+} from "../oauth/OAuthMiddleware";
 import FacilityServices from "../services/FacilityServices";
 
 // Public Objects ------------------------------------------------------------
@@ -20,6 +26,7 @@ const FacilityRouter = Router({
 // Model-Specific Routes (no facilityId) -------------------------------------
 
 FacilityRouter.get("/exact/:name",
+    requireAny, // No facilityId is present
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.exact(
             req.params.name,
@@ -30,6 +37,7 @@ FacilityRouter.get("/exact/:name",
 // Standard CRUD Routes ------------------------------------------------------
 
 FacilityRouter.get("/",
+    requireNone, // Avoid catch-22 on initial FacilityContext population
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.all(
             req.query
@@ -37,6 +45,7 @@ FacilityRouter.get("/",
     });
 
 FacilityRouter.post("/",
+    requireSuperuser,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.insert(
             req.body
@@ -44,6 +53,7 @@ FacilityRouter.post("/",
     });
 
 FacilityRouter.delete("/:facilityId",
+    requireSuperuser,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.remove(
             parseInt(req.params.facilityId, 10)
@@ -51,6 +61,7 @@ FacilityRouter.delete("/:facilityId",
     });
 
 FacilityRouter.get("/:facilityId",
+    requireRegular,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.find(
             parseInt(req.params.facilityId, 10),
@@ -59,6 +70,7 @@ FacilityRouter.get("/:facilityId",
     });
 
 FacilityRouter.put("/:facilityId",
+    requireAdmin,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.update(
             parseInt(req.params.facilityId, 10),
@@ -70,6 +82,7 @@ FacilityRouter.put("/:facilityId",
 
 /*
 FacilityRouter.get("/:facilityId/checkins",
+    requireRegular,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.checkins(
             parseInt(req.params.facilityId, 10),
@@ -80,6 +93,7 @@ FacilityRouter.get("/:facilityId/checkins",
 
 /*
 FacilityRouter.get("/:facilityId/guests",
+    requireRegular,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.guests(
             parseInt(req.params.facilityId, 10),
@@ -90,6 +104,7 @@ FacilityRouter.get("/:facilityId/guests",
 
 /*
 FacilityRouter.get("/:facilityId/templates",
+    requireRegular,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.templates(
             parseInt(req.params.facilityId, 10),

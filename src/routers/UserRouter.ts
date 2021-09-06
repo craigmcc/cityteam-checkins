@@ -8,7 +8,7 @@ import {Request, Response, Router} from "express";
 
 // Internal Modules ----------------------------------------------------------
 
-// import {requireSuperuser} from "../oauth/OAuthMiddleware";
+import {requireSuperuser} from "../oauth/OAuthMiddleware";
 import UserServices from "../services/UserServices";
 
 // Public Objects ------------------------------------------------------------
@@ -16,6 +16,9 @@ import UserServices from "../services/UserServices";
 const UserRouter = Router({
     strict: true,
 });
+
+// Superuser access required for all routes
+UserRouter.use(requireSuperuser);
 
 // Model-Specific Routes (no userId) -----------------------------------------
 

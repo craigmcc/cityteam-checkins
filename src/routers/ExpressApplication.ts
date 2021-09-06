@@ -14,6 +14,8 @@ const rfs = require("rotating-file-stream");
 // Internal Modules ----------------------------------------------------------
 
 import ApiRouter from "./ApiRouter";
+import OAuthTokenRouter from "../oauth/OAuthTokenRouter";
+import {handleOAuthError} from "../oauth/OAuthMiddleware";
 import {handleHttpError, handleServerError, handleValidationError} from "../util/Middleware";
 import logger from "../util/ServerLogger";
 import {toLocalISO} from "../util/Timestamps";
@@ -71,11 +73,12 @@ app.use(express.static(CLIENT_BASE));
 // Configure application-specific routing
 //app.use("/openapi.json", OpenApiRouter);
 app.use("/api", ApiRouter);
+app.use("/oauth/token", OAuthTokenRouter);
 
 // Configure error handling (must be last)
 app.use(handleHttpError);
 app.use(handleValidationError);
-// app.use(handleOAuthError);
+app.use(handleOAuthError);
 app.use(handleServerError); // The last of the last :-)
 
 // Configure unknown mappings back to the client

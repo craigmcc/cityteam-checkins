@@ -27,16 +27,16 @@ class FacilityServices extends AbstractServices<Facility> {
         return await Facility.findAll(options);
     }
 
-    public async find(tokenId: number, query?: any): Promise<Facility> {
+    public async find(facilityId: number, query?: any): Promise<Facility> {
         const options: FindOptions = this.appendIncludeOptions({
-            where: { id: tokenId }
+            where: { id: facilityId }
         }, query);
         const results = await Facility.findAll(options);
         if (results.length === 1) {
             return results[0];
         } else {
             throw new NotFound(
-                `tokenId: Missing Facility ${tokenId}`,
+                `facilityId: Missing Facility ${facilityId}`,
                 "FacilityServices.find"
             );
         }
@@ -62,34 +62,34 @@ class FacilityServices extends AbstractServices<Facility> {
         }
     }
 
-    public async remove(tokenId: number): Promise<Facility> {
-        const removed = await Facility.findByPk(tokenId);
+    public async remove(facilityId: number): Promise<Facility> {
+        const removed = await Facility.findByPk(facilityId);
         if (!removed) {
             throw new NotFound(
-                `tokenId: Missing Facility ${tokenId}`,
+                `facilityId: Missing Facility ${facilityId}`,
                 "FacilityServices.remove"
             );
         }
         await Facility.destroy({
-            where: { id: tokenId }
+            where: { id: facilityId }
         })
         return removed;
     }
 
-    public async update(tokenId: number, facility: any): Promise<Facility> {
+    public async update(facilityId: number, facility: any): Promise<Facility> {
         try {
-            facility.id = tokenId; // No cheating
+            facility.id = facilityId; // No cheating
             const result = await Facility.update(facility, {
                 fields: FIELDS_WITH_ID,
-                where: { id: tokenId }
+                where: { id: facilityId }
             });
             if (result[0] < 1) {
                 throw new NotFound(
-                    `tokenId: Missing Facility ${tokenId}`,
+                    `facilityId: Missing Facility ${facilityId}`,
                     "FacilityServices.update"
                 );
             }
-            return this.find(tokenId);
+            return this.find(facilityId);
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;

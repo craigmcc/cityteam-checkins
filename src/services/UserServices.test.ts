@@ -10,7 +10,6 @@ const expect = chai.expect;
 // Internal Modules ----------------------------------------------------------
 
 import UserServices from "./UserServices";
-import User from "../models/User";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupUser} from "../util/TestUtils";
@@ -124,16 +123,15 @@ describe("UserServices Functional Tests", () => {
 
             const LIMIT = 3;
             const OFFSET = 1;
+            const INPUTS = await UserServices.all();
 
-            const users = await UserServices.all();
-            expect(users.length).to.equal(SeedData.USERS.length);
-            const paginateds = await UserServices.all({
+            const OUTPUTS = await UserServices.all({
                 limit: LIMIT,
                 offset: OFFSET,
             });
-            expect(paginateds.length).equals(LIMIT);
-            paginateds.forEach((paginated, index) => {
-                expect(paginated.id).to.equal(users[index + OFFSET].id);
+            expect(OUTPUTS.length).equals(LIMIT);
+            OUTPUTS.forEach((OUTPUT, index) => {
+                expect(OUTPUT.id).to.equal(INPUTS[index + OFFSET].id);
             });
 
         })
@@ -164,7 +162,7 @@ describe("UserServices Functional Tests", () => {
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
-                    expect((error as Error).message).to.include
+                    expect(error.message).to.include
                         (`username: Missing User '${INVALID_USERNAME}'`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
@@ -175,12 +173,12 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const originals = await UserServices.all({
+            const OUTPUTS = await UserServices.all({
                 withAccessTokens: "",
                 withRefreshTokens: "",
             });
-            originals.forEach(async original => {
-                const user = await UserServices.exact(original.username);
+            OUTPUTS.forEach(async OUTPUT => {
+                const user = await UserServices.exact(OUTPUT.username);
                 expect(user.accessTokens).to.exist;
                 if (user.username === SeedData.USERNAME_SUPERUSER) {
                     expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
@@ -193,16 +191,17 @@ describe("UserServices Functional Tests", () => {
                 } else {
                     expect(user.refreshTokens.length).to.equal(0);
                 }
-            })
+            });
 
         })
 
         it("should pass on valid usernames", async () => {
 
-            const users = await UserServices.all();
-            users.forEach(async (user) => {
-                const found = await UserServices.exact(user.username);
-                expect(found.id).to.equal(user.id);
+            const INPUTS = await UserServices.all();
+
+            INPUTS.forEach(async (INPUT) => {
+                const OUTPUT = await UserServices.exact(INPUT.username);
+                expect(OUTPUT.id).to.equal(INPUT.id);
             })
 
         })
@@ -220,7 +219,7 @@ describe("UserServices Functional Tests", () => {
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
-                    expect((error as Error).message).to.include
+                    expect(error.message).to.include
                         (`userId: Missing User ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);
@@ -270,7 +269,7 @@ describe("UserServices Functional Tests", () => {
 
     describe("UserServices.insert()", () => {
 
-        it("should fail on duplicate data", async () => { // TODO - weirdness
+        it("should fail on duplicate username", async () => { // TODO - weirdness
 
             const EXISTING = await lookupUser(SeedData.USERNAME_SUPERUSER);
             const INPUT = {
@@ -282,7 +281,6 @@ describe("UserServices Functional Tests", () => {
 
             try {
                 const OUTPUT = await UserServices.insert(INPUT);
-                console.log("DUPLICATE INSERT OUTPUT", OUTPUT);
                 expect.fail(`Should have thrown BadRequest`);
             } catch (error) {
                 if (error instanceof BadRequest) {
@@ -329,7 +327,7 @@ describe("UserServices Functional Tests", () => {
             expect(OUTPUT.scope).to.equal(INPUT.scope);
             expect(OUTPUT.username).to.equal(INPUT.username);
 
-            const FOUND = await User.findByPk(OUTPUT.id);
+            const FOUND = await UserServices.find(OUTPUT.id);
             expect(FOUND).to.exist;
             // @ts-ignore
             expect(FOUND.name).to.equal(INPUT.name);
@@ -398,7 +396,7 @@ describe("UserServices Functional Tests", () => {
                 expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
-                    expect((error as Error).message).to.include
+                    expect(error.message).to.include
                     (`userId: Missing User ${INVALID_ID}`);
                 } else {
                     expect.fail(`Should not have thrown '${error}'`);

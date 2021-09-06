@@ -14,8 +14,20 @@ import AccessToken from "../models/AccessToken";
 import Database from "../models/Database";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
+import Facility from "../models/Facility";
 
 // Public Objects ------------------------------------------------------------
+
+export const lookupFacility = async (name: string): Promise<Facility> => {
+    const result = await Facility.findOne({
+        where: { name: name }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`name: Should have found Facility for '${name}'`);
+    }
+}
 
 export const lookupUser = async (username: string): Promise<User> => {
     const result = await User.findOne({
@@ -41,6 +53,12 @@ export const loadTestData = async (): Promise<void> => {
     await loadAccessTokens(userSuperuser, SeedData.ACCESS_TOKENS_SUPERUSER);
     await loadRefreshTokens(userSuperuser, SeedData.REFRESH_TOKENS_SUPERUSER);
 
+    // Load Facility Related Tables (top-down order)
+    await loadFacilities(SeedData.FACILITIES);
+    const facilityFirst = await lookupFacility(SeedData.NAME_FACILITY_FIRST);
+    const facilitySecond = await lookupFacility(SeedData.NAME_FACILITY_SECOND)
+    // TODO - child data
+
 }
 
 // Private Objects -----------------------------------------------------------
@@ -58,6 +76,17 @@ const loadAccessTokens
         console.info(`  Reloading AccessTokens for User '${user.username}' ERROR`, error);
         throw error;
     }
+}
+
+const loadFacilities = async (facilities: Partial<Facility>[]) => {
+    let results: Facility[] = [];
+    try {
+        results = await Facility.bulkCreate(facilities);
+    } catch (error) {
+        console.info("  Reloading Facilities ERROR", error);
+        throw error;
+    }
+    return results;
 }
 
 const loadRefreshTokens

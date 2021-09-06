@@ -9,6 +9,7 @@
 import AccessToken from "../models/AccessToken";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
+import Facility from "../models/Facility";
 
 // Seed Data -----------------------------------------------------------------
 
@@ -28,6 +29,31 @@ export const ACCESS_TOKENS_SUPERUSER: Partial<AccessToken>[] = [
         scope: "superuser",
         token: "superuser_access_2",
         // userId must be seeded
+    },
+];
+
+// *** Facilities ***
+
+export const NAME_FACILITY_FIRST = "First Facility"
+export const NAME_FACILITY_SECOND = "Second Facility";
+export const NAME_FACILITY_THIRD = "Third Facility";
+export const SCOPE_FACILITY_FIRST = "first";
+export const SCOPE_FACILITY_SECOND = "second";
+export const SCOPE_FACILITY_THIRD = "third";
+
+export const FACILITIES: Partial<Facility>[] = [
+    {
+        name: NAME_FACILITY_FIRST,
+        scope: SCOPE_FACILITY_FIRST,
+    },
+    {
+        active: false,
+        name: NAME_FACILITY_SECOND,
+        scope: SCOPE_FACILITY_SECOND,
+    },
+    {
+        name: NAME_FACILITY_THIRD,
+        scope: SCOPE_FACILITY_THIRD,
     },
 ];
 

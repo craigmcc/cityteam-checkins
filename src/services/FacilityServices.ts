@@ -8,15 +8,17 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 
 // Internal Modules ----------------------------------------------------------
 
-import AbstractServices from "./AbstractServices";
+import AbstractParentServices from "./AbstractParentServices";
 import Facility from "../models/Facility";
+import Template from "../models/Template";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
+import TemplateServices from "./TemplateServices";
 
 // Public Objects ------------------------------------------------------------
 
-class FacilityServices extends AbstractServices<Facility> {
+class FacilityServices extends AbstractParentServices<Facility> {
 
     // Standard CRUD Methods -------------------------------------------------
 
@@ -125,6 +127,20 @@ class FacilityServices extends AbstractServices<Facility> {
         return results[0];
     }
 
+    public async templates(facilityId: number, query?: any): Promise<Template[]> {
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "FacilityServices.templates"
+            );
+        }
+        const options = TemplateServices.appendMatchOptions({
+            order: SortOrder.TEMPLATES,
+        }, query);
+        return await facility.$get("templates", options);
+    }
+
     // Public Helpers --------------------------------------------------------
 
     /**
@@ -149,11 +165,9 @@ class FacilityServices extends AbstractServices<Facility> {
             include.push(Guest);
         }
 */
-/*
         if ("" === query.withTemplates) {
             include.push(Template);
         }
-*/
         if (include.length > 0) {
             options.include = include;
         }
@@ -176,7 +190,7 @@ class FacilityServices extends AbstractServices<Facility> {
             where.active = true;
         }
         if (query.name) {
-            where.name = { [Op.iLike]: `%${query.name}%` }
+            where.name = { [Op.iLike]: `%${query.name}%` };
         }
         if (query.scope) {
             where.scope = query.scope;

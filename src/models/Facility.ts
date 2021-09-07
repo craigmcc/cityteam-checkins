@@ -10,6 +10,7 @@ import {Column, DataType, HasMany, Table}
 // Internal Modules ----------------------------------------------------------
 
 import AbstractModel from "./AbstractModel";
+import Template from "./Template";
 import {
     validateFacilityNameUnique,
     validateFacilityScopeUnique
@@ -105,6 +106,9 @@ class Facility extends AbstractModel<Facility> {
         type: DataType.TEXT,
     })
     state?: string;
+
+    @HasMany(() => Template)
+    templates!: Template[];
 
     @Column({
         allowNull: true,

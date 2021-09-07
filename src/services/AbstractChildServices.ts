@@ -1,6 +1,8 @@
-// AbstractServices ----------------------------------------------------------
+// AbstractChildServices -----------------------------------------------------
 
-// Abstract base class for Services implementations with standard CRUD methods.
+// Abstract base class for Services implementations with standard CRUD methods,
+// for Models that do require a facilityId argument, because they all belong
+// to the specified Facility.
 
 // External Modules ----------------------------------------------------------
 
@@ -14,19 +16,19 @@ import {Model} from "sequelize-typescript";
  * <p>Define the standard CRUD operations that every service implementation
  * must support.</p>
  */
-abstract class AbstractServices<M extends Model> {
+abstract class AbstractChildServices<M extends Model> {
 
     /**
      * <p>Return all models of the specified type.</p>
      */
-    public abstract all(query?: any): Promise<M[]>;
+    public abstract all(facilityId: number, query?: any): Promise<M[]>;
 
     /**
      * <p>Return the model with the specified id.</p>
      *
      * @param id ID of the model to find
      */
-    public abstract find(id: number, query?: any): Promise<M>;
+    public abstract find(facilityId: number, id: number, query?: any): Promise<M>;
 
     /**
      * <p>Insert a new model instance, and return it with populated
@@ -34,7 +36,7 @@ abstract class AbstractServices<M extends Model> {
      *
      * @param model Model to be inserted
      */
-    public abstract insert(model: any): Promise<M>;
+    public abstract insert(facilityId: number, model: any): Promise<M>;
 
     /**
      * <p>Remove the model with the specified id, and return the
@@ -42,7 +44,7 @@ abstract class AbstractServices<M extends Model> {
      *
      * @param id ID of the model to remove
      */
-    public abstract remove(id: number): Promise<M>;
+    public abstract remove(facilityId: number, id: number): Promise<M>;
 
     /**
      * <p>Update the model with the specified id and new data,
@@ -51,8 +53,8 @@ abstract class AbstractServices<M extends Model> {
      * @param id ID of the model to update
      * @param model Model containing updated values
      */
-    public abstract update(id: number, model: any): Promise<M>
+    public abstract update(facilityId: number, id: number, model: any): Promise<M>
 
 }
 
-export default AbstractServices;
+export default AbstractChildServices;

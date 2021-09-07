@@ -16,6 +16,7 @@ import AccessToken from "../models/AccessToken";
 import Facility from "../models/Facility";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
+import Template from "../models/Template";
 
 // Public Objects ------------------------------------------------------------
 
@@ -33,6 +34,15 @@ export const validateAccessTokenTokenUnique
         }
         const results = await AccessToken.findAll(options);
         return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateFacilityId = async (facilityId: number): Promise<Boolean> => {
+    if (facilityId) {
+        const facility = await Facility.findByPk(facilityId);
+        return (facility !== null);
     } else {
         return true;
     }
@@ -89,6 +99,24 @@ export const validateRefreshTokenTokenUnique
             options.where.id = { [Op.ne]: refreshToken.id }
         }
         const results = await RefreshToken.findAll(options);
+        return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateTemplateNameUnique = async (template: Template): Promise<boolean> => {
+    if (template) {
+        let options: any = {
+            where: {
+                facilityId: template.facilityId,
+                name: template.name,
+            }
+        }
+        if (template.id) {
+            options.where.id = {[Op.ne]: template.id}
+        }
+        const results = await Template.findAll(options);
         return (results.length === 0);
     } else {
         return true;

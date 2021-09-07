@@ -13,6 +13,7 @@ import {Sequelize} from "sequelize-typescript";
 import AccessToken from "./AccessToken";
 import Facility from "./Facility";
 import RefreshToken from "./RefreshToken";
+import Template from "./Template";
 import User from "./User";
 
 // Configure Database Instance ----------------------------------------------
@@ -44,6 +45,7 @@ Database.addModels([
     AccessToken,
     Facility,
     RefreshToken,
+    Template,
     User,
 ]);
 

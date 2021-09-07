@@ -22,6 +22,11 @@ export const REFRESH_TOKENS: Order = [
     [ "token", "ASC" ],
 ];
 
+export const TEMPLATES: Order = [
+    [ "facilityId", "ASC" ],
+    [ "name", "ASC" ],
+];
+
 export const USERS: Order = [
     [ "username", "ASC" ],
 ];

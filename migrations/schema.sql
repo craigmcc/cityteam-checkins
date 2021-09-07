@@ -126,6 +126,43 @@ ALTER SEQUENCE public.refresh_tokens_id_seq OWNED BY public.refresh_tokens.id;
 
 
 --
+-- Name: templates; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.templates (
+    id integer NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    all_mats text NOT NULL,
+    comments text,
+    facility_id integer NOT NULL,
+    handicap_mats text,
+    name text NOT NULL,
+    socket_mats text,
+    work_mats text
+);
+
+
+--
+-- Name: templates_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.templates_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: templates_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.templates_id_seq OWNED BY public.templates.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -181,6 +218,13 @@ ALTER TABLE ONLY public.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: templates id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.templates ALTER COLUMN id SET DEFAULT nextval('public.templates_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -209,6 +253,14 @@ ALTER TABLE ONLY public.facilities
 
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: templates templates_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.templates
+    ADD CONSTRAINT templates_pkey PRIMARY KEY (id);
 
 
 --
@@ -248,6 +300,13 @@ CREATE UNIQUE INDEX refresh_tokens_token_key ON public.refresh_tokens USING btre
 
 
 --
+-- Name: templates_facility_id_name_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX templates_facility_id_name_key ON public.templates USING btree (facility_id, name);
+
+
+--
 -- Name: users_username_key; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -268,6 +327,14 @@ ALTER TABLE ONLY public.access_tokens
 
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: templates templates_facility_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.templates
+    ADD CONSTRAINT templates_facility_id_fkey FOREIGN KEY (facility_id) REFERENCES public.facilities(id);
 
 
 --

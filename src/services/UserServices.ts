@@ -8,7 +8,7 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 
 // Internal Modules ----------------------------------------------------------
 
-import AbstractServices from "./AbstractServices";
+import AbstractParentServices from "./AbstractParentServices";
 import AccessToken from "../models/AccessToken";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
@@ -19,7 +19,7 @@ import * as SortOrder from "../util/SortOrders";
 
 // Public Objects ------------------------------------------------------------
 
-class UserServices extends AbstractServices<User> {
+class UserServices extends AbstractParentServices<User> {
 
     // Standard CRUD Methods -------------------------------------------------
 

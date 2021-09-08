@@ -23,6 +23,7 @@ export const ERROR = "Error";
 export const FACILITY = "Facility";
 export const GUEST = "Guest";
 export const REFRESH_TOKEN = "RefreshToken";
+export const STRING = "String";
 export const TEMPLATE = "Template";
 export const USER = "User";
 

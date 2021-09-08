@@ -103,6 +103,7 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
+        .addDescription("Guests associated with this Facility")
         .addItems(schemaRef(GUEST))
         .addType("array")
         .build();

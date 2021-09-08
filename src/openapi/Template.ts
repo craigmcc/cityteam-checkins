@@ -106,6 +106,7 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
+        .addDescription("Templates associated with this Facility")
         .addItems(schemaRef(TEMPLATE))
         .addType("array")
         .build();

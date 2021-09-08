@@ -63,7 +63,7 @@ export function update(): ob.OperationObject {
 export function includes(): ob.ParametersObject {
     const parameters: ob.ParametersObject = {};
 //    parameters[WITH_CHECKINS] = parameterRef(WITH_CHECKINS);
-//    parameters[WITH_GUESTS] = parameterRef(WITH_GUESTS);
+    parameters[WITH_GUESTS] = parameterRef(WITH_GUESTS);
     parameters[WITH_TEMPLATES] = parameterRef(WITH_TEMPLATES);
     return parameters;
 }

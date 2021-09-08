@@ -15,20 +15,23 @@ import * as Guest from "./Guest";
 import * as Template from "./Template";
 import * as User from "./User";
 import {
-    BAD_REQUEST, CHECKIN_ID,
-    ERROR,
-    FACILITY, FACILITY_ID, FORBIDDEN, GUEST, GUEST_ID,
-    LIMIT, MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE, MODELS, NOT_FOUND, NOT_UNIQUE,
-    OFFSET,
-    REQUIRE_ADMIN,
-    REQUIRE_REGULAR,
-    REQUIRE_SUPERUSER, SERVER_ERROR,
-    TEMPLATE, TEMPLATE_ID,
-    USER, USER_ID, WITH_CHECKINS,
-    WITH_FACILITY, WITH_GUEST, WITH_GUESTS, WITH_TEMPLATES
+    BAD_REQUEST, CHECKIN_ID, ERROR,
+    FACILITY, FACILITY_ID, FORBIDDEN,
+    GUEST, GUEST_ID, LIMIT,
+    MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
+    MODELS, NOT_FOUND, NOT_UNIQUE,
+    OFFSET, REQUIRE_ADMIN, REQUIRE_REGULAR,
+    REQUIRE_SUPERUSER, SERVER_ERROR, STRING,
+    TEMPLATE, TEMPLATE_ID, USER,
+    USER_ID, WITH_CHECKINS, WITH_FACILITY,
+    WITH_GUEST, WITH_GUESTS, WITH_TEMPLATES
 } from "./Constants";
 import {OpenApiObjectBuilder, TagObjectBuilder} from "@craigmcc/openapi-builders";
-import {errorResponse, modelRequestBody, modelResponse, modelsResponse} from "./Common";
+import {
+    errorResponse, modelRequestBody, modelResponse,
+    modelsResponse, queryParameter, pathParameter,
+    schemaRef
+} from "./Common";
 
 // Public Objects ------------------------------------------------------------
 
@@ -100,78 +103,42 @@ function parameters(): ob.ParametersObject {
     const parameters: ob.ParametersObject = {};
 
     // Path Parameters
-    parameters[CHECKIN_ID] = new ob.ParameterObjectBuilder("path", CHECKIN_ID)
-        .addDescription("ID of the specified Checkin")
-        .addRequired(true)
-        .build();
-    parameters[FACILITY_ID] = new ob.ParameterObjectBuilder("path", FACILITY_ID)
-        .addDescription("ID of the specified Facility")
-        .addRequired(true)
-        .build();
-    parameters[GUEST_ID] = new ob.ParameterObjectBuilder("path", GUEST_ID)
-        .addDescription("ID of the specified Guest")
-        .addRequired(true)
-        .build();
-    parameters[TEMPLATE_ID] = new ob.ParameterObjectBuilder("path", TEMPLATE_ID)
-        .addDescription("ID of the specified Template")
-        .addRequired(true)
-        .build();
-    parameters[USER_ID] = new ob.ParameterObjectBuilder("path", USER_ID)
-        .addDescription("ID of the specified User")
-        .addRequired(true)
-        .build();
+    parameters[CHECKIN_ID]
+        = pathParameter(CHECKIN_ID, "ID of the specified Checkin");
+    parameters[FACILITY_ID]
+        = pathParameter(FACILITY_ID, "ID of the specified Facility");
+    parameters[GUEST_ID]
+        = pathParameter(GUEST_ID, "ID of the specified Guest");
+    parameters[TEMPLATE_ID]
+        = pathParameter(TEMPLATE_ID, "ID of the specified Template");
+    parameters[USER_ID]
+        = pathParameter(USER_ID, "ID of the specified User");
 
     // Query Parameters (Includes)
-    parameters[WITH_CHECKINS] = new ob.ParameterObjectBuilder("query", WITH_CHECKINS)
-        .addAllowEmptyValue(true)
-        .addDescription("Include the related Checkins")
-        .addRequired(false)
-        .build();
-    parameters[WITH_FACILITY] = new ob.ParameterObjectBuilder("query", WITH_FACILITY)
-        .addAllowEmptyValue(true)
-        .addDescription("Include the parent Facility")
-        .addRequired(false)
-        .build();
-    parameters[WITH_GUEST] = new ob.ParameterObjectBuilder("query", WITH_GUEST)
-        .addAllowEmptyValue(true)
-        .addDescription("Include the associated Guest")
-        .addRequired(false)
-        .build();
-    parameters[WITH_GUESTS] = new ob.ParameterObjectBuilder("query", WITH_GUESTS)
-        .addAllowEmptyValue(true)
-        .addDescription("Include the related Guests")
-        .addRequired(false)
-        .build();
-    parameters[WITH_TEMPLATES] = new ob.ParameterObjectBuilder("query", WITH_TEMPLATES)
-        .addAllowEmptyValue(true)
-        .addDescription("Include the related Templates")
-        .addRequired(false)
-        .build();
+    parameters[WITH_CHECKINS]
+        = queryParameter(WITH_CHECKINS, "Include the related Checkins", true);
+    parameters[WITH_FACILITY]
+        = queryParameter(WITH_FACILITY, "Include the related Facility", true);
+    parameters[WITH_GUEST]
+        = queryParameter(WITH_GUEST, "Include the related Guest", true);
+    parameters[WITH_GUESTS]
+        = queryParameter(WITH_GUESTS, "Include the related Guests", true);
+    parameters[WITH_TEMPLATES]
+        = queryParameter(WITH_TEMPLATES, "Include the related Templates", true);
 
     // Query Parameters (Matches)
-    parameters[MATCH_ACTIVE] = new ob.ParameterObjectBuilder("query", MATCH_ACTIVE)
-        .addAllowEmptyValue(true)
-        .addDescription("Return only active objects")
-        .addRequired(false)
-        .build();
-    parameters[MATCH_NAME] = new ob.ParameterObjectBuilder("query", MATCH_NAME)
-        .addDescription("Return objects matching name wildcard")
-        .addRequired(false)
-        .build();
-    parameters[MATCH_SCOPE] = new ob.ParameterObjectBuilder("query", MATCH_SCOPE)
-        .addDescription("Return objects matching the specified scope")
-        .addRequired(false)
-        .build();
+    parameters[MATCH_ACTIVE]
+        = queryParameter(MATCH_ACTIVE, "Return only active objects", true);
+    parameters[MATCH_NAME]
+        = queryParameter(MATCH_NAME, "Return objects matching name wildcard", false);
+    parameters[MATCH_SCOPE]
+        = queryParameter(MATCH_SCOPE, "Return objects matching specified scope", false);
 
     // Query Parameters (Pagination)
-    parameters[LIMIT] = new ob.ParameterObjectBuilder("query", LIMIT)
-        .addDescription("Maximum number of rows returned (default is 25)")
-        .addRequired(false)
-        .build();
-    parameters[OFFSET] = new ob.ParameterObjectBuilder("query", OFFSET)
-        .addDescription("Zero-relative offset to the first returned row (default is 0)")
-        .addRequired(false)
-        .build();
+    parameters[LIMIT]
+        = queryParameter(LIMIT, "Maximum number of rows returned (default is 25)", false);
+    parameters[OFFSET]
+        = queryParameter(OFFSET, "Zero-relative offset to the first returned row (default is 0)", false);
 
     return parameters;
 }
@@ -221,6 +188,8 @@ function schemas(): ob.SchemasObject {
 
     // Other Schemas
     schemas[ERROR] = ErrorSchema.schema();
+    schemas[STRING] = new ob.SchemaObjectBuilder("string")
+        .build();
 
     return schemas;
 }

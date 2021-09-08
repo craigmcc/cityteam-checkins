@@ -10,7 +10,9 @@ const pluralize = require("pluralize");
 // Internal Modules ----------------------------------------------------------
 
 import {
-    APPLICATION_JSON, BAD_REQUEST, CREATED, ERROR, FORBIDDEN, LIMIT, NOT_FOUND, OFFSET, OK
+    APPLICATION_JSON, BAD_REQUEST, CREATED,
+    ERROR, FORBIDDEN, LIMIT,
+    NOT_FOUND, OFFSET, OK, STRING
 } from "./Constants";
 import {PathItemObjectBuilder, ReferenceObjectBuilder} from "@craigmcc/openapi-builders";
 
@@ -167,6 +169,27 @@ export function updateOperation(
     if (tag) {
         builder.addTag(tag);
     }
+    return builder.build();
+}
+
+// ***** Parameters *****
+
+export function pathParameter(name: string, description: string): ob.ParameterObject {
+    const builder = new ob.ParameterObjectBuilder("path", name)
+        .addDescription(description)
+        .addRequired(true)
+        .addSchema(schemaRef(STRING))
+    ;
+    return builder.build();
+}
+
+export function queryParameter(name: string, description: string, allowEmptyValue?: boolean): ob.ParameterObject {
+    const builder = new ob.ParameterObjectBuilder("query", name)
+        .addAllowEmptyValue(allowEmptyValue ? true : false)
+        .addDescription(description)
+        .addRequired(false)
+        .addSchema(schemaRef(STRING))
+    ;
     return builder.build();
 }
 
@@ -349,7 +372,7 @@ export function facilityIdSchema(model: string): ob.SchemaObject {
 export function guestIdSchema(model: string): ob.SchemaObject {
     return new ob.SchemaObjectBuilder(
         "integer",
-        "Primary key of the Guest that owns this ${model}",
+        `Primary key of the Guest that owns this ${model}`,
         false).build();
 }
 
@@ -364,7 +387,7 @@ export function idSchema(model: string): ob.SchemaObject {
 export function nameSchema(model: string): ob.SchemaObject {
     return new ob.SchemaObjectBuilder(
         "string",
-        "Canonical name of this ${model}",
+        `Canonical name of this ${model}`,
         false).build();
 }
 

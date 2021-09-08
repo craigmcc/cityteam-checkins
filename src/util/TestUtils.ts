@@ -15,6 +15,8 @@ import Database from "../models/Database";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import Facility from "../models/Facility";
+import Template from "../models/Template";
+import {hashPassword} from "../oauth/OAuthUtils";
 
 // Public Objects ------------------------------------------------------------
 
@@ -56,7 +58,11 @@ export const loadTestData = async (): Promise<void> => {
     // Load Facility Related Tables (top-down order)
     await loadFacilities(SeedData.FACILITIES);
     const facilityFirst = await lookupFacility(SeedData.NAME_FACILITY_FIRST);
-    const facilitySecond = await lookupFacility(SeedData.NAME_FACILITY_SECOND)
+    const facilitySecond = await lookupFacility(SeedData.NAME_FACILITY_SECOND);
+    const facilityThird = await lookupFacility(SeedData.NAME_FACILITY_THIRD);
+    await loadTemplates(facilityFirst, SeedData.TEMPLATES);
+    await loadTemplates(facilitySecond, SeedData.TEMPLATES);
+    await loadTemplates(facilityThird, SeedData.TEMPLATES);
     // TODO - child data
 
 }
@@ -104,7 +110,25 @@ const loadRefreshTokens
     }
 }
 
+const loadTemplates
+    = async (facility: Facility, templates: Partial<Template>[]): Promise<Template[]> =>
+{
+    templates.forEach(template => {
+        template.facilityId = facility.id;
+    })
+    try {
+        const results = await Template.bulkCreate(templates);
+        return results;
+    } catch (error) {
+        console.info(`  Reloading Templates for Facility '${facility.name}' ERROR`, error);
+        throw error;
+    }
+}
+
 const loadUsers = async (users: Partial<User>[]): Promise<User[]> => {
+    users.forEach(async user => {
+        await hashPassword(user.password ? user.password : "password");
+    })
     let results: User[] = [];
     try {
         results = await User.bulkCreate(users);

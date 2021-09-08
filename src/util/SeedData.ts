@@ -10,6 +10,7 @@ import AccessToken from "../models/AccessToken";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import Facility from "../models/Facility";
+import Template from "../models/Template";
 
 // Seed Data -----------------------------------------------------------------
 
@@ -74,6 +75,37 @@ export const REFRESH_TOKENS_SUPERUSER: Partial<RefreshToken>[] = [
     },
 ];
 
+// *** Templates ***
+
+export const NAME_TEMPLATE_FIRST = "First Template";
+export const NAME_TEMPLATE_SECOND = "Second Template";
+export const NAME_TEMPLATE_THIRD = "Third Template";
+
+// Will be repeated for each Facility
+export const TEMPLATES: Partial<Template>[] = [
+    {
+        active: true,
+        allMats:  "1-24",
+        // facilityId must be seeded
+        name: NAME_TEMPLATE_FIRST,
+    },
+    {
+        active: false,
+        allMats: "2,4,6,8",
+        // facilityId must be seeded
+        name: NAME_TEMPLATE_SECOND,
+    },
+    {
+        active: true,
+        allMats: "1-12",
+        // facilityId must be seeded
+        handicapMats: "5,7,9",
+        name: NAME_TEMPLATE_SECOND,
+        socketMats: "2,4,6",
+        workMats: "8,10,12",
+    },
+];
+
 // *** Users ***
 
 export const USERNAME_SUPERUSER = "superuser";
@@ -83,28 +115,28 @@ export const USERS: Partial<User>[] = [
     {
         active: true,
         name: "First Facility Admin",
-        password: "firstadmin",
+        password: "firstadminpass",
         scope: "first:admin",
         username: USERNAME_FIRST_ADMIN,
     },
     {
         active: true,
         name: "First Facility Regular",
-        password: "firstregular",
+        password: "firstregularpass",
         scope: "first:regular",
         username: "firstregular",
     },
     {
         active: false,
         name: "Second Facility Admin",
-        password: "secondadmin",
+        password: "secondadminpass",
         scope: "second:admin",
         username: "secondadmin",
     },
     {
         active: false,
         name: "Second Facility Regular",
-        password: "secondregular",
+        password: "secondregularpass",
         scope: "second:regular",
         username: "secondregular",
     },

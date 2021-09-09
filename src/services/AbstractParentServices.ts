@@ -19,7 +19,7 @@ import {Model} from "sequelize-typescript";
 abstract class AbstractParentServices<M extends Model> {
 
     /**
-     * <p>Return all models of the specified type.</p>
+     * <p>Return all matching models of the specified type.</p>
      */
     public abstract all(query?: any): Promise<M[]>;
 

@@ -225,7 +225,7 @@ describe("RefreshTokenServices Functional Tests", () => {
 
         it("should pass on valid input data", async () => {
 
-            const USER = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const USER = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 accessToken: "newaccesstoken",
                 expires: new Date(),

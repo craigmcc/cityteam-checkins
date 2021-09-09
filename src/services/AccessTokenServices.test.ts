@@ -4,8 +4,6 @@
 
 // External Modules ----------------------------------------------------------
 
-import UserServices from "./UserServices";
-
 const chai = require("chai");
 const expect = chai.expect;
 
@@ -225,7 +223,7 @@ describe("AccessTokenServices Functional Tests", () => {
 
         it("should pass on valid input data", async () => {
 
-            const USER = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const USER = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 expires: new Date(),
                 scope: "newscope",

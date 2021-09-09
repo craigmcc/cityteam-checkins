@@ -51,15 +51,15 @@ export const loadTestData = async (): Promise<void> => {
 
     // Load OAuth Related Tables (top-down order)
     await loadUsers(SeedData.USERS);
-    const userSuperuser = await lookupUser(SeedData.USERNAME_SUPERUSER);
+    const userSuperuser = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
     await loadAccessTokens(userSuperuser, SeedData.ACCESS_TOKENS_SUPERUSER);
     await loadRefreshTokens(userSuperuser, SeedData.REFRESH_TOKENS_SUPERUSER);
 
     // Load Facility Related Tables (top-down order)
     await loadFacilities(SeedData.FACILITIES);
-    const facilityFirst = await lookupFacility(SeedData.NAME_FACILITY_FIRST);
-    const facilitySecond = await lookupFacility(SeedData.NAME_FACILITY_SECOND);
-    const facilityThird = await lookupFacility(SeedData.NAME_FACILITY_THIRD);
+    const facilityFirst = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+    const facilitySecond = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+    const facilityThird = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
     await loadTemplates(facilityFirst, SeedData.TEMPLATES);
     await loadTemplates(facilitySecond, SeedData.TEMPLATES);
     await loadTemplates(facilityThird, SeedData.TEMPLATES);

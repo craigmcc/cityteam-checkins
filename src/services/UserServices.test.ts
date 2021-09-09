@@ -31,7 +31,7 @@ describe("UserServices Functional Tests", () => {
         it("should pass on active AccessTokens", async () => {
 
             const NOW = new Date().getTime();
-            const INPUT = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const INPUT = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
 
             const OUTPUTS = await UserServices.accessTokens(INPUT.id, {
                 active: "",
@@ -45,7 +45,7 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on all AccessTokens", async () => {
 
-            const INPUT = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const INPUT = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
 
             const OUTPUTS = await UserServices.accessTokens(INPUT.id);
             expect(OUTPUTS.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
@@ -59,7 +59,7 @@ describe("UserServices Functional Tests", () => {
 
             const LIMIT = 1;
             const OFFSET = 1;
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const user = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
 
             const accessTokens = await UserServices.accessTokens(user.id);
             const paginateds = await UserServices.accessTokens(user.id, {
@@ -104,13 +104,13 @@ describe("UserServices Functional Tests", () => {
             });
             OUTPUTS.forEach(OUTPUT => {
                 expect(OUTPUT.accessTokens).to.exist;
-                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                if (OUTPUT.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(OUTPUT.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 } else {
                     expect(OUTPUT.accessTokens.length).to.equal(0);
                 }
                 expect(OUTPUT.refreshTokens).to.exist;
-                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                if (OUTPUT.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(OUTPUT.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 } else {
                     expect(OUTPUT.refreshTokens.length).to.equal(0);
@@ -180,13 +180,13 @@ describe("UserServices Functional Tests", () => {
             OUTPUTS.forEach(async OUTPUT => {
                 const user = await UserServices.exact(OUTPUT.username);
                 expect(user.accessTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
+                if (user.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(user.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 } else {
                     expect(user.accessTokens.length).to.equal(0);
                 }
                 expect(user.refreshTokens).to.exist;
-                if (user.username === SeedData.USERNAME_SUPERUSER) {
+                if (user.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(user.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 } else {
                     expect(user.refreshTokens.length).to.equal(0);
@@ -238,13 +238,13 @@ describe("UserServices Functional Tests", () => {
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await UserServices.find(INPUT.id);
                 expect(OUTPUT.accessTokens).to.exist;
-                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                if (OUTPUT.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(OUTPUT.accessTokens.length).to.equal(SeedData.ACCESS_TOKENS_SUPERUSER.length);
                 } else {
                     expect(OUTPUT.accessTokens.length).to.equal(0);
                 }
                 expect(OUTPUT.refreshTokens).to.exist;
-                if (OUTPUT.username === SeedData.USERNAME_SUPERUSER) {
+                if (OUTPUT.username === SeedData.USER_USERNAME_SUPERUSER) {
                     expect(OUTPUT.refreshTokens.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
                 } else {
                     expect(OUTPUT.refreshTokens.length).to.equal(0);
@@ -271,7 +271,7 @@ describe("UserServices Functional Tests", () => {
 
         it("should fail on duplicate username", async () => { // TODO - weirdness
 
-            const EXISTING = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const EXISTING = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 name: "dummy",
                 password: "dummy",
@@ -341,7 +341,7 @@ describe("UserServices Functional Tests", () => {
         it("should pass on active RefreshTokens", async () => {
 
             const NOW = new Date().getTime();
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const user = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
 
             const results = await UserServices.refreshTokens(user.id, {
                 active: "",
@@ -355,7 +355,7 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on all RefreshTokens", async () => {
 
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const user = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const results = await UserServices.refreshTokens(user.id);
             expect(results.length).to.equal(SeedData.REFRESH_TOKENS_SUPERUSER.length);
             results.forEach(result => {
@@ -369,7 +369,7 @@ describe("UserServices Functional Tests", () => {
             const LIMIT = 1;
             const OFFSET = 1;
 
-            const user = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const user = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const refreshTokens = await UserServices.refreshTokens(user.id);
             const paginateds = await UserServices.refreshTokens(user.id, {
                 limit: LIMIT,
@@ -406,7 +406,7 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on valid input", async () => {
 
-            const INPUT = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const INPUT = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const OUTPUT = await UserServices.remove(INPUT.id);
             expect(OUTPUT.id).to.equal(INPUT.id);
 
@@ -429,12 +429,12 @@ describe("UserServices Functional Tests", () => {
 
         it("should fail on duplicate username", async () => {
 
-            const ORIGINAL = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const ORIGINAL = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 active: ORIGINAL.active,
                 name: ORIGINAL.name,
                 scope: ORIGINAL.scope,
-                username: SeedData.USERNAME_FIRST_ADMIN,
+                username: SeedData.USER_USERNAME_FIRST_ADMIN,
             }
 
             try {
@@ -454,7 +454,7 @@ describe("UserServices Functional Tests", () => {
         it("should fail on invalid ID", async () => {
 
             const INVALID_ID = -1;
-            const ORIGINAL = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const ORIGINAL = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 active: ORIGINAL.active,
                 name: ORIGINAL.name,
@@ -479,7 +479,7 @@ describe("UserServices Functional Tests", () => {
 
         it("should pass on valid update data", async () => {
 
-            const ORIGINAL = await lookupUser(SeedData.USERNAME_SUPERUSER);
+            const ORIGINAL = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {
                 active: !ORIGINAL.active,
                 name: ORIGINAL.name + " UPDATED",

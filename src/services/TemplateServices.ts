@@ -163,7 +163,7 @@ class TemplateServices extends AbstractChildServices<Template> {
         const results = await facility.$get("templates", options);
         if (results.length !== 1) {
             throw new NotFound(
-                `templateId: Missing Template '${name}'`,
+                `name: Missing Template '${name}'`,
                 "TemplateServices.exact"
             );
         }
@@ -206,7 +206,7 @@ class TemplateServices extends AbstractChildServices<Template> {
             where.active = true;
         }
         if (query.name) {
-            where.name = { [Op.iLike]: `%{query.name}%` };
+            where.name = { [Op.iLike]: `%${query.name}%` };
         }
         if (Object.keys(where).length > 0) {
             options.where = where;

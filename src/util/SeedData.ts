@@ -35,26 +35,30 @@ export const ACCESS_TOKENS_SUPERUSER: Partial<AccessToken>[] = [
 
 // *** Facilities ***
 
-export const NAME_FACILITY_FIRST = "First Facility"
-export const NAME_FACILITY_SECOND = "Second Facility";
-export const NAME_FACILITY_THIRD = "Third Facility";
-export const SCOPE_FACILITY_FIRST = "first";
-export const SCOPE_FACILITY_SECOND = "second";
-export const SCOPE_FACILITY_THIRD = "third";
+export const FACILITY_NAME_FIRST = "First Facility"
+export const FACILITY_NAME_SECOND = "Second Facility";
+export const FACILITY_NAME_THIRD = "Third Facility";
+export const FACILITY_SCOPE_FIRST = "first";
+export const FACILITY_SCOPE_SECOND = "second";
+export const FACILITY_SCOPE_THIRD = "third";
+
+export const FACILITY_NAMES = [
+    FACILITY_NAME_FIRST, FACILITY_NAME_SECOND, FACILITY_NAME_THIRD
+];
 
 export const FACILITIES: Partial<Facility>[] = [
     {
-        name: NAME_FACILITY_FIRST,
-        scope: SCOPE_FACILITY_FIRST,
+        name: FACILITY_NAME_FIRST,
+        scope: FACILITY_SCOPE_FIRST,
     },
     {
         active: false,
-        name: NAME_FACILITY_SECOND,
-        scope: SCOPE_FACILITY_SECOND,
+        name: FACILITY_NAME_SECOND,
+        scope: FACILITY_SCOPE_SECOND,
     },
     {
-        name: NAME_FACILITY_THIRD,
-        scope: SCOPE_FACILITY_THIRD,
+        name: FACILITY_NAME_THIRD,
+        scope: FACILITY_SCOPE_THIRD,
     },
 ];
 
@@ -77,9 +81,9 @@ export const REFRESH_TOKENS_SUPERUSER: Partial<RefreshToken>[] = [
 
 // *** Templates ***
 
-export const NAME_TEMPLATE_FIRST = "First Template";
-export const NAME_TEMPLATE_SECOND = "Second Template";
-export const NAME_TEMPLATE_THIRD = "Third Template";
+export const TEMPLATE_NAME_FIRST = "First Template";
+export const TEMPLATE_NAME_SECOND = "Second Template";
+export const TEMPLATE_NAME_THIRD = "Third Template";
 
 // Will be repeated for each Facility
 export const TEMPLATES: Partial<Template>[] = [
@@ -87,20 +91,20 @@ export const TEMPLATES: Partial<Template>[] = [
         active: true,
         allMats:  "1-24",
         // facilityId must be seeded
-        name: NAME_TEMPLATE_FIRST,
+        name: TEMPLATE_NAME_FIRST,
     },
     {
         active: false,
         allMats: "2,4,6,8",
         // facilityId must be seeded
-        name: NAME_TEMPLATE_SECOND,
+        name: TEMPLATE_NAME_SECOND,
     },
     {
         active: true,
         allMats: "1-12",
         // facilityId must be seeded
         handicapMats: "5,7,9",
-        name: NAME_TEMPLATE_SECOND,
+        name: TEMPLATE_NAME_THIRD,
         socketMats: "2,4,6",
         workMats: "8,10,12",
     },
@@ -108,8 +112,11 @@ export const TEMPLATES: Partial<Template>[] = [
 
 // *** Users ***
 
-export const USERNAME_SUPERUSER = "superuser";
-export const USERNAME_FIRST_ADMIN = "firstadmin";
+export const USER_USERNAME_SUPERUSER = "superuser";
+export const USER_USERNAME_FIRST_ADMIN = "firstadmin";
+export const USER_USERNAME_FIRST_REGULAR = "firstregular";
+export const USER_USERNAME_SECOND_ADMIN = "secondadmin";
+export const USER_USERNAME_SECOND_REGULAR = "secondregular";
 
 export const USERS: Partial<User>[] = [
     {
@@ -117,35 +124,35 @@ export const USERS: Partial<User>[] = [
         name: "First Facility Admin",
         password: "firstadminpass",
         scope: "first:admin",
-        username: USERNAME_FIRST_ADMIN,
+        username: USER_USERNAME_FIRST_ADMIN,
     },
     {
         active: true,
         name: "First Facility Regular",
         password: "firstregularpass",
         scope: "first:regular",
-        username: "firstregular",
+        username: USER_USERNAME_FIRST_REGULAR,
     },
     {
         active: false,
         name: "Second Facility Admin",
         password: "secondadminpass",
         scope: "second:admin",
-        username: "secondadmin",
+        username: USER_USERNAME_SECOND_ADMIN,
     },
     {
         active: false,
         name: "Second Facility Regular",
         password: "secondregularpass",
         scope: "second:regular",
-        username: "secondregular",
+        username: USER_USERNAME_SECOND_REGULAR,
     },
     {
         active: true,
         name: "Superuser User",
         password: "superuser",
         scope: "superuser",
-        username: USERNAME_SUPERUSER,
+        username: USER_USERNAME_SUPERUSER,
     }
 ];
 

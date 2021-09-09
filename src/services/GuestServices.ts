@@ -231,12 +231,21 @@ class GuestServices extends AbstractChildServices<Guest> {
         if (!query) {
             return options;
         }
-        const where: any = options.where ? options.where : {};
+        let where: any = options.where ? options.where : {};
         if ("" === query.active) {
             where.active = true;
         }
         if (query.name) {
-            where.name = { [Op.iLike]: `%{query.name}%` };
+            const names = query.name.trim().split(" ");
+            const firstMatch = names[0];
+            const lastMatch = (names.length > 1) ? names[1] : names[0];
+            where = {
+                ...where,
+                [Op.or]: {
+                    firstName: {[Op.iLike]: `%${firstMatch}%`},
+                    lastName: {[Op.iLike]: `%${lastMatch}%`},
+                }
+            }
         }
         if (Object.keys(where).length > 0) {
             options.where = where;

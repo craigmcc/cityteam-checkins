@@ -9,12 +9,15 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AbstractParentServices from "./AbstractParentServices";
+import GuestServices from "./GuestServices";
+import TemplateServices from "./TemplateServices";
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
+import Guest from "../models/Guest";
 import Template from "../models/Template";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
-import TemplateServices from "./TemplateServices";
 
 // Public Objects ------------------------------------------------------------
 
@@ -127,6 +130,20 @@ class FacilityServices extends AbstractParentServices<Facility> {
         return results[0];
     }
 
+    public async guests(facilityId: number, query?: any): Promise<Guest[]> {
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "FacilityServices.templates"
+            );
+        }
+        const options = GuestServices.appendMatchOptions({
+            order: SortOrder.GUESTS,
+        }, query);
+        return await facility.$get("guests", options);
+    }
+
     public async templates(facilityId: number, query?: any): Promise<Template[]> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
@@ -155,16 +172,12 @@ class FacilityServices extends AbstractParentServices<Facility> {
         }
         options = appendPaginationOptions(options, query);
         const include: any = options.include ? options.include : [];
-/*
         if ("" === query.withCheckins) {
             include.push(Checkin);
         }
-*/
-/*
         if ("" === query.withGuests) {
             include.push(Guest);
         }
-*/
         if ("" === query.withTemplates) {
             include.push(Template);
         }

@@ -10,6 +10,7 @@ import {Column, DataType, HasMany, Table}
 // Internal Modules ----------------------------------------------------------
 
 import AbstractModel from "./AbstractModel";
+import Guest from "./Guest";
 import Template from "./Template";
 import {
     validateFacilityNameUnique,
@@ -72,6 +73,9 @@ class Facility extends AbstractModel<Facility> {
         type: DataType.TEXT,
     })
     email?: string;
+
+    @HasMany(() => Guest)
+    guests!: Guest[];
 
     @Column({
         allowNull: false,

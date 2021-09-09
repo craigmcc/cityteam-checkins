@@ -1,6 +1,6 @@
-// TemplateServices ----------------------------------------------------------
+// GuestServices -------------------------------------------------------------
 
-// Services implementation for Template models.
+// Services implementation for Guest models.
 
 // External Modules ----------------------------------------------------------
 
@@ -9,139 +9,140 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AbstractChildServices from "./AbstractChildServices";
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
-import Template from "../models/Template";
+import Guest from "../models/Guest";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
 
 // Public Objects ------------------------------------------------------------
 
-class TemplateServices extends AbstractChildServices<Template> {
+class GuestServices extends AbstractChildServices<Guest> {
 
     // Standard CRUD Methods -------------------------------------------------
 
-    public async all(facilityId: number, query?: any): Promise<Template[]> {
+    public async all(facilityId: number, query?: any): Promise<Guest[]> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.all"
+                "GuestServices.all"
             );
         }
         const options = this.appendMatchOptions({
-            order: SortOrder.TEMPLATES
+            order: SortOrder.GUESTS
         }, query);
-        return await facility.$get("templates", options);
+        return await facility.$get("guests", options);
     }
 
-    public async find(facilityId: number, templateId: number, query?: any): Promise<Template> {
+    public async find(facilityId: number, guestId: number, query?: any): Promise<Guest> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.find"
+                "GuestServices.find"
             );
         }
         const options = this.appendIncludeOptions({
-            where: { id: templateId }
+            where: { id: guestId }
         }, query);
-        const results = await facility.$get("templates", options);
+        const results = await facility.$get("guests", options);
         if (results.length !== 1) {
             throw new NotFound(
-                `templateId: Missing Template ${templateId}`,
-                "TemplateServices.find"
+                `guestId: Missing Guest ${guestId}`,
+                "GuestServices.find"
             );
         }
         return results[0];
     }
 
-    public async insert(facilityId: number, template: any): Promise<Template> {
+    public async insert(facilityId: number, guest: any): Promise<Guest> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.find"
+                "GuestServices.find"
             );
         }
-        template.facilityId = facilityId; // No cheating
+        guest.facilityId = facilityId; // No cheating
         try {
-            return await Template.create(template, {
+            return await Guest.create(guest, {
                 fields: FIELDS,
             });
         } catch (error) {
             if (error instanceof ValidationError) {
                 throw new BadRequest(
                     error,
-                    "TemplateServices.insert"
+                    "GuestServices.insert"
                 );
             } else {
                 throw new ServerError(
                     error as Error,
-                    "TemplateServices.insert"
+                    "GuestServices.insert"
                 );
             }
         }
     }
 
-    public async remove(facilityId: number, templateId: number): Promise<Template> {
+    public async remove(facilityId: number, guestId: number): Promise<Guest> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.remove"
+                "GuestServices.remove"
             );
         }
-        const results = await facility.$get("templates", {
-            where: { id: templateId }
+        const results = await facility.$get("guests", {
+            where: { id: guestId }
         });
         if (results.length !== 1) {
             throw new NotFound(
-                `templateId: Missing Template ${templateId}`,
-                "TemplateServices.remove"
+                `guestId: Missing Guest ${guestId}`,
+                "GuestServices.remove"
             );
         }
-        await Template.destroy({
-            where: { id: templateId }
+        await Guest.destroy({
+            where: { id: guestId }
         });
         return results[0];
     }
 
-    public async update(facilityId: number, templateId: number, template: any): Promise<Template> {
+    public async update(facilityId: number, guestId: number, guest: any): Promise<Guest> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.remove"
+                "GuestServices.remove"
             );
         }
-        const results = await facility.$get("templates", {
-            where: { id: templateId }
+        const results = await facility.$get("guests", {
+            where: { id: guestId }
         });
         if (results.length !== 1) {
             throw new NotFound(
-                `templateId: Missing Template ${templateId}`,
-                "TemplateServices.remove"
+                `guestId: Missing Guest ${guestId}`,
+                "GuestServices.remove"
             );
         }
         try {
-            await Template.update(template, {
+            await Guest.update(guest, {
                 fields: FIELDS_WITH_ID,
-                where: { id: templateId }
+                where: { id: guestId }
             });
-            return this.find(facilityId, templateId);
+            return this.find(facilityId, guestId);
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;
             } else if (error instanceof ValidationError) {
                 throw new BadRequest(
                     error,
-                    "TemplateServices.update"
+                    "GuestServices.update"
                 );
             } else {
                 throw new ServerError(
                     error as Error,
-                    "TemplateServices.update"
+                    "GuestServices.update"
                 );
             }
         }
@@ -149,22 +150,49 @@ class TemplateServices extends AbstractChildServices<Template> {
 
     // Model-Specific Methods ------------------------------------------------
 
-    public async exact(facilityId: number, name: string, query?: any): Promise<Template> {
+    public async checkins(facilityId: number, guestId: number, query?: any): Promise<Checkin[]> {
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "TemplateServices.exact"
+                "GuestServices.checkins",
+            );
+        }
+        const guest = await Guest.findByPk(guestId);
+        if (!guest || (guest.facilityId !== facility.id)) {
+            throw new NotFound(
+                `guestId: Missing Guest ${guestId}`,
+                "GuestServices.checkins",
+            );
+        }
+        return []; // TODO - replace with remainder when CheckinServices exists
+/*
+        const options = CheckinServices.appendMatchOptions({
+            order: SortOrder.CHECKINS,
+        }, query);
+        return await guest.$get("checkins", options);
+*/
+    }
+
+    public async exact(facilityId: number, firstName: string, lastName: string, query?: any): Promise<Guest> {
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "GuestServices.exact"
             );
         }
         const options = this.appendIncludeOptions({
-            where: { name: name }
+            where: {
+                firstName: firstName,
+                lastName: lastName,
+            }
         }, query);
-        const results = await facility.$get("templates", options);
+        const results = await facility.$get("guests", options);
         if (results.length !== 1) {
             throw new NotFound(
-                `templateId: Missing Template '${name}'`,
-                "TemplateServices.exact"
+                `guestId: Missing Guest '${name}'`,
+                "GuestServices.exact"
             );
         }
         return results[0];
@@ -174,6 +202,7 @@ class TemplateServices extends AbstractChildServices<Template> {
 
     /**
      * Supported include query parameters:
+     * * withCheckins                   Include child Checkins
      * * withFacility                   Include parent Facility
      */
     public appendIncludeOptions(options: FindOptions, query?: any): FindOptions {
@@ -182,6 +211,9 @@ class TemplateServices extends AbstractChildServices<Template> {
         }
         options = appendPaginationOptions(options, query);
         const include: any = options.include ? options.include : [];
+        if ("" === query.withCheckins) {
+            include.push(Checkin);
+        }
         if ("" === query.withFacility) {
             include.push(Facility);
         }
@@ -193,8 +225,8 @@ class TemplateServices extends AbstractChildServices<Template> {
 
     /**
      * Supported match query parameters:
-     * * active                         Select active Templates
-     * * name={wildcard}                Select templates with matching name (wildcard)
+     * * active                         Select active Guests
+     * * name={wildcard}                Select guests with matching name (wildcard)
      */
     public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
         options = this.appendIncludeOptions(options, query);
@@ -216,19 +248,17 @@ class TemplateServices extends AbstractChildServices<Template> {
 
 }
 
-export default new TemplateServices();
+export default new GuestServices();
 
 // Private Options -----------------------------------------------------------
 
 const FIELDS = [
     "active",
-    "allMats",
     "comments",
     "facilityId",
-    "handicapMats",
-    "name",
-    "socketMats",
-    "workMats",
+    "favorite",
+    "firstName",
+    "lastName",
 ];
 
 const FIELDS_WITH_ID = [

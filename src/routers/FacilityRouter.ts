@@ -91,7 +91,6 @@ FacilityRouter.get("/:facilityId/checkins",
     });
 */
 
-/*
 FacilityRouter.get("/:facilityId/guests",
     requireRegular,
     async (req: Request, res: Response) => {
@@ -100,7 +99,6 @@ FacilityRouter.get("/:facilityId/guests",
             req.query
         ));
     });
-*/
 
 FacilityRouter.get("/:facilityId/templates",
     requireRegular,

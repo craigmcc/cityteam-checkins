@@ -9,12 +9,14 @@ const {
     Column,
     DataType,
     ForeignKey,
+    HasMany,
     Table
 } = require("sequelize-typescript");
 
 // Internal Modules ----------------------------------------------------------
 
 import AbstractModel from "./AbstractModel";
+import Checkin from "./Checkin";
 import Facility from "./Facility";
 import {
     validateFacilityId,
@@ -55,8 +57,8 @@ class Guest extends AbstractModel<Guest> {
     })
     active!: boolean;
 
-    // @HasMany(() => Checkin)
-    // checkins!: Checkin[];
+    @HasMany(() => Checkin)
+    checkins!: Checkin[];
 
     @Column({
         allowNull: true,

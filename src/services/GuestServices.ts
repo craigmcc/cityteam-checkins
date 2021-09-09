@@ -15,6 +15,7 @@ import Guest from "../models/Guest";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
+import CheckinServices from "./CheckinServices";
 
 // Public Objects ------------------------------------------------------------
 
@@ -113,7 +114,7 @@ class GuestServices extends AbstractChildServices<Guest> {
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "GuestServices.remove"
+                "GuestServices.update"
             );
         }
         const results = await facility.$get("guests", {
@@ -122,7 +123,7 @@ class GuestServices extends AbstractChildServices<Guest> {
         if (results.length !== 1) {
             throw new NotFound(
                 `guestId: Missing Guest ${guestId}`,
-                "GuestServices.remove"
+                "GuestServices.update"
             );
         }
         try {
@@ -165,13 +166,10 @@ class GuestServices extends AbstractChildServices<Guest> {
                 "GuestServices.checkins",
             );
         }
-        return []; // TODO - replace with remainder when CheckinServices exists
-/*
         const options = CheckinServices.appendMatchOptions({
             order: SortOrder.CHECKINS,
         }, query);
         return await guest.$get("checkins", options);
-*/
     }
 
     public async exact(facilityId: number, firstName: string, lastName: string, query?: any): Promise<Guest> {

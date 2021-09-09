@@ -75,7 +75,7 @@ export const handleOAuthError: ErrorRequestHandler =
     }
 
 /**
- * Require "admin" scope (for a specific library) to handle this request.
+ * Require "admin" scope (for a specific Facility) to handle this request.
  */
 export const requireAdmin: RequestHandler =
     async (req: Request, res: Response, next: NextFunction) => {
@@ -146,7 +146,7 @@ export const requireNotProduction: RequestHandler =
     }
 
 /**
- * Require "regular" scope (for a specific library) to handle this request.
+ * Require "regular" scope (for a specific Facility) to handle this request.
  */
 export const requireRegular: RequestHandler =
     async (req: Request, res: Response, next: NextFunction) => {

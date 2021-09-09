@@ -13,10 +13,12 @@ import {Op} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
+import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
-import User from "../models/User";
 import Template from "../models/Template";
+import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
 
@@ -33,6 +35,27 @@ export const validateAccessTokenTokenUnique
             options.where.id = { [Op.ne]: accessToken.id }
         }
         const results = await AccessToken.findAll(options);
+        return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateCheckinKeyUnique
+    = async (checkin: Checkin): Promise<boolean> =>
+{
+    if (checkin) {
+        let options: any = {
+            where: {
+                checkinDate: checkin.checkinDate,
+                facilityId: checkin.facilityId,
+                matNumber: checkin.matNumber,
+            }
+        }
+        if (checkin.id) {
+            options.where.id = { [Op.ne]: checkin.id }
+        }
+        const results = await Checkin.findAll(options);
         return (results.length === 0);
     } else {
         return true;
@@ -80,6 +103,38 @@ export const validateFacilityScopeUnique
             options.where.id = { [Op.ne]: facility.id }
         }
         const results = await Facility.findAll(options);
+        return (results.length === 0);
+    } else {
+        return true;
+    }
+}
+
+export const validateGuestId = async (facilityId: number, guestId: number | undefined): Promise<Boolean> => {
+    if (guestId) {
+        const guest = await Guest.findByPk(guestId);
+        if (!guest) {
+            return false;
+        } else {
+            return guest.facilityId === facilityId;
+        }
+    } else {
+        return true;
+    }
+}
+
+export const validateGuestNameUnique = async (guest: Guest): Promise<boolean> => {
+    if (guest) {
+        let options: any = {
+            where: {
+                facilityId: guest.facilityId,
+                firstName: guest.firstName,
+                lastName: guest.lastName,
+            }
+        }
+        if (guest.id) {
+            options.where.id = {[Op.ne]: guest.id}
+        }
+        const results = await Guest.findAll(options);
         return (results.length === 0);
     } else {
         return true;

@@ -11,7 +11,9 @@ import {Sequelize} from "sequelize-typescript";
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "./AccessToken";
+import Checkin from "./Checkin";
 import Facility from "./Facility";
+import Guest from "./Guest";
 import RefreshToken from "./RefreshToken";
 import Template from "./Template";
 import User from "./User";
@@ -43,7 +45,9 @@ export const Database = DATABASE_URL
 
 Database.addModels([
     AccessToken,
+    Checkin,
     Facility,
+    Guest,
     RefreshToken,
     Template,
     User,

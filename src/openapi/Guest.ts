@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import * as ob from "@craigmcc/openapi-builders"
+import * as ob from "@craigmcc/openapi-builders";
 const pluralize = require("pluralize");
 
 // Internal Modules ----------------------------------------------------------

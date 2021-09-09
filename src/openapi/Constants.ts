@@ -29,7 +29,7 @@ export const USER = "User";
 
 export const MODELS = [
 //    ACCESS_TOKEN,
-//    CHECKIN,
+    CHECKIN,
     FACILITY,
     GUEST,
 //    REFRESH_TOKEN,
@@ -40,20 +40,27 @@ export const MODELS = [
 // ***** Model Properties *****
 
 export const ACTIVE = "active";
+export const CHECKIN_DATE = "checkinDate";
 export const CHECKIN_ID = "checkinId";
 export const COMMENTS = "comments";
 export const EXPIRES = "expires";
 export const FACILITY_ID = "facilityId";
 export const FAVORITE = "favorite";
+export const FEATURES = "features";
 export const FIRST_NAME = "firstName";
 export const GUEST_ID = "guestId";
 export const ID = "id";
 export const LAST_NAME = "lastName";
+export const MAT_NUMBER = "matNumber";
 export const NAME = "name";
+export const PAYMENT_AMOUNT = "paymentAmount";
+export const PAYMENT_TYPE = "paymentType";
 export const SCOPE = "scope";
+export const SHOWER_TIME = "showerTime";
 export const TEMPLATE_ID = "templateId";
 export const TOKEN = "token";
 export const USER_ID = "userId";
+export const WAKEUP_TIME = "wakeupTime";
 
 // ***** Parameter Names (Includes) *****
 
@@ -66,6 +73,8 @@ export const WITH_TEMPLATES = "withTemplates";
 // ***** Parameter Names (Matches) *****
 
 export const MATCH_ACTIVE = "active";
+export const MATCH_AVAILABLE = "available";
+export const MATCH_DATE = "date";
 export const MATCH_NAME = "name";
 export const MATCH_SCOPE = "scope";
 

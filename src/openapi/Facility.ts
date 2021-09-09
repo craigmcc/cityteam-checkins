@@ -21,8 +21,11 @@ import {
     ACTIVE, API_PREFIX, CHECKIN,
     FACILITY, FACILITY_ID, GUEST,
     ID, MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
-    NAME, REQUIRE_ADMIN, REQUIRE_REGULAR, REQUIRE_SUPERUSER, TEMPLATE, WITH_CHECKINS, WITH_GUESTS, WITH_TEMPLATES,
+    NAME, REQUIRE_ADMIN, REQUIRE_REGULAR,
+    REQUIRE_SUPERUSER, TEMPLATE,
+    WITH_CHECKINS, WITH_GUESTS, WITH_TEMPLATES,
 } from "./Constants";
+import * as Checkin from "./Checkin";
 import * as Guest from "./Guest";
 import * as Template from "./Template";
 
@@ -32,6 +35,10 @@ import * as Template from "./Template";
 
 export function all(): ob.OperationObject {
     return allOperation(FACILITY, null, includes, matches)
+}
+
+export function checkins(): ob.OperationObject {
+    return childrenOperation(FACILITY, CHECKIN, REQUIRE_REGULAR, Checkin.includes, Checkin.matches);
 }
 
 export function find(): ob.OperationObject {
@@ -62,7 +69,7 @@ export function update(): ob.OperationObject {
 
 export function includes(): ob.ParametersObject {
     const parameters: ob.ParametersObject = {};
-//    parameters[WITH_CHECKINS] = parameterRef(WITH_CHECKINS);
+    parameters[WITH_CHECKINS] = parameterRef(WITH_CHECKINS);
     parameters[WITH_GUESTS] = parameterRef(WITH_GUESTS);
     parameters[WITH_TEMPLATES] = parameterRef(WITH_TEMPLATES);
     return parameters;
@@ -85,9 +92,11 @@ export function paths(): ob.PathsObject {
     paths[API_PREFIX + "/" + pluralize(FACILITY.toLowerCase())
             + "/" + pathParam(FACILITY_ID)]
         = pathItemParentDetail(FACILITY,  FACILITY_ID, find, remove, update);
-    // TODO - /api/facilities/{facilityId}/checkins
     paths[API_PREFIX + "/" + pluralize(FACILITY.toLowerCase())
-    + "/" + pathParam(FACILITY_ID) + "/" + pluralize(GUEST.toLowerCase())]
+            + "/" + pathParam(FACILITY_ID) + "/" + pluralize(CHECKIN.toLowerCase())]
+        = pathItemParentChildren(FACILITY_ID, checkins);
+    paths[API_PREFIX + "/" + pluralize(FACILITY.toLowerCase())
+            + "/" + pathParam(FACILITY_ID) + "/" + pluralize(GUEST.toLowerCase())]
         = pathItemParentChildren(FACILITY_ID, guests);
     paths[API_PREFIX + "/" + pluralize(FACILITY.toLowerCase())
             + "/" + pathParam(FACILITY_ID) + "/" + pluralize(TEMPLATE.toLowerCase())]
@@ -109,7 +118,7 @@ export function schema(): ob.SchemaObject {
             "string",
             "Second line of Facility address",
             true).build())
-//        .addProperty(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
+        .addProperty(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
         .addProperty("city", new ob.SchemaObjectBuilder(
             "string",
             "City of Facility address",
@@ -146,4 +155,3 @@ export function schemas(): ob.SchemaObject {
         .addType("array")
         .build();
 }
-

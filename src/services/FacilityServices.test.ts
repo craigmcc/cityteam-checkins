@@ -4,6 +4,8 @@
 
 // External Modules ----------------------------------------------------------
 
+import Facility from "../models/Facility";
+
 const chai = require("chai");
 const expect = chai.expect;
 
@@ -81,7 +83,7 @@ describe("FacilityServices Functional Tests", () => {
             });
             expect(OUTPUTS.length).to.equal(LIMIT);
             OUTPUTS.forEach((OUTPUT, index) => {
-                expect(OUTPUT.id).to.equal(INPUTS[index + OFFSET].id);
+                compareFacility(OUTPUT, INPUTS[index + OFFSET]);
             });
 
         })
@@ -203,17 +205,7 @@ describe("FacilityServices Functional Tests", () => {
 
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await FacilityServices.find(INPUT.id);
-                expect(OUTPUT.id).to.equal(INPUT.id);
-                expect(OUTPUT.active).to.equal(INPUT.active);
-                expect(OUTPUT.address1).to.equal(INPUT.address1);
-                expect(OUTPUT.address2).to.equal(INPUT.address2);
-                expect(OUTPUT.city).to.equal(INPUT.city);
-                expect(OUTPUT.email).to.equal(INPUT.email);
-                expect(OUTPUT.name).to.equal(INPUT.name);
-                expect(OUTPUT.phone).to.equal(INPUT.phone);
-                expect(OUTPUT.scope).to.equal(INPUT.scope);
-                expect(OUTPUT.state).to.equal(INPUT.state);
-                expect(OUTPUT.zipCode).to.equal(INPUT.zipCode);
+                compareFacility(OUTPUT, INPUT);
             })
 
         })
@@ -309,6 +301,7 @@ describe("FacilityServices Functional Tests", () => {
 
             const OUTPUT = await FacilityServices.insert(INPUT);
             expect(OUTPUT.id).to.exist;
+//            compareFacility(OUTPUT, INPUT, true); // TODO - issues on optional fields
             expect(OUTPUT.active).to.equal(INPUT.active);
             expect(OUTPUT.address1).to.be.null;
             expect(OUTPUT.address2).to.be.null;
@@ -523,3 +516,21 @@ describe("FacilityServices Functional Tests", () => {
     })
 
 })
+
+// Helper Objects ------------------------------------------------------------
+
+export function compareFacility(OUTPUT: Partial<Facility>, INPUT: Partial<Facility>, skipId: boolean = true) {
+    if (!skipId) {
+        expect(OUTPUT.id).to.equal(INPUT.id);
+    }
+    expect(OUTPUT.active).to.equal(INPUT.active);
+    expect(OUTPUT.address1).to.equal(INPUT.address1);
+    expect(OUTPUT.address2).to.equal(INPUT.address2);
+    expect(OUTPUT.city).to.equal(INPUT.city);
+    expect(OUTPUT.email).to.equal(INPUT.email);
+    expect(OUTPUT.name).to.equal(INPUT.name);
+    expect(OUTPUT.phone).to.equal(INPUT.phone);
+    expect(OUTPUT.scope).to.equal(INPUT.scope);
+    expect(OUTPUT.state).to.equal(INPUT.state);
+    expect(OUTPUT.zipCode).to.equal(INPUT.zipCode);
+}

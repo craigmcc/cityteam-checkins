@@ -150,7 +150,7 @@ describe("RefreshTokenServices Functional Tests", () => {
 
         })
 
-        it("should pass on included children", async () => {
+        it("should pass on included parent", async () => {
 
             const INPUTS = await RefreshTokenServices.all();
 

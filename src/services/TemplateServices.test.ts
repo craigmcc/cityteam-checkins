@@ -15,6 +15,7 @@ import TemplateServices from "./TemplateServices";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupFacility} from "../../dist/util/TestUtils";
+import Template from "../models/Template";
 
 // Test Specifications -------------------------------------------------------
 
@@ -146,7 +147,7 @@ describe("TemplateServices Functional Tests", () => {
 
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await TemplateServices.exact(facility.id, INPUT.name);
-                expect(OUTPUT.id).to.equal(INPUT.id);
+                compareTemplate(OUTPUT, INPUT);
                 expect(OUTPUT.facilityId).to.equal(INPUT.facilityId);
             })
 
@@ -154,7 +155,56 @@ describe("TemplateServices Functional Tests", () => {
 
     })
 
-    // TODO - TemplateServices.find()
+    describe("TemplateServices.find()", () => {
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INVALID_ID = -1;
+
+            try {
+                await TemplateServices.find(facility.id, INVALID_ID);
+                expect.fail("Should have thrown NotFound");
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect((error as Error).message).to.include
+                    (`templateId: Missing Template ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on included parent", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INPUTS = await TemplateServices.all(facility.id);
+
+            INPUTS.forEach(async INPUT => {
+                const OUTPUT = await TemplateServices.find(facility.id, INPUT.id, {
+                    withFacility: ""
+                });
+                expect(OUTPUT.facility).to.exist;
+                expect(OUTPUT.facility.id).to.equal(facility.id);
+            })
+
+        })
+
+        it("should pass on valid IDs", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUTS = await TemplateServices.all(facility.id);
+
+            INPUTS.forEach(async INPUT => {
+                const OUTPUT = await TemplateServices.find(facility.id, INPUT.id);
+                compareTemplate(OUTPUT, INPUT);
+            })
+
+        })
+
+    })
+
 
     // TODO - TemplateServices.insert()
 
@@ -163,3 +213,18 @@ describe("TemplateServices Functional Tests", () => {
     // TODO - TemplateServices.update()
 
 })
+
+// Helper Objects ------------------------------------------------------------
+
+export function compareTemplate(OUTPUT: Template, INPUT: Template) {
+    expect(OUTPUT.id).to.equal(INPUT.id);
+    expect(OUTPUT.active).to.equal(INPUT.active);
+    expect(OUTPUT.allMats).to.equal(INPUT.allMats);
+    expect(OUTPUT.comments).to.equal(INPUT.comments);
+    expect(OUTPUT.facilityId).to.equal(INPUT.facilityId);
+    expect(OUTPUT.handicapMats).to.equal(INPUT.handicapMats);
+    expect(OUTPUT.name).to.equal(INPUT.name);
+    expect(OUTPUT.socketMats).to.equal(INPUT.socketMats);
+    expect(OUTPUT.workMats).to.equal(INPUT.workMats);
+}
+

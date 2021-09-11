@@ -88,18 +88,6 @@ describe("FacilityServices Functional Tests", () => {
 
         })
 
-        it("should pass on name matched Facilities", async () => {
-
-            const PATTERN = "ACIL";
-
-            const OUTPUTS = await FacilityServices.all({ name: PATTERN });
-            expect(OUTPUTS.length).to.be.greaterThan(0);
-            OUTPUTS.forEach(OUTPUT => {
-                expect(OUTPUT.name).to.include(PATTERN.toLowerCase());
-            });
-
-        })
-
     })
 
     describe("FacilityServices.checkins()", () => {
@@ -157,7 +145,7 @@ describe("FacilityServices Functional Tests", () => {
 
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await FacilityServices.exact(INPUT.name);
-                expect(OUTPUT.id).to.equal(INPUT.id);
+                compareFacilityOld(OUTPUT, INPUT);
             })
 
         })
@@ -315,6 +303,7 @@ describe("FacilityServices Functional Tests", () => {
 
             try {
                 await FacilityServices.remove(INVALID_ID);
+                expect.fail("Should have thrown NotFound");
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect(error.message).to.include(`facilityId: Missing Facility ${INVALID_ID}`);
@@ -325,7 +314,7 @@ describe("FacilityServices Functional Tests", () => {
 
         })
 
-        it("should pass on valid input", async () => {
+        it("should pass on valid ID", async () => {
 
             const INPUT = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
             const OUTPUT = await FacilityServices.remove(INPUT.id);
@@ -337,6 +326,8 @@ describe("FacilityServices Functional Tests", () => {
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect(error.message).to.include(`facilityId: Missing Facility ${INPUT.id}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
                 }
             }
 
@@ -361,7 +352,7 @@ describe("FacilityServices Functional Tests", () => {
     })
 
 
-    describe("FacilityServices.update()", async () => {
+    describe("FacilityServices.update()", () => {
 
         it("should fail on duplicate name", async () => {
 

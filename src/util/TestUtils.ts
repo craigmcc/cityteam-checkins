@@ -31,6 +31,20 @@ export const lookupFacility = async (name: string): Promise<Facility> => {
     }
 }
 
+export const lookupTemplate = async (facilityId: number, name: string): Promise<Template> => {
+    const result = await Template.findOne({
+        where: {
+            facilityId: facilityId,
+            name: name,
+        }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`name: Should have found Template for '${name}'`);
+    }
+}
+
 export const lookupUser = async (username: string): Promise<User> => {
     const result = await User.findOne({
         where: { username: username }

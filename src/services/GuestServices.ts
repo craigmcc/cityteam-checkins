@@ -117,21 +117,22 @@ class GuestServices extends AbstractChildServices<Guest> {
                 "GuestServices.update"
             );
         }
-        const results = await facility.$get("guests", {
-            where: { id: guestId }
-        });
-        if (results.length !== 1) {
-            throw new NotFound(
-                `guestId: Missing Guest ${guestId}`,
-                "GuestServices.update"
-            );
-        }
         try {
-            await Guest.update(guest, {
+            const results = await Guest.update(guest, {
                 fields: FIELDS_WITH_ID,
-                where: { id: guestId }
+                returning: true,
+                where: {
+                    id: guestId,
+                    facilityId: facilityId,
+                }
             });
-            return this.find(facilityId, guestId);
+            if (results[0] < 1) {
+                throw new NotFound(
+                    `guestId: Missing Guest ${guestId}`,
+                    "GuestServices.update"
+                );
+            }
+            return results[1][0];
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;

@@ -84,17 +84,18 @@ class FacilityServices extends AbstractParentServices<Facility> {
     public async update(facilityId: number, facility: any): Promise<Facility> {
         try {
             facility.id = facilityId; // No cheating
-            const result = await Facility.update(facility, {
+            const results = await Facility.update(facility, {
                 fields: FIELDS_WITH_ID,
+                returning: true,
                 where: { id: facilityId }
             });
-            if (result[0] < 1) {
+            if (results[0] < 1) {
                 throw new NotFound(
                     `facilityId: Missing Facility ${facilityId}`,
                     "FacilityServices.update"
                 );
             }
-            return this.find(facilityId);
+            return results[1][0];
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;

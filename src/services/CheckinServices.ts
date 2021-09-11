@@ -116,21 +116,22 @@ class CheckinServices extends AbstractChildServices<Checkin> {
                 "CheckinServices.update"
             );
         }
-        const results = await facility.$get("checkins", {
-            where: { id: checkinId }
-        });
-        if (results.length !== 1) {
-            throw new NotFound(
-                `checkinId: Missing Checkin ${checkinId}`,
-                "CheckinServices.update"
-            );
-        }
         try {
-            await Checkin.update(checkin, {
+            const results = await Checkin.update(checkin, {
                 fields: FIELDS_WITH_ID,
-                where: { id: checkinId }
+                returning: true,
+                where: {
+                    id: checkinId,
+                    facilityId: facilityId,
+                }
             });
-            return this.find(facilityId, checkinId);
+            if (results[0] < 1) {
+                throw new NotFound(
+                    `checkinId: Missing Checkin ${checkinId}`,
+                    "CheckinServices.update"
+                );
+            }
+            return results[1][0];
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;

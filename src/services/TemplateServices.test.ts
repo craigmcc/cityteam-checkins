@@ -377,11 +377,11 @@ describe("TemplateServices Functional Tests", () => {
 
         })
 
-        it.skip("should pass on no updated data", async () => {
+        it("should pass on no updated data", async () => {
 
             const facility = await lookupFacility(FACILITY_NAME_THIRD);
             const ORIGINAL = await lookupTemplate(facility.id, TEMPLATE_NAME_THIRD);
-            const INPUT = {};
+            const INPUT = { id: ORIGINAL.id };
 
             const OUTPUT = await TemplateServices.update(facility.id, ORIGINAL.id, INPUT);
             compareTemplateOld(OUTPUT, INPUT);
@@ -390,7 +390,7 @@ describe("TemplateServices Functional Tests", () => {
 
         })
 
-        it.skip("should pass on valid updated data", async () => {
+        it("should pass on valid updated data", async () => {
 
             const facility = await lookupFacility(FACILITY_NAME_THIRD);
             const ORIGINAL = await lookupTemplate(facility.id, TEMPLATE_NAME_THIRD);
@@ -426,14 +426,14 @@ export function compareTemplateNew(OUTPUT: Partial<Template>, INPUT: Partial<Tem
 }
 
 export function compareTemplateOld(OUTPUT: Partial<Template>, INPUT: Partial<Template>) {
-    expect(OUTPUT.id).to.equal(INPUT.id);
+    expect(OUTPUT.id).to.equal(INPUT.id !== undefined ? INPUT.id : OUTPUT.id);
     expect(OUTPUT.active).to.equal(INPUT.active !== undefined ? INPUT.active : OUTPUT.active);
     expect(OUTPUT.allMats).to.equal(INPUT.allMats ? INPUT.allMats : OUTPUT.allMats);
-    expect(OUTPUT.comments).to.equal(INPUT.comments ? INPUT.comments : null);
+    expect(OUTPUT.comments).to.equal(INPUT.comments ? INPUT.comments : OUTPUT.comments);
     expect(OUTPUT.facilityId).to.exist;
-    expect(OUTPUT.handicapMats).to.equal(INPUT.handicapMats ? INPUT.handicapMats : null);
+    expect(OUTPUT.handicapMats).to.equal(INPUT.handicapMats ? INPUT.handicapMats : OUTPUT.handicapMats);
     expect(OUTPUT.name).to.equal(INPUT.name ? INPUT.name : OUTPUT.name);
-    expect(OUTPUT.socketMats).to.equal(INPUT.socketMats ? INPUT.socketMats : null);
-    expect(OUTPUT.workMats).to.equal(INPUT.workMats ? INPUT.workMats : null);
+    expect(OUTPUT.socketMats).to.equal(INPUT.socketMats ? INPUT.socketMats : OUTPUT.socketMats);
+    expect(OUTPUT.workMats).to.equal(INPUT.workMats ? INPUT.workMats : OUTPUT.workMats);
 }
 

@@ -115,25 +115,22 @@ class TemplateServices extends AbstractChildServices<Template> {
                 "TemplateServices.update"
             );
         }
-        const original = await Template.findByPk(templateId);
-        if (!original || (original.facilityId !== facilityId)) {
-            throw new NotFound(
-                `templateId: Missing Template ${templateId}`,
-                "TemplateServices.update"
-            );
-        }
         try {
-            const result = await Template.update(template, {
+            const results = await Template.update(template, {
                 fields: FIELDS_WITH_ID,
-                where: { id: templateId }
+                returning: true,
+                where: {
+                    id: templateId,
+                    facilityId: facilityId,
+                }
             });
-            if (result[0] < 1) {
+            if (results[0] < 1) {
                 throw new NotFound(
                     `templateId: Missing Template ${templateId}`,
                     "TemplateServices.update"
                 );
             }
-            return this.find(facilityId, templateId);
+            return results[1][0];
         } catch (error) {
             if (error instanceof NotFound) {
                 throw error;

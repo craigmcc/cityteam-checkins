@@ -83,7 +83,7 @@ describe("FacilityServices Functional Tests", () => {
             });
             expect(OUTPUTS.length).to.equal(LIMIT);
             OUTPUTS.forEach((OUTPUT, index) => {
-                compareFacility(OUTPUT, INPUTS[index + OFFSET]);
+                compareFacilityOld(OUTPUT, INPUTS[index + OFFSET]);
             });
 
         })
@@ -205,7 +205,7 @@ describe("FacilityServices Functional Tests", () => {
 
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await FacilityServices.find(INPUT.id);
-                compareFacility(OUTPUT, INPUT);
+                compareFacilityOld(OUTPUT, INPUT);
             })
 
         })
@@ -301,15 +301,7 @@ describe("FacilityServices Functional Tests", () => {
 
             const OUTPUT = await FacilityServices.insert(INPUT);
             expect(OUTPUT.id).to.exist;
-//            compareFacility(OUTPUT, INPUT, true); // TODO - issues on optional fields
-            expect(OUTPUT.active).to.equal(INPUT.active);
-            expect(OUTPUT.address1).to.be.null;
-            expect(OUTPUT.address2).to.be.null;
-            expect(OUTPUT.city).to.equal(INPUT.city);
-            expect(OUTPUT.name).to.equal(INPUT.name);
-            expect(OUTPUT.scope).to.equal(INPUT.scope);
-            expect(OUTPUT.state).to.equal(INPUT.state);
-            expect(OUTPUT.zipCode).to.be.null;
+            compareFacilityNew(OUTPUT, INPUT);
 
         })
 
@@ -396,7 +388,6 @@ describe("FacilityServices Functional Tests", () => {
             const INPUTS = await FacilityServices.all();
             const INPUT = {
                 id: INPUTS[1].id,
-                name: INPUTS[1].name,
                 scope: INPUTS[0].scope,
             }
 
@@ -435,7 +426,7 @@ describe("FacilityServices Functional Tests", () => {
 
         })
 
-        it("should pass on no update data", async () => {
+        it("should pass on no changed data", async () => {
 
             const ORIGINAL = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
             const INPUT = {
@@ -453,63 +444,37 @@ describe("FacilityServices Functional Tests", () => {
             }
 
             const OUTPUT = await FacilityServices.update(ORIGINAL.id, INPUT);
-            expect(OUTPUT.active).to.equal(INPUT.active);
-            expect(OUTPUT.address1).to.equal(ORIGINAL.address1);
-            expect(OUTPUT.address2).to.equal(ORIGINAL.address2);
-            expect(OUTPUT.city).to.equal(ORIGINAL.city);
-            expect(OUTPUT.email).to.equal(ORIGINAL.email);
-            expect(OUTPUT.name).to.equal(INPUT.name);
-            expect(OUTPUT.phone).to.equal(ORIGINAL.phone);
-            expect(OUTPUT.scope).to.equal(INPUT.scope);
-            expect(OUTPUT.state).to.equal(ORIGINAL.state);
-            expect(OUTPUT.zipCode).to.equal(ORIGINAL.zipCode);
-
+            compareFacilityOld(OUTPUT, INPUT);
             const UPDATED = await FacilityServices.find(ORIGINAL.id);
-            expect(UPDATED.active).to.equal(OUTPUT.active);
-            expect(UPDATED.address1).to.equal(OUTPUT.address1);
-            expect(UPDATED.address2).to.equal(OUTPUT.address2);
-            expect(UPDATED.city).to.equal(OUTPUT.city);
-            expect(UPDATED.email).to.equal(OUTPUT.email);
-            expect(UPDATED.name).to.equal(OUTPUT.name);
-            expect(UPDATED.phone).to.equal(OUTPUT.phone);
-            expect(UPDATED.scope).to.equal(OUTPUT.scope);
-            expect(UPDATED.state).to.equal(OUTPUT.state);
-            expect(UPDATED.zipCode).to.equal(OUTPUT.zipCode);
+            compareFacilityOld(UPDATED, OUTPUT);
 
         })
 
-        it("should pass on valid update data", async () => {
+        it("should pass on no updated data", async () => {
+
+            const ORIGINAL = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INPUT = {};
+
+            const OUTPUT = await FacilityServices.update(ORIGINAL.id, INPUT);
+            compareFacilityOld(OUTPUT, INPUT);
+            const UPDATED = await FacilityServices.find(ORIGINAL.id);
+            compareFacilityOld(UPDATED, OUTPUT);
+
+        })
+
+        it("should pass on valid updated data", async () => {
 
             const ORIGINAL = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
             const INPUT = {
                 active: !ORIGINAL.active,
-                name: ORIGINAL.name,
+                address1: "New address1",
                 scope: ORIGINAL.scope + "updated",
             }
 
             const OUTPUT = await FacilityServices.update(ORIGINAL.id, INPUT);
-            expect(OUTPUT.active).to.equal(INPUT.active);
-            expect(OUTPUT.address1).to.equal(ORIGINAL.address1);
-            expect(OUTPUT.address2).to.equal(ORIGINAL.address2);
-            expect(OUTPUT.city).to.equal(ORIGINAL.city);
-            expect(OUTPUT.email).to.equal(ORIGINAL.email);
-            expect(OUTPUT.name).to.equal(INPUT.name);
-            expect(OUTPUT.phone).to.equal(ORIGINAL.phone);
-            expect(OUTPUT.scope).to.equal(INPUT.scope);
-            expect(OUTPUT.state).to.equal(ORIGINAL.state);
-            expect(OUTPUT.zipCode).to.equal(ORIGINAL.zipCode);
-
+            compareFacilityOld(OUTPUT, INPUT);
             const UPDATED = await FacilityServices.find(ORIGINAL.id);
-            expect(UPDATED.active).to.equal(OUTPUT.active);
-            expect(UPDATED.address1).to.equal(OUTPUT.address1);
-            expect(UPDATED.address2).to.equal(OUTPUT.address2);
-            expect(UPDATED.city).to.equal(OUTPUT.city);
-            expect(UPDATED.email).to.equal(OUTPUT.email);
-            expect(UPDATED.name).to.equal(OUTPUT.name);
-            expect(UPDATED.phone).to.equal(OUTPUT.phone);
-            expect(UPDATED.scope).to.equal(OUTPUT.scope);
-            expect(UPDATED.state).to.equal(OUTPUT.state);
-            expect(UPDATED.zipCode).to.equal(OUTPUT.zipCode);
+            compareFacilityOld(UPDATED, OUTPUT);
 
         })
 
@@ -519,18 +484,30 @@ describe("FacilityServices Functional Tests", () => {
 
 // Helper Objects ------------------------------------------------------------
 
-export function compareFacility(OUTPUT: Partial<Facility>, INPUT: Partial<Facility>, skipId: boolean = true) {
-    if (!skipId) {
-        expect(OUTPUT.id).to.equal(INPUT.id);
-    }
-    expect(OUTPUT.active).to.equal(INPUT.active);
-    expect(OUTPUT.address1).to.equal(INPUT.address1);
-    expect(OUTPUT.address2).to.equal(INPUT.address2);
-    expect(OUTPUT.city).to.equal(INPUT.city);
-    expect(OUTPUT.email).to.equal(INPUT.email);
+export function compareFacilityNew(OUTPUT: Partial<Facility>, INPUT: Partial<Facility>) {
+    expect(OUTPUT.id).to.exist;
+    expect(OUTPUT.active).to.equal(INPUT.active !== undefined ? INPUT.active : true);
+    expect(OUTPUT.address1).to.equal(INPUT.address1 ? INPUT.address1 : null);
+    expect(OUTPUT.address2).to.equal(INPUT.address2 ? INPUT.address2 : null);
+    expect(OUTPUT.city).to.equal(INPUT.city ? INPUT.city : null);
+    expect(OUTPUT.email).to.equal(INPUT.email ? INPUT.email : null);
     expect(OUTPUT.name).to.equal(INPUT.name);
-    expect(OUTPUT.phone).to.equal(INPUT.phone);
+    expect(OUTPUT.phone).to.equal(INPUT.phone ? INPUT.phone : null);
     expect(OUTPUT.scope).to.equal(INPUT.scope);
-    expect(OUTPUT.state).to.equal(INPUT.state);
-    expect(OUTPUT.zipCode).to.equal(INPUT.zipCode);
+    expect(OUTPUT.state).to.equal(INPUT.state ? INPUT.state : null);
+    expect(OUTPUT.zipCode).to.equal(INPUT.zipCode ? INPUT.zipCode : null);
+}
+
+export function compareFacilityOld(OUTPUT: Partial<Facility>, INPUT: Partial<Facility>) {
+    expect(OUTPUT.id).to.equal(INPUT.id);
+    expect(OUTPUT.active).to.equal(INPUT.active !== undefined ? INPUT.active : OUTPUT.active);
+    expect(OUTPUT.address1).to.equal(INPUT.address1 ? INPUT.address1 : null);
+    expect(OUTPUT.address2).to.equal(INPUT.address2 ? INPUT.address2 : null);
+    expect(OUTPUT.city).to.equal(INPUT.city ? INPUT.city : null);
+    expect(OUTPUT.email).to.equal(INPUT.email ? INPUT.email : null);
+    expect(OUTPUT.name).to.equal(INPUT.name ? INPUT.name : OUTPUT.name);
+    expect(OUTPUT.phone).to.equal(INPUT.phone ? INPUT.phone : null);
+    expect(OUTPUT.scope).to.equal(INPUT.scope ? INPUT.scope : OUTPUT.scope);
+    expect(OUTPUT.state).to.equal(INPUT.state ? INPUT.state : null);
+    expect(OUTPUT.zipCode).to.equal(INPUT.zipCode ? INPUT.zipCode : null);
 }

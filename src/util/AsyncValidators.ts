@@ -25,7 +25,7 @@ import User from "../models/User";
 export const validateAccessTokenTokenUnique
     = async (accessToken: AccessToken): Promise<boolean> =>
 {
-    if (accessToken) {
+    if (accessToken && accessToken.token) {
         let options: any = {
             where: {
                 token: accessToken.token,
@@ -44,7 +44,7 @@ export const validateAccessTokenTokenUnique
 export const validateCheckinKeyUnique
     = async (checkin: Checkin): Promise<boolean> =>
 {
-    if (checkin) {
+    if (checkin && checkin.checkinDate && checkin.facilityId && checkin.matNumber) {
         let options: any = {
             where: {
                 checkinDate: checkin.checkinDate,
@@ -74,7 +74,7 @@ export const validateFacilityId = async (facilityId: number): Promise<Boolean> =
 export const validateFacilityNameUnique
     = async (facility: Facility): Promise<boolean> =>
 {
-    if (facility) {
+    if (facility && facility.name) {
         let options: any = {
             where: {
                 name: facility.name,
@@ -93,7 +93,7 @@ export const validateFacilityNameUnique
 export const validateFacilityScopeUnique
     = async (facility: Facility): Promise<boolean> =>
 {
-    if (facility) {
+    if (facility && facility.scope) {
         let options: any = {
             where: {
                 scope: facility.scope,
@@ -123,7 +123,7 @@ export const validateGuestId = async (facilityId: number, guestId: number | unde
 }
 
 export const validateGuestNameUnique = async (guest: Guest): Promise<boolean> => {
-    if (guest) {
+    if (guest && guest.facilityId && guest.firstName && guest.lastName) {
         let options: any = {
             where: {
                 facilityId: guest.facilityId,
@@ -144,7 +144,7 @@ export const validateGuestNameUnique = async (guest: Guest): Promise<boolean> =>
 export const validateRefreshTokenTokenUnique
     = async (refreshToken: RefreshToken): Promise<boolean> =>
 {
-    if (refreshToken) {
+    if (refreshToken && refreshToken.token) {
         let options: any = {
             where: {
                 token: refreshToken.token,
@@ -161,7 +161,7 @@ export const validateRefreshTokenTokenUnique
 }
 
 export const validateTemplateNameUnique = async (template: Template): Promise<boolean> => {
-    if (template) {
+    if (template && template.facilityId && template.name) {
         let options: any = {
             where: {
                 facilityId: template.facilityId,
@@ -181,7 +181,7 @@ export const validateTemplateNameUnique = async (template: Template): Promise<bo
 export const validateUserUsernameUnique
     = async (user: User): Promise<boolean> =>
 {
-    if (user) {
+    if (user && user.username) {
         let options: any = {
             where: {
                 username: user.username,

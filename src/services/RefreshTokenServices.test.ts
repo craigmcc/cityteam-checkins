@@ -23,7 +23,10 @@ describe("RefreshTokenServices Functional Tests", () => {
     // Test Hooks -----------------------------------------------------------
 
     beforeEach("#beforeEach", async () => {
-        await loadTestData();
+        await loadTestData({
+            withRefreshTokens: true,
+            withUsers: true,
+        });
     })
 
     // Test Methods --------------------------------------------------------

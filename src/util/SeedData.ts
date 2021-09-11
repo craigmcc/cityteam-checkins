@@ -11,6 +11,7 @@ import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import Facility from "../models/Facility";
 import Template from "../models/Template";
+import Guest from "../models/Guest";
 
 // Seed Data -----------------------------------------------------------------
 
@@ -61,6 +62,40 @@ export const FACILITIES: Partial<Facility>[] = [
         scope: FACILITY_SCOPE_THIRD,
     },
 ];
+
+// *** Guests ***
+
+export const GUEST_FIRST_NAME_FIRST = "First";
+export const GUEST_FIRST_NAME_SECOND = "Second";
+export const GUEST_FIRST_NAME_THIRD = "Third";
+export const GUEST_LAST_NAME_FIRST = "Name";
+export const GUEST_LAST_NAME_SECOND = "Name";
+export const GUEST_LAST_NAME_THIRD = "Name";
+
+// Will be repeated for each Facility
+export const GUESTS: Partial<Guest>[] = [
+    {
+        active: true,
+        // facilityId must be seeded
+        comments: `Comments about '${GUEST_FIRST_NAME_FIRST} ${GUEST_LAST_NAME_FIRST}'`,
+        firstName: GUEST_FIRST_NAME_FIRST,
+        lastName: GUEST_LAST_NAME_FIRST,
+    },
+    {
+        active: false,
+        // facilityId must be seeded
+        comments: `Comments about '${GUEST_FIRST_NAME_SECOND} ${GUEST_LAST_NAME_SECOND}'`,
+        firstName: GUEST_FIRST_NAME_SECOND,
+        lastName: GUEST_LAST_NAME_SECOND,
+    },
+    {
+        active: true,
+        // facilityId must be seeded
+        comments: `Comments about '${GUEST_FIRST_NAME_THIRD} ${GUEST_LAST_NAME_THIRD}'`,
+        firstName: GUEST_FIRST_NAME_THIRD,
+        lastName: GUEST_LAST_NAME_THIRD,
+    },
+]
 
 // *** Refresh Tokens ***
 

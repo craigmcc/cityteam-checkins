@@ -21,7 +21,10 @@ describe("AccessTokenServices Functional Tests", () => {
     // Test Hooks -----------------------------------------------------------
 
     beforeEach("#beforeEach", async () => {
-        await loadTestData();
+        await loadTestData({
+            withAccessTokens: true,
+            withUsers: true,
+        });
     })
 
     // Test Methods --------------------------------------------------------

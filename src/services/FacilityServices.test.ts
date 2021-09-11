@@ -21,7 +21,9 @@ describe("FacilityServices Functional Tests", () => {
     // Test Hooks -----------------------------------------------------------
 
     beforeEach("#beforeEach", async () => {
-        await loadTestData();
+        await loadTestData({
+            withFacilities: true,
+        });
     })
 
     // Test Methods --------------------------------------------------------

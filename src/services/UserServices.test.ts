@@ -21,7 +21,11 @@ describe("UserServices Functional Tests", () => {
     // Test Hooks -----------------------------------------------------------
 
     beforeEach("#beforeEach", async () => {
-        await loadTestData();
+        await loadTestData({
+            withAccessTokens: true,
+            withRefreshTokens: true,
+            withUsers: true,
+        });
     })
 
     // Test Methods --------------------------------------------------------

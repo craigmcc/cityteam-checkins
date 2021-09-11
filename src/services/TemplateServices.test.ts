@@ -14,7 +14,7 @@ const expect = chai.expect;
 import TemplateServices from "./TemplateServices";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
-import {loadTestData, lookupFacility} from "../../dist/util/TestUtils";
+import {loadTestData, lookupFacility} from "../util/TestUtils";
 import Template from "../models/Template";
 import {
     FACILITY_NAME_FIRST,
@@ -32,7 +32,10 @@ describe("TemplateServices Functional Tests", () => {
     // Test Hooks -----------------------------------------------------------
 
     beforeEach("#beforeEach", async () => {
-        await loadTestData();
+        await loadTestData({
+            withFacilities: true,
+            withTemplates: true,
+        });
     })
 
     // Test Methods --------------------------------------------------------

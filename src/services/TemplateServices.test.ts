@@ -4,18 +4,16 @@
 
 // External Modules ----------------------------------------------------------
 
-import Facility from "../models/Facility";
-
 const chai = require("chai");
 const expect = chai.expect;
 
 // Internal Modules ----------------------------------------------------------
 
 import TemplateServices from "./TemplateServices";
+import Template from "../models/Template";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
-import {loadTestData, lookupFacility} from "../util/TestUtils";
-import Template from "../models/Template";
+import {loadTestData, lookupFacility, lookupTemplate} from "../util/TestUtils";
 import {
     FACILITY_NAME_FIRST,
     FACILITY_NAME_SECOND,
@@ -23,7 +21,6 @@ import {
     TEMPLATE_NAME_SECOND,
     TEMPLATE_NAME_THIRD
 } from "../util/SeedData";
-import {lookupTemplate} from "../util/TestUtils";
 
 // Test Specifications -------------------------------------------------------
 

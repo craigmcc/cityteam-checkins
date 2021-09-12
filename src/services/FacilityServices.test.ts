@@ -15,6 +15,7 @@ import FacilityServices from "./FacilityServices";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupFacility} from "../util/TestUtils";
+import {FACILITY_NAME_FIRST} from "../util/SeedData";
 
 describe("FacilityServices Functional Tests", () => {
 
@@ -22,7 +23,10 @@ describe("FacilityServices Functional Tests", () => {
 
     beforeEach("#beforeEach", async () => {
         await loadTestData({
+            withCheckins: true,
             withFacilities: true,
+            withGuests: true,
+            withTemplates: true,
         });
     })
 
@@ -56,8 +60,24 @@ describe("FacilityServices Functional Tests", () => {
                 withTemplates: "",
             });
             OUTPUTS.forEach(OUTPUT => {
-                // TODO - check contents of each child list
-            })
+                expect(OUTPUT.checkins).to.exist;
+/* TODO - load seed checkins
+                expect(OUTPUT.checkins.length).to.be.greaterThan(0);
+                OUTPUT.checkins.forEach(checkin => {
+                    expect(checkin.facilityId).to.equal(OUTPUT.id);
+                });
+*/
+                expect(OUTPUT.guests).to.exist;
+                expect(OUTPUT.guests.length).to.be.greaterThan(0);
+                OUTPUT.guests.forEach(guest => {
+                    expect(guest.facilityId).to.equal(OUTPUT.id);
+                });
+                expect(OUTPUT.templates).to.exist;
+                expect(OUTPUT.templates.length).to.be.greaterThan(0);
+                OUTPUT.templates.forEach(template => {
+                    expect(template.facilityId).to.equal(OUTPUT.id);
+                });
+            });
 
         })
 
@@ -205,15 +225,47 @@ describe("FacilityServices Functional Tests", () => {
     describe("FacilityServices.guests()", () => {
 
         it("should pass on active Guests", async () => {
-            // TODO - active Guests
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const guests = await FacilityServices.guests(facility.id, {
+                active: "",
+            });
+
+            guests.forEach(guest => {
+                expect(guest.active).to.be.true;
+                expect(guest.facilityId).to.equal(facility.id);
+            });
+
         })
 
         it("should pass on named Guests", async () => {
-            // TODO - named Guests
+
+            const PATTERN = "IR"; // Match "First" and "Third";
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const guests = await FacilityServices.guests(facility.id, {
+                name: PATTERN,
+            });
+
+            expect(guests.length).to.be.greaterThan(0);
+            guests.forEach(guest => {
+                expect(guest.facilityId).to.equal(facility.id);
+                expect(guest.firstName.toLowerCase()).to.include(PATTERN.toLowerCase());
+            })
+
         })
 
         it("should pass on paginated Guests", async () => {
-            // TODO - paginated Guests
+
+            const LIMIT = 1;
+            const OFFSET = 1;
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const guests = await FacilityServices.guests(facility.id, {
+                limit: LIMIT,
+                offset: OFFSET,
+            });
+
+            expect(guests.length).to.equal(LIMIT);
+
         })
 
     })
@@ -340,15 +392,47 @@ describe("FacilityServices Functional Tests", () => {
     describe("FacilityServices.templates()", () => {
 
         it("should pass on active Templates", async () => {
-            // TODO - active Templates
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const templates = await FacilityServices.templates(facility.id, {
+                active: "",
+            });
+
+            templates.forEach(template => {
+                expect(template.active).to.be.true;
+                expect(template.facilityId).to.equal(facility.id);
+            });
+
         })
 
         it("should pass on named Templates", async () => {
-            // TODO - named Templates
+
+            const PATTERN = "IR"; // Match "First" and "Third";
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const templates = await FacilityServices.templates(facility.id, {
+                name: PATTERN,
+            });
+
+            expect(templates.length).to.be.greaterThan(0);
+            templates.forEach(template => {
+                expect(template.facilityId).to.equal(facility.id);
+                expect(template.name.toLowerCase()).to.include(PATTERN.toLowerCase());
+            })
+
         })
 
         it("should pass on paginated Templates", async () => {
-            // TODO - paginated Templates
+
+            const LIMIT = 1;
+            const OFFSET = 1;
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const templates = await FacilityServices.templates(facility.id, {
+                limit: LIMIT,
+                offset: OFFSET,
+            });
+
+            expect(templates.length).to.equal(LIMIT);
+
         })
 
     })

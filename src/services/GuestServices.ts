@@ -248,7 +248,9 @@ class GuestServices extends AbstractChildServices<Guest> {
                 }
             }
         }
-        if (Object.keys(where).length > 0) {
+        const count = Object.getOwnPropertyNames(where).length
+            + Object.getOwnPropertySymbols(where).length;
+        if (count > 0) {
             options.where = where;
         }
         return options;

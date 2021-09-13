@@ -209,11 +209,198 @@ describe("GuestServices Functional Tests", () => {
 
     })
 
-    // TODO - insert()
+    describe("GuestServices.insert()", () => {
 
-    // TODO - remove()
+        it("should fail on duplicate name", async () => {
 
-    // TODO - update()
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const guests = await GuestServices.all(facility.id);
+            const INPUT = {
+                firstName: guests[0].firstName,
+                lastName: guests[0].lastName,
+            }
+
+            try {
+                await GuestServices.insert(facility.id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include("is already in use");
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should fail on invalid input data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUT = { };
+
+            try {
+                await GuestServices.insert(facility.id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include("Is required");
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid input data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INPUT = {
+                firstName: "New First Name",
+                lastName: "New Last Name",
+            }
+
+            const OUTPUT = await GuestServices.insert(facility.id, INPUT);
+            compareGuestNew(OUTPUT, INPUT);
+
+        })
+
+    })
+
+    describe("GuestServices.remove()", () => {
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INVALID_ID = -1;
+
+            try {
+                await GuestServices.remove(facility.id, INVALID_ID);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`guestId: Missing Guest ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}`);
+                }
+            }
+
+        })
+
+        it("should pass on valid ID", async () => {
+
+            const faclity = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const guests = await GuestServices.all(faclity.id);
+            await GuestServices.remove(faclity.id, guests[0].id);
+
+            try {
+                await GuestServices.remove(faclity.id, guests[0].id);
+                expect.fail(`Should have thrown NotFound after remove`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`guestId: Missing Guest ${guests[0].id}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+    })
+
+    describe("GuestServices.update()", () => {
+
+        it("should fail on duplicate name", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const guests = await GuestServices.all(facility.id);
+            const INPUT = {
+                firstName: guests[1].firstName,
+                lastName: guests[1].lastName,
+            }
+
+            try {
+                await GuestServices.update(facility.id, guests[0].id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(`name: Name '${INPUT.firstName} ${INPUT.lastName}' is already in use`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}`);
+                }
+            }
+
+        })
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const guests = await GuestServices.all(facility.id);
+            const INVALID_ID = -1;
+
+            try {
+                await GuestServices.update(facility.id, INVALID_ID, guests[0]);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`guestId: Missing Guest ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on no changed data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const ORIGINAL = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_FIRST, SeedData.GUEST_LAST_NAME_FIRST);
+            const INPUT = {
+                id: ORIGINAL.id,
+                active: ORIGINAL.active,
+                comments: ORIGINAL.comments,
+                facilityId: ORIGINAL.facilityId,
+                firstName: ORIGINAL.firstName,
+                lastName: ORIGINAL.lastName,
+            }
+
+            const OUTPUT = await GuestServices.update(INPUT.facilityId, INPUT.id, INPUT);
+            compareGuestOld(OUTPUT, INPUT);
+            const UPDATED = await lookupGuest(facility.id, INPUT.firstName, INPUT.lastName);
+            compareGuestOld(UPDATED, OUTPUT);
+
+        })
+
+        it("should pass on no updated data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const ORIGINAL = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_FIRST, SeedData.GUEST_LAST_NAME_FIRST);
+            const INPUT = { };
+
+            const OUTPUT = await GuestServices.update(facility.id, ORIGINAL.id, INPUT);
+            compareGuestOld(OUTPUT, INPUT);
+            const UPDATED = await GuestServices.find(facility.id, ORIGINAL.id);
+            compareGuestOld(UPDATED, OUTPUT);
+
+        })
+
+
+        it("should pass on valid updated data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const ORIGINAL = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_SECOND, SeedData.GUEST_LAST_NAME_SECOND);
+            const INPUT = {
+                active: !ORIGINAL.active,
+                comments: "Newly added comment",
+            };
+
+            const OUTPUT = await GuestServices.update(facility.id, ORIGINAL.id, INPUT);
+            compareGuestOld(OUTPUT, INPUT);
+            const UPDATED = await GuestServices.find(facility.id, ORIGINAL.id);
+            compareGuestOld(UPDATED, OUTPUT);
+
+        })
+
+    })
 
 })
 

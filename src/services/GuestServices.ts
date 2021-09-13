@@ -118,6 +118,8 @@ class GuestServices extends AbstractChildServices<Guest> {
             );
         }
         try {
+            guest.id = guestId; // No cheating
+            guest.facilityId = facilityId; // No cheating
             const results = await Guest.update(guest, {
                 fields: FIELDS_WITH_ID,
                 returning: true,

@@ -79,7 +79,6 @@ class Guest extends AbstractModel<Guest> {
         allowNull: false,
         field: "facility_id",
         type: DataType.INTEGER,
-        unique: "uniqueNameWithinFacility",
         validate: {
             notNull: { msg: "facilityId: Is required"},
         },
@@ -100,8 +99,7 @@ class Guest extends AbstractModel<Guest> {
         allowNull: false,
         field: "last_name",
         type: DataType.TEXT,
-        unique: "uniqueNameWithinFacility",
-        valudate: {
+        validate: {
             notNull: { msg: "lastName: Is required"},
         },
     })
@@ -111,8 +109,7 @@ class Guest extends AbstractModel<Guest> {
         allowNull: false,
         field: "first_name",
         type: DataType.TEXT,
-        unique: "uniqueNameWithinFacility",
-        valudate: {
+        validate: {
             notNull: { msg: "firstName: Is required"},
         },
     })

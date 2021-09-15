@@ -109,7 +109,54 @@ describe("CheckinServices Functional Tests", () => {
 
     })
 
-    // TODO - CheckinServices.find();
+    describe("CheckinServices.find()", () => {
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.find(facility.id, INVALID_ID);
+                expect.fail("Should have thrown NotFound");
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on included parent", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUTS = await CheckinServices.all(facility.id);
+
+            INPUTS.forEach(async INPUT => {
+                const OUTPUT = await CheckinServices.find(facility.id, INPUT.id, {
+                    withFacility: "",
+                });
+                expect(OUTPUT.facility).to.exist;
+                expect(OUTPUT.facility.id).to.equal(facility.id);
+            })
+
+        })
+
+        it("should pass on valid IDs", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INPUTS = await CheckinServices.all(facility.id);
+
+            INPUTS.forEach(async INPUT => {
+                const OUTPUT = await CheckinServices.find(facility.id, INPUT.id);
+                compareCheckinOld(OUTPUT, INPUT);
+            })
+
+        })
+
+    })
 
     // TODO - CheckinServices.insert();
 

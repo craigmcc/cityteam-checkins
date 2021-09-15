@@ -14,13 +14,6 @@ import Template from "../models/Template";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupFacility, lookupTemplate} from "../util/TestUtils";
-import {
-    FACILITY_NAME_FIRST,
-    FACILITY_NAME_SECOND,
-    FACILITY_NAME_THIRD,
-    TEMPLATE_NAME_SECOND,
-    TEMPLATE_NAME_THIRD
-} from "../util/SeedData";
 
 // Test Specifications -------------------------------------------------------
 
@@ -217,7 +210,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should fail on duplicate name", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_FIRST);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
             const INPUTS = await TemplateServices.all(facility.id);
             const INPUT = {
                 name: INPUTS[0].name,
@@ -238,7 +231,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should fail on invalid input data", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_FIRST);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
             const INPUT = {};
 
             try {
@@ -256,7 +249,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should pass on valid input data", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_SECOND);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
             const INPUT = {
                 allMats: "1-100",
                 name: "Brand New Template",
@@ -273,7 +266,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should fail on invalid ID", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_THIRD);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
             const INVALID_ID = -1;
 
             try {
@@ -291,7 +284,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should pass on valid ID", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_SECOND);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
             const INPUTS = await TemplateServices.all(facility.id);
             await TemplateServices.remove(facility.id, INPUTS[0].id);
 
@@ -314,7 +307,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should fail on duplicate name", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_SECOND);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
             const INPUTS = await TemplateServices.all(facility.id);
             const INPUT = {
                 allMats: "1-10",
@@ -337,7 +330,7 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should fail on invalid ID", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_THIRD);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
             const INPUTS = await TemplateServices.all(facility.id);
             const INVALID_ID = -1;
 
@@ -356,8 +349,8 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should pass on no changed data", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_SECOND);
-            const ORIGINAL = await lookupTemplate(facility.id, TEMPLATE_NAME_SECOND);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const ORIGINAL = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_SECOND);
             const INPUT = {
                 id: ORIGINAL.id,
                 active: ORIGINAL.active,
@@ -372,15 +365,15 @@ describe("TemplateServices Functional Tests", () => {
 
             const OUTPUT = await TemplateServices.update(INPUT.facilityId, INPUT.id, INPUT);
             compareTemplateOld(OUTPUT, INPUT);
-            const UPDATED = await lookupTemplate(facility.id, TEMPLATE_NAME_SECOND);
+            const UPDATED = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_SECOND);
             compareTemplateOld(UPDATED, OUTPUT);
 
         })
 
         it("should pass on no updated data", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_THIRD);
-            const ORIGINAL = await lookupTemplate(facility.id, TEMPLATE_NAME_THIRD);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const ORIGINAL = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_THIRD);
             const INPUT = { id: ORIGINAL.id };
 
             const OUTPUT = await TemplateServices.update(facility.id, ORIGINAL.id, INPUT);
@@ -392,8 +385,8 @@ describe("TemplateServices Functional Tests", () => {
 
         it("should pass on valid updated data", async () => {
 
-            const facility = await lookupFacility(FACILITY_NAME_THIRD);
-            const ORIGINAL = await lookupTemplate(facility.id, TEMPLATE_NAME_THIRD);
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const ORIGINAL = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_THIRD);
             const INPUT = {
                 active: !ORIGINAL.active,
                 allMats: "1-36",

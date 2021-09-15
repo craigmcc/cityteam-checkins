@@ -200,9 +200,10 @@ class CheckinServices extends AbstractChildServices<Checkin> {
     }
 
     /**
-     * Supported match query parameters:
+     * Supported match query parameters (available and guest are mutually exclusive):
      * * available                      Select available (i.e. no Guest) Checkins
      * * date={checkinDate}             Select checkins for the specified date
+     * * guestId={guestId}              Select checkins for the specified guest
      */
     public appendMatchOptions(options: FindOptions, query?: any): FindOptions {
         options = this.appendIncludeOptions(options, query);
@@ -213,8 +214,11 @@ class CheckinServices extends AbstractChildServices<Checkin> {
         if ("" === query.available) {
             where.guestId = { [Op.eq]: null };
         }
-        if ("" === query.date) {
+        if (query.date) {
             where.checkinDate = query.date;
+        }
+        if (query.guestId) {
+            where.guestId = parseInt(query.guestId, 10);
         }
         if (Object.keys(where).length > 0) {
             options.where = where;

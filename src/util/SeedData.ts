@@ -34,6 +34,13 @@ export const ACCESS_TOKENS_SUPERUSER: Partial<AccessToken>[] = [
     },
 ];
 
+// *** Checkins ***
+
+export const CHECKIN_DATE_ZERO = "2020-07-03"; // No Checkins
+export const CHECKIN_DATE_ONE = "2020-07-04"; // First and Third Guests assigned
+export const CHECKIN_DATE_TWO = "2020-07-05"; // Second and Fourth Guests assigned
+export const CHECKIN_DATE_THREE = "2020-07-05"; // No Checkins
+
 // *** Facilities ***
 
 export const FACILITY_NAME_FIRST = "First Facility"
@@ -68,9 +75,11 @@ export const FACILITIES: Partial<Facility>[] = [
 export const GUEST_FIRST_NAME_FIRST = "First";
 export const GUEST_FIRST_NAME_SECOND = "Second";
 export const GUEST_FIRST_NAME_THIRD = "Third";
+export const GUEST_FIRST_NAME_FOURTH = "Fourth";
 export const GUEST_LAST_NAME_FIRST = "Name";
 export const GUEST_LAST_NAME_SECOND = "Name";
 export const GUEST_LAST_NAME_THIRD = "Name";
+export const GUEST_LAST_NAME_FOURTH = "Name";
 
 // Will be repeated for each Facility
 export const GUESTS: Partial<Guest>[] = [
@@ -94,6 +103,13 @@ export const GUESTS: Partial<Guest>[] = [
         comments: `Comments about '${GUEST_FIRST_NAME_THIRD} ${GUEST_LAST_NAME_THIRD}'`,
         firstName: GUEST_FIRST_NAME_THIRD,
         lastName: GUEST_LAST_NAME_THIRD,
+    },
+    {
+        active: true,
+        // facilityId must be seeded
+        comments: `Comments about '${GUEST_FIRST_NAME_FOURTH} ${GUEST_LAST_NAME_FOURTH}'`,
+        firstName: GUEST_FIRST_NAME_FOURTH,
+        lastName: GUEST_LAST_NAME_FOURTH,
     },
 ]
 

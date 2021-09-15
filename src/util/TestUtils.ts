@@ -11,6 +11,7 @@ import {Op} from "sequelize";
 import {NotFound} from "./HttpErrors";
 import * as SeedData from "./SeedData";
 import AccessToken from "../models/AccessToken";
+import Checkin from "../models/Checkin";
 import Database from "../models/Database";
 import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
@@ -112,7 +113,9 @@ export const loadTestData = async (options: Partial<OPTIONS> = {}): Promise<void
             const guestsSecond = await loadGuests(facilitySecond, SeedData.GUESTS);
             const guestsThird = await loadGuests(facilityThird, SeedData.GUESTS);
             if (options.withCheckins) {
-                // TODO - checkins
+                loadCheckins(facilityFirst, guestsFirst);
+                loadCheckins(facilitySecond, guestsSecond);
+                loadCheckins(facilityThird, guestsThird);
             }
         }
         if (options.withTemplates) {
@@ -140,6 +143,67 @@ const loadAccessTokens
         console.info(`  Reloading AccessTokens for User '${user.username}' ERROR`, error);
         throw error;
     }
+}
+
+const loadCheckins = async (facility: Facility, guests: Guest[]): Promise<Checkin[]> => {
+    const ones = await Checkin.bulkCreate([
+        {
+            checkinDate: SeedData.CHECKIN_DATE_ONE,
+            facilityId: facility.id,
+            guestId: guests[0].id,
+            matNumber: 1,
+            paymentAmount: 5.00,
+            paymentType: "$$",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_ONE,
+            facilityId: facility.id,
+            matNumber: 2,
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_ONE,
+            facilityId: facility.id,
+            guestId: guests[2].id,
+            matNumber: 3,
+            paymentType: "SW",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_ONE,
+            facilityId: facility.id,
+            matNumber: 4,
+        },
+    ]);
+    const twos = await Checkin.bulkCreate([
+        {
+            checkinDate: SeedData.CHECKIN_DATE_TWO,
+            facilityId: facility.id,
+            matNumber: 1,
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_TWO,
+            facilityId: facility.id,
+            guestId: guests[1].id,
+            matNumber: 2,
+            paymentType: "AG",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_TWO,
+            facilityId: facility.id,
+            matNumber: 3,
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_TWO,
+            facilityId: facility.id,
+            guestId: guests[3].id,
+            matNumber: 4,
+            paymentAmount: 5.00,
+            paymentType: "$$",
+        },
+    ]);
+    return [
+        ...ones,
+        ...twos,
+    ];
 }
 
 const loadFacilities = async (facilities: Partial<Facility>[]) => {

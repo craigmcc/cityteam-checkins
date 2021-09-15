@@ -20,7 +20,7 @@ import {
     API_PREFIX, CHECKIN, CHECKIN_DATE, CHECKIN_ID,
     COMMENTS, FACILITY, FACILITY_ID,
     FEATURES, GUEST, GUEST_ID, ID,
-    MAT_NUMBER, MATCH_AVAILABLE, MATCH_DATE,
+    MAT_NUMBER, MATCH_AVAILABLE, MATCH_DATE, MATCH_GUEST_ID,
     PAYMENT_AMOUNT, PAYMENT_TYPE, REQUIRE_REGULAR,
     REQUIRE_SUPERUSER, SHOWER_TIME, WAKEUP_TIME,
     WITH_FACILITY, WITH_GUEST
@@ -65,6 +65,8 @@ export function matches(): ob.ParametersObject {
         = queryParameter(MATCH_AVAILABLE, "Match only mats that are available", true);
     parameters[MATCH_DATE]
         = queryParameter(MATCH_DATE, "Checkin date to match (YYYY-MM-DD)", false);
+    parameters[MATCH_GUEST_ID]
+        = queryParameter(MATCH_GUEST_ID, "Match checkins for the specified guest ID", false);
     return parameters;
 }
 

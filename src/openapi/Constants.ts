@@ -75,6 +75,7 @@ export const WITH_TEMPLATES = "withTemplates";
 export const MATCH_ACTIVE = "active";
 export const MATCH_AVAILABLE = "available";
 export const MATCH_DATE = "date";
+export const MATCH_GUEST_ID = "guestId";
 export const MATCH_NAME = "name";
 export const MATCH_SCOPE = "scope";
 

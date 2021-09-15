@@ -65,7 +65,7 @@ describe("CheckinServices Functional Tests", () => {
         it("should pass on all checkins for a guestId", async () => {
 
             const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
-            const guest = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_FOURTH, SeedData.GUEST_LAST_NAME_FOURTH);
+            const guest = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_THIRD, SeedData.GUEST_LAST_NAME_THIRD);
 
             const results = await CheckinServices.all(facility.id, {
                 guestId: guest.id,
@@ -222,7 +222,47 @@ describe("CheckinServices Functional Tests", () => {
 
     })
 
-    // TODO - CheckinServices.remove();
+    describe("CheckinServices.remove()", () => {
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.remove(facility.id, INVALID_ID);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}`)
+                }
+            }
+
+        })
+
+        it("should pass on valid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUTS = await CheckinServices.all(facility.id);
+            await CheckinServices.remove(facility.id, INPUTS[0].id);
+
+            try {
+                await CheckinServices.remove(facility.id, INPUTS[0].id);
+                expect.fail(`Should have thrown NotFound after remove`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INPUTS[0].id}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+
+    })
 
     // TODO - CheckinServices.update();
 

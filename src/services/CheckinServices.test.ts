@@ -13,6 +13,7 @@ const expect = chai.expect;
 
 import CheckinServices from "./CheckinServices";
 import Checkin from "../models/Checkin";
+import {fromDateObject, toDateObject} from "../util/Dates";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 
@@ -158,7 +159,68 @@ describe("CheckinServices Functional Tests", () => {
 
     })
 
-    // TODO - CheckinServices.insert();
+    describe("CheckinServices.insert()", () => {
+
+        it.skip("should fail on already assigned checkinDate+guestId", async () => {
+            // TODO - already assigned checkinDate+guestId
+        })
+
+        it("should fail on duplicate checkinDate+matNumber", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INPUTS = await CheckinServices.all(facility.id);
+            const INPUT = {
+                checkinDate: INPUTS[0].checkinDate,
+                matNumber: INPUTS[0].matNumber,
+            }
+
+            try {
+                await CheckinServices.insert(facility.id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include("is already in use");
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should fail on invalid input data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUT = {};
+
+            try {
+                await CheckinServices.insert(facility.id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include("Is required");
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid input data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const guest = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_SECOND, SeedData.GUEST_LAST_NAME_SECOND);
+            const INPUT = {
+                checkinDate: toDateObject(SeedData.CHECKIN_DATE_ONE),
+                guestId: guest.id,
+                matNumber: 5,
+            }
+
+            const OUTPUT = await CheckinServices.insert(facility.id, INPUT);
+            compareCheckinNew(OUTPUT, INPUT);
+
+        })
+
+    })
 
     // TODO - CheckinServices.remove();
 
@@ -171,7 +233,8 @@ describe("CheckinServices Functional Tests", () => {
 export function compareCheckinNew(OUTPUT: Partial<Checkin>, INPUT: Partial<Checkin>) {
 
     expect(OUTPUT.id).to.exist;
-    expect(OUTPUT.checkinDate).to.equal(INPUT.checkinDate);
+    // @ts-ignore (we will never try this without an actual checkinDate)
+    expect(OUTPUT.checkinDate).to.equal(fromDateObject(INPUT.checkinDate));
     expect(OUTPUT.facilityId).to.exist;
     expect(OUTPUT.guestId).to.equal(INPUT.guestId ? INPUT.guestId : null);
     expect(OUTPUT.matNumber).to.equal(INPUT.matNumber);

@@ -233,14 +233,16 @@ export default new CheckinServices();
 // Private Options -----------------------------------------------------------
 
 const FIELDS = [
-    "active",
-    "allMats",
+    "checkinDate",
     "comments",
     "facilityId",
-    "handicapMats",
-    "name",
-    "socketMats",
-    "workMats",
+    "features",
+    "guestId",
+    "matNumber",
+    "paymentAmount",
+    "paymentType",
+    "showerTime",
+    "wakeupTime",
 ];
 
 const FIELDS_WITH_ID = [

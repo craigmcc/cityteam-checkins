@@ -39,7 +39,7 @@ export const ACCESS_TOKENS_SUPERUSER: Partial<AccessToken>[] = [
 export const CHECKIN_DATE_ZERO = "2020-07-03"; // No Checkins
 export const CHECKIN_DATE_ONE = "2020-07-04"; // First and Third Guests assigned
 export const CHECKIN_DATE_TWO = "2020-07-05"; // Second and Fourth Guests assigned
-export const CHECKIN_DATE_THREE = "2020-07-05"; // No Checkins
+export const CHECKIN_DATE_THREE = "2020-07-06"; // All four Guests assigned
 
 // *** Facilities ***
 

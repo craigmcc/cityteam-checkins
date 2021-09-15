@@ -19,6 +19,7 @@ import User from "../models/User";
 import Facility from "../models/Facility";
 import Template from "../models/Template";
 import {hashPassword} from "../oauth/OAuthUtils";
+import CheckinServices from "../services/CheckinServices";
 
 // Public Objects ------------------------------------------------------------
 
@@ -200,9 +201,42 @@ const loadCheckins = async (facility: Facility, guests: Guest[]): Promise<Checki
             paymentType: "$$",
         },
     ]);
+    const threes = await Checkin.bulkCreate([
+        {
+            checkinDate: SeedData.CHECKIN_DATE_THREE,
+            facilityId: facility.id,
+            guestId: guests[0].id,
+            matNumber: 1,
+            paymentAmount: 5.00,
+            paymentType: "$$",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_THREE,
+            facilityId: facility.id,
+            guestId: guests[1].id,
+            matNumber: 2,
+            paymentAmount: 5.00,
+            paymentType: "$$",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_THREE,
+            facilityId: facility.id,
+            guestId: guests[2].id,
+            matNumber: 3,
+            paymentType: "AG",
+        },
+        {
+            checkinDate: SeedData.CHECKIN_DATE_THREE,
+            facilityId: facility.id,
+            guestId: guests[3].id,
+            matNumber: 4,
+            paymentType: "CT",
+        },
+    ]);
     return [
         ...ones,
         ...twos,
+        ...threes,
     ];
 }
 

@@ -69,7 +69,7 @@ describe("CheckinServices Functional Tests", () => {
             const results = await CheckinServices.all(facility.id, {
                 guestId: guest.id,
             });
-            expect(results.length).to.equal(1);
+            expect(results.length).to.equal(2);
             expect(results[0].facilityId).to.equal(facility.id);
             expect(results[0].guestId).to.equal(guest.id);
 

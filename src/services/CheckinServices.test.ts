@@ -130,10 +130,8 @@ export function compareCheckinNew(OUTPUT: Partial<Checkin>, INPUT: Partial<Check
     expect(OUTPUT.matNumber).to.equal(INPUT.matNumber);
     expect(OUTPUT.paymentAmount).to.equal(INPUT.paymentAmount ? INPUT.paymentAmount : null);
     expect(OUTPUT.paymentType).to.equal(INPUT.paymentType ? INPUT.paymentType : null);
-/* TODO - need showerTime/wakeupTime
     expect(OUTPUT.showerTime).to.equal(INPUT.showerTime ? INPUT.showerTime : null);
     expect(OUTPUT.wakeupTime).to.equal(INPUT.wakeupTime ? INPUT.wakeupTime : null);
-*/
 }
 
 export function compareCheckinOld(OUTPUT: Partial<Checkin>, INPUT: Partial<Checkin>) {
@@ -141,12 +139,10 @@ export function compareCheckinOld(OUTPUT: Partial<Checkin>, INPUT: Partial<Check
     expect(OUTPUT.checkinDate).to.equal(INPUT.checkinDate ? INPUT.checkinDate : OUTPUT.checkinDate);
     expect(OUTPUT.facilityId).to.exist;
     expect(OUTPUT.guestId).to.equal(INPUT.guestId ? INPUT.guestId : OUTPUT.guestId);
-    expect(OUTPUT.matNumber).to.equaal(INPUT.matNumber ? INPUT.matNumber : OUTPUT.matNumber);
+    expect(OUTPUT.matNumber).to.equal(INPUT.matNumber ? INPUT.matNumber : OUTPUT.matNumber);
     expect(OUTPUT.paymentAmount).to.equal(INPUT.paymentAmount ? INPUT.paymentAmount : OUTPUT.paymentAmount);
     expect(OUTPUT.paymentType).to.equal(INPUT.paymentType ? INPUT.paymentType : OUTPUT.paymentType);
-/* TODO - need showerTime/wakeupTime
     expect(OUTPUT.showerTime).to.equal(INPUT.showerTime ? INPUT.showerTime : OUTPUT.showerTime);
     expect(OUTPUT.wakeupTime).to.equal(INPUT.wakeupTime ? INPUT.wakeupTime : OUTPUT.wakeupTime);
-*/
 
 }

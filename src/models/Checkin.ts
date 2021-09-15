@@ -179,6 +179,20 @@ class Checkin extends AbstractModel<Checkin> {
     })
     paymentType?: string;
 
+    @Column({
+        allowNull: true,
+        field: "shower_time",
+        type: DataType.TIME
+    })
+    showerTime?: Date;
+
+    @Column({
+        allowNull: true,
+        field: "wakeup_time",
+        type: DataType.TIME
+    })
+    wakeupTime?: Date;
+
 }
 
 export default Checkin;

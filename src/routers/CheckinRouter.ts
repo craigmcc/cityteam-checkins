@@ -22,17 +22,15 @@ const CheckinRouter = Router({
 
 // Model-Specific Routes (no checkinId) -------------------------------------
 
-/* Not relevant on Checkins
-CheckinRouter.get("/:facilityId/exact/:name",
+CheckinRouter.post("/:facilityId/generate/:checkinDate/:templateId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await CheckinServices.exact(
+        res.send(await CheckinServices.generate(
             parseInt(req.params.facilityId, 10),
-            req.params.name,
-            req.query
+            req.params.checkinDate,
+            parseInt(req.params.templateId, 10)
         ));
     });
-*/
 
 // Standard CRUD Routes ------------------------------------------------------
 

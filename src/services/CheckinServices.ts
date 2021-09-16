@@ -12,7 +12,10 @@ import AbstractChildServices from "./AbstractChildServices";
 import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
+import Template from "../models/Template";
+import {toDateObject} from "../util/Dates";
 import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
+import MatsList from "../util/MatsList";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
 
@@ -152,28 +155,85 @@ class CheckinServices extends AbstractChildServices<Checkin> {
 
     // Model-Specific Methods ------------------------------------------------
 
-/* Not relevant on Checkins
-    public async exact(facilityId: number, name: string, query?: any): Promise<Checkin> {
+    /**
+     * Generate empty Checkins for the specified checkinDate, using the
+     * specified templateId as the basis.
+     */
+    public async generate(facilityId: number, checkinDate: string, templateId: number): Promise<Checkin[]> {
+
+        // Look up the requested Facility and Template
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
                 `facilityId: Missing Facility ${facilityId}`,
-                "CheckinServices.exact"
+                "CheckinServices.generate"
             );
         }
-        const options = this.appendIncludeOptions({
-            where: { name: name }
-        }, query);
-        const results = await facility.$get("checkins", options);
-        if (results.length !== 1) {
+        const template = await Template.findByPk(templateId);
+        if (!template) {
             throw new NotFound(
-                `checkinId: Missing Checkin '${name}'`,
-                "CheckinServices.exact"
+                `templateId: Missing Template ${templateId}`,
+                "CheckinServices.generate"
             );
         }
-        return results[0];
+        if (template.facilityId !== facility.id) {
+            throw new BadRequest(
+                `templateId: Template ${templateId} does not belong to this Facility`,
+                "CheckinServices.generate"
+            );
+        }
+
+        // Verify that there are no Checkins for this checkinDate already
+        const count = await Checkin.count({
+            where: {
+                checkinDate: checkinDate,
+                facilityId: facilityId,
+            }
+        });
+        if (count > 0) {
+            throw new BadRequest(
+                `checkinDate: There are already ${count} Checkins for this date`,
+                "CheckinServices.generate"
+            );
+        }
+
+        // Set up parameters we will need for features generation
+        const allMats = new MatsList(template.allMats);
+        const handicapMats = new MatsList(template.handicapMats);
+        const socketMats = new MatsList(template.socketMats);
+        const workMats = new MatsList(template.workMats);
+
+        // Accumulate the requested (unassigned) Checkins to be created.
+        const inputs: Partial<Checkin>[] = [];
+        allMats.exploded().forEach(matNumber => {
+            let features: string | null = "";
+            if (handicapMats && handicapMats.isMemberOf(matNumber)) {
+                features += "H";
+            }
+            if (socketMats && socketMats.isMemberOf(matNumber)) {
+                features += "S";
+            }
+            if (workMats && workMats.isMemberOf(matNumber)) {
+                features += "W";
+            }
+            if (features.length === 0) {
+                features = null;
+            }
+            inputs.push({
+                checkinDate: toDateObject(checkinDate),
+                facilityId: facilityId,
+                features: features ? features : undefined,
+                matNumber: matNumber,
+            });
+        });
+
+        // Persist and return the generated Checkins
+        const outputs = await Checkin.bulkCreate(inputs, {
+            fields: ["checkinDate", "facilityId", "features", "matNumber"]
+        })
+        return outputs;
+
     }
- */
 
     // Public Helpers --------------------------------------------------------
 

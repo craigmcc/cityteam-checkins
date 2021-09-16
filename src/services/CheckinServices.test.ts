@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import {loadTestData, lookupFacility, lookupGuest} from "../util/TestUtils";
+import {loadTestData, lookupFacility, lookupGuest, lookupTemplate} from "../util/TestUtils";
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -29,6 +29,7 @@ describe("CheckinServices Functional Tests", () => {
             withCheckins: true,
             withFacilities: true,
             withGuests: true,
+            withTemplates: true,
         });
     })
 
@@ -157,6 +158,102 @@ describe("CheckinServices Functional Tests", () => {
             })
 
         })
+
+    })
+
+    describe("CheckinServices.generate()", () => {
+
+        it("should fail on invalid facilityId", async () => {
+
+            const INVALID_FACILITY_ID = -1;
+            const INVALID_TEMPLATE_ID = -2;
+
+            try {
+                await CheckinServices.generate(INVALID_FACILITY_ID, SeedData.CHECKIN_DATE_ZERO, INVALID_TEMPLATE_ID);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`facilityId: Missing Facility ${INVALID_FACILITY_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should fail on invalid templateId", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INVALID_TEMPLATE_ID = -2;
+
+            try {
+                await CheckinServices.generate(facility.id, SeedData.CHECKIN_DATE_ZERO, INVALID_TEMPLATE_ID);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`templateId: Missing Template ${INVALID_TEMPLATE_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should fail on mismatched templateId", async () => {
+
+            const facilityOne = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const facilityTwo = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const templateTwo = await lookupTemplate(facilityTwo.id, SeedData.TEMPLATE_NAME_SECOND);
+
+            try {
+                await CheckinServices.generate(facilityOne.id, SeedData.CHECKIN_DATE_ZERO, templateTwo.id);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(`templateId: Template ${templateTwo.id} does not belong to this Facility`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should fail on non-empty checkinDate", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const template = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_FIRST);
+
+            try {
+                await CheckinServices.generate(facility.id, SeedData.CHECKIN_DATE_ONE, template.id);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(`checkinDate: There are already `);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const template = await lookupTemplate(facility.id, SeedData.TEMPLATE_NAME_THIRD)
+
+            const OUTPUTS = await CheckinServices.generate(facility.id, SeedData.CHECKIN_DATE_ZERO, template.id);
+            expect(OUTPUTS.length).to.be.greaterThan(0);
+            OUTPUTS.forEach(OUTPUT => {
+                expect(OUTPUT.facilityId).to.equal(facility.id);
+                expect(OUTPUT.guestId).to.be.null;
+            });
+            const CHECKS = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ZERO,
+            });
+            expect(CHECKS.length).to.equal(OUTPUTS.length);
+
+        })
+
 
     })
 

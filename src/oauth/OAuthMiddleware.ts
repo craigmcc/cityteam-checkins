@@ -15,7 +15,7 @@ import {
 
 // Internal Modules ----------------------------------------------------------
 
-import {OAuthOrchestrator} from "../server";
+import OAuthOrchestrator from "./OAuthOrchestrator";
 import {Forbidden} from "../util/HttpErrors";
 import logger from "../util/ServerLogger";
 

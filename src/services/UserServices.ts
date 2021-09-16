@@ -158,6 +158,7 @@ class UserServices extends AbstractParentServices<User> {
                 "UserServices.exact"
             );
         }
+        results[0].password = "";
         return results[0];
     }
 

@@ -2,6 +2,15 @@
 
 // Classes defining HTTP errors that can be returned by this application.
 
+// HTTP Status Codes ---------------------------------------------------------
+
+export const OK = 200;
+export const BAD_REQUEST = 400;
+export const FORBIDDEN = 403;
+export const NOT_FOUND = 404;
+export const NOT_UNIQUE = 409;
+export const SERVER_ERROR = 500;
+
 // Base Error Class ----------------------------------------------------------
 
 export type Source = string | Error;
@@ -20,7 +29,7 @@ export abstract class HttpError extends Error {
         super(source instanceof Error ? source.message : source);
         this.context = context ? context : undefined;
         this.inner = source instanceof Error ? source : undefined;
-        this.status = 400;
+        this.status = BAD_REQUEST;
     }
 
     context: string | undefined;
@@ -37,7 +46,7 @@ export abstract class HttpError extends Error {
 export class BadRequest extends HttpError {
     constructor(source: Source, context?: string) {
         super(source, context);
-        this.status = 400;
+        this.status = BAD_REQUEST;
     }
 }
 
@@ -47,7 +56,7 @@ export class BadRequest extends HttpError {
 export class Forbidden extends HttpError {
     constructor(source: Source, context?: string) {
         super(source, context);
-        this.status = 403;
+        this.status = FORBIDDEN;
     }
 }
 
@@ -57,7 +66,7 @@ export class Forbidden extends HttpError {
 export class NotFound extends HttpError {
     constructor(source: Source, context?: string) {
         super(source, context);
-        this.status = 404;
+        this.status = NOT_FOUND;
     }
 }
 
@@ -67,7 +76,7 @@ export class NotFound extends HttpError {
 export class NotUnique extends HttpError {
     constructor(source: Source, context?: string) {
         super(source, context);
-        this.status = 409;
+        this.status = NOT_UNIQUE;
     }
 }
 
@@ -77,6 +86,6 @@ export class NotUnique extends HttpError {
 export class ServerError extends HttpError {
     constructor(source: Source, context?: string) {
         super(source, context);
-        this.status = 500;
+        this.status = SERVER_ERROR;
     }
 }

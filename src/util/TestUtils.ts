@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import {Op} from "sequelize";
+import {PasswordTokenRequest} from "@craigmcc/oauth-orchestrator";
 
 // Internal Modules ----------------------------------------------------------
 
@@ -18,60 +18,29 @@ import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 import Facility from "../models/Facility";
 import Template from "../models/Template";
+import OAuthOrchestrator from "../oauth/OAuthOrchestrator";
 import {hashPassword} from "../oauth/OAuthUtils";
-import CheckinServices from "../services/CheckinServices";
 
 // Public Objects ------------------------------------------------------------
 
-export const lookupFacility = async (name: string): Promise<Facility> => {
-    const result = await Facility.findOne({
-        where: { name: name }
-    });
-    if (result) {
-        return result;
-    } else {
-        throw new NotFound(`name: Should have found Facility for '${name}'`);
-    }
-}
+export const AUTHORIZATION = "Authorization"; // HTTP header name
 
-export const lookupGuest = async (facilityId: number, firstName: string, lastName: string): Promise<Guest> => {
-    const result = await Guest.findOne({
-        where: {
-            facilityId: facilityId,
-            firstName: firstName,
-            lastName: lastName,
-        }
-    });
-    if (result) {
-        return result;
-    } else {
-        throw new NotFound(`firstName/lastName: Should have found Guest for '${firstName} ${lastName}`);
+/**
+ * Return an authenticated OAuth bearer token for the specified user,
+ * in the form to be transmitted in an HTTP "Authorization" header.
+ *
+ * @param username Username of the user to be authenticated
+ */
+export const authorization = async (username: string, scope?: string): Promise<string> => {
+    const user = await lookupUser(username);
+    const request: PasswordTokenRequest = {
+        grant_type: "password",
+        password: user.username, // For tests, we hashed the username as the password
+        scope: user.scope,
+        username: user.username,
     }
-}
-
-export const lookupTemplate = async (facilityId: number, name: string): Promise<Template> => {
-    const result = await Template.findOne({
-        where: {
-            facilityId: facilityId,
-            name: name,
-        }
-    });
-    if (result) {
-        return result;
-    } else {
-        throw new NotFound(`name: Should have found Template for '${name}'`);
-    }
-}
-
-export const lookupUser = async (username: string): Promise<User> => {
-    const result = await User.findOne({
-        where: { username: username }
-    });
-    if (result) {
-        return result;
-    } else {
-        throw new NotFound(`username:  Should have found User for '${username}'`);
-    }
+    const response = await OAuthOrchestrator.token(request);
+    return `Bearer ${response.access_token}`;
 }
 
 export type OPTIONS = {
@@ -127,6 +96,57 @@ export const loadTestData = async (options: Partial<OPTIONS> = {}): Promise<void
         // TODO - other child data
     }
 
+}
+
+export const lookupFacility = async (name: string): Promise<Facility> => {
+    const result = await Facility.findOne({
+        where: { name: name }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`name: Should have found Facility for '${name}'`);
+    }
+}
+
+export const lookupGuest = async (facilityId: number, firstName: string, lastName: string): Promise<Guest> => {
+    const result = await Guest.findOne({
+        where: {
+            facilityId: facilityId,
+            firstName: firstName,
+            lastName: lastName,
+        }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`firstName/lastName: Should have found Guest for '${firstName} ${lastName}`);
+    }
+}
+
+export const lookupTemplate = async (facilityId: number, name: string): Promise<Template> => {
+    const result = await Template.findOne({
+        where: {
+            facilityId: facilityId,
+            name: name,
+        }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`name: Should have found Template for '${name}'`);
+    }
+}
+
+export const lookupUser = async (username: string): Promise<User> => {
+    const result = await User.findOne({
+        where: { username: username }
+    });
+    if (result) {
+        return result;
+    } else {
+        throw new NotFound(`username:  Should have found User for '${username}'`);
+    }
 }
 
 // Private Objects -----------------------------------------------------------
@@ -296,17 +316,23 @@ const loadTemplates
     }
 }
 
+const hashedPassword = async (password: string | undefined): Promise<string> => {
+    return await hashPassword(password ? password : "");
+}
+
 const loadUsers = async (users: Partial<User>[]): Promise<User[]> => {
-    users.forEach(async user => {
-        await hashPassword(user.password ? user.password : "password");
-    })
-    let results: User[] = [];
+    // For tests, the unhashed password is the same as the username
+    const promises = await users.map(user => hashedPassword(user.username));
+    const hashedPasswords: string[] = await Promise.all(promises);
+    for(let i = 0; i < users.length; i++) {
+        users[i].password = hashedPasswords[i];
+    }
     try {
-        results = await User.bulkCreate(users);
+        const results = await User.bulkCreate(users);
+        return results;
     } catch (error) {
         console.info("  Reloading Users ERROR", error);
         throw error;
     }
-    return results;
 }
 

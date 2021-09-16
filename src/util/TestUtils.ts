@@ -175,6 +175,8 @@ const loadCheckins = async (facility: Facility, guests: Guest[]): Promise<Checki
             matNumber: 1,
             paymentAmount: 5.00,
             paymentType: "$$",
+            showerTime: "05:10",
+            wakeupTime: "05:20:30",
         },
         {
             checkinDate: SeedData.CHECKIN_DATE_ONE,

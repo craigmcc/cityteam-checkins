@@ -117,6 +117,7 @@ class CheckinServices extends AbstractChildServices<Checkin> {
             );
         }
         try {
+            checkin.facilityId = facilityId; // No cheating
             const results = await Checkin.update(checkin, {
                 fields: FIELDS_WITH_ID,
                 returning: true,

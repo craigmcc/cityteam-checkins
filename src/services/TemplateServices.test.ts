@@ -336,7 +336,7 @@ describe("TemplateServices Functional Tests", () => {
 
             try {
                 await TemplateServices.update(facility.id, INVALID_ID, INPUTS[0]);
-                expect.fail(`Should hve thrown NotFound`);
+                expect.fail(`Should have thrown NotFound`);
             } catch (error) {
                 if (error instanceof NotFound) {
                     expect(error.message).to.include(`templateId: Missing Template ${INVALID_ID}`);

@@ -16,6 +16,7 @@ import Checkin from "../models/Checkin";
 import {fromDateObject, toDateObject} from "../util/Dates";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
+import * as Times from "../util/Times";
 
 // Test Specifications -------------------------------------------------------
 
@@ -264,7 +265,87 @@ describe("CheckinServices Functional Tests", () => {
 
     })
 
-    // TODO - CheckinServices.update();
+    describe("CheckinServices.update()", () => {
+
+        it("should fail on duplicate checkinDate/matNumber", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INPUTS = await CheckinServices.all(facility.id);
+            const INPUT = {
+                checkinDate: INPUTS[1].checkinDate,
+                matNumber: INPUTS[1].matNumber
+            }
+
+            try {
+                await CheckinServices.update(facility.id, INPUTS[0].id, INPUT);
+                expect.fail("Should have thrown BadRequest");
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(" is already in use");
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+
+        })
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INPUTS = await CheckinServices.all(facility.id);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.update(facility.id, INVALID_ID, INPUTS[0]);
+                expect.fail("Should have thrown NotFound");
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on no changed data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const INPUTS = await CheckinServices.all(facility.id);
+            const INPUT = {};
+
+            const OUTPUT = await CheckinServices.update(facility.id, INPUTS[0].id, INPUT);
+            compareCheckinOld(OUTPUT, INPUT);
+            const UPDATED = await CheckinServices.find(facility.id, INPUTS[0].id);
+            compareCheckinOld(UPDATED, OUTPUT);
+
+        })
+
+        it("should pass on valid updated data", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const INPUTS = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE,
+            });
+            const showerTime = Times.toTimeObject("05:00");
+            //console.log(`SHOW IN=${showerTime} OUT=${Times.fromTimeObject(showerTime)}`)
+            const wakeupTime = Times.toTimeObject("04:30:15");
+            //console.log(`WAKE IN=${wakeupTime} OUT=${Times.fromTimeObject(wakeupTime)}`)
+            const INPUT = {
+                comments: "Updated comments",
+                //showerTime: showerTime,
+                //wakeupTime: wakeupTime,
+            }
+
+            const OUTPUT = await CheckinServices.update(facility.id, INPUTS[0].id, INPUT);
+            compareCheckinOld(OUTPUT, INPUT);
+            const UPDATED = await CheckinServices.find(facility.id, INPUTS[0].id);
+            compareCheckinOld(UPDATED, OUTPUT);
+
+        })
+
+    })
 
 })
 

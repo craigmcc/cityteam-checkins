@@ -14,13 +14,14 @@ import {
     findOperation, guestIdSchema, idSchema,
     insertOperation, parameterRef, pathItemChildCollection,
     pathItemChildDetail, pathParam, queryParameter,
-    removeOperation, schemaRef, updateOperation
+    removeOperation, requestBodyRef, responseRef,
+    schemaRef, updateOperation
 } from "./Common";
 import {
-    API_PREFIX, CHECKIN, CHECKIN_DATE, CHECKIN_ID,
+    API_PREFIX, ASSIGN, BAD_REQUEST, CHECKIN, CHECKIN_DATE, CHECKIN_ID,
     COMMENTS, FACILITY, FACILITY_ID,
     FEATURES, GUEST, GUEST_ID, ID,
-    MAT_NUMBER, MATCH_AVAILABLE, MATCH_DATE, MATCH_GUEST_ID,
+    MAT_NUMBER, MATCH_AVAILABLE, MATCH_DATE, MATCH_GUEST_ID, NOT_FOUND,
     PAYMENT_AMOUNT, PAYMENT_TYPE, REQUIRE_REGULAR,
     REQUIRE_SUPERUSER, SHOWER_TIME, WAKEUP_TIME,
     WITH_FACILITY, WITH_GUEST
@@ -34,12 +35,47 @@ export function all(): ob.OperationObject {
     return allOperation(CHECKIN, REQUIRE_REGULAR, includes, matches);
 }
 
+export function assign(): ob.OperationObject {
+    const builder = new ob.OperationObjectBuilder()
+        .addDescription("Assign the specified Guest to the specified Checkin")
+        .addRequestBody(requestBodyRef(ASSIGN))
+        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
+        .addSummary("The updated (now assigned) Checkin")
+        .addTag(REQUIRE_REGULAR)
+    ;
+    return builder.build();
+}
+
+export function deassign(): ob.OperationObject {
+    const builder = new ob.OperationObjectBuilder()
+        .addDescription("Deassign the specified Guest from the specified Checkin")
+        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
+        .addSummary("The updated (now unassigned) Checkin")
+        .addTag(REQUIRE_REGULAR)
+    ;
+    return builder.build();
+}
+
 export function find(): ob.OperationObject {
     return findOperation(CHECKIN, REQUIRE_REGULAR, includes);
 }
 
 export function insert(): ob.OperationObject {
     return insertOperation(CHECKIN, REQUIRE_REGULAR);
+}
+
+export function reassign(): ob.OperationObject {
+    const builder = new ob.OperationObjectBuilder()
+        .addDescription("Reassign the specified Guest for an existing Checkin to different Checkin")
+        .addRequestBody(requestBodyRef(ASSIGN))
+        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
+        .addSummary("The updated (now assigned) destination Checkin")
+        .addTag(REQUIRE_REGULAR)
+    ;
+    return builder.build();
 }
 
 export function remove(): ob.OperationObject {
@@ -80,6 +116,9 @@ export function paths(): ob.PathsObject {
     paths[API_PREFIX + "/" + pluralize(CHECKIN.toLowerCase())
     + "/" + pathParam(FACILITY_ID) + "/" + pathParam(CHECKIN_ID)]
         = pathItemChildDetail(CHECKIN, CHECKIN_ID, FACILITY_ID, find, remove, update);
+    paths[API_PREFIX + "/" + pluralize(CHECKIN.toLowerCase())
+    + "/" + pathParam(FACILITY_ID) + "/" + pathParam(CHECKIN_ID) + "/assignment"]
+        = assignmentPath();
     return paths;
 }
 
@@ -129,5 +168,17 @@ export function schemas(): ob.SchemaObject {
         .addDescription("Checkins associated with this Facility")
         .addItems(schemaRef(CHECKIN))
         .addType("array")
+        .build();
+}
+
+// Private Objects -----------------------------------------------------------
+
+function assignmentPath(): ob.PathItemObject {
+    return new ob.PathItemObjectBuilder()
+        .addParameter(parameterRef(FACILITY_ID))
+        .addParameter(parameterRef(CHECKIN_ID))
+        .addPost(assign())
+        .addDelete(deassign())
+        .addPut(reassign())
         .build();
 }

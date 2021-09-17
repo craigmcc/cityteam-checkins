@@ -9,6 +9,7 @@ const pluralize = require("pluralize");
 
 // Internal Modules ----------------------------------------------------------
 
+import * as Assign from "./Assign";
 import * as Checkin from "./Checkin";
 import * as ErrorSchema from "./ErrorSchema";
 import * as Facility from "./Facility";
@@ -16,8 +17,8 @@ import * as Guest from "./Guest";
 import * as Template from "./Template";
 import * as User from "./User";
 import {
-    BAD_REQUEST, CHECKIN, CHECKIN_ID, ERROR,
-    FACILITY, FACILITY_ID, FORBIDDEN,
+    ASSIGN, BAD_REQUEST, CHECKIN, CHECKIN_ID,
+    ERROR, FACILITY, FACILITY_ID, FORBIDDEN,
     GUEST, GUEST_ID, LIMIT,
     MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
     MODELS, NOT_FOUND, NOT_UNIQUE,
@@ -179,6 +180,8 @@ function schemas(): ob.SchemasObject {
     const schemas: ob.SchemasObject = {};
 
     // Application Models
+    schemas[ASSIGN] = Assign.schema();
+    schemas[pluralize(ASSIGN)] = Assign.schemas();
     schemas[CHECKIN] = Checkin.schema();
     schemas[pluralize(CHECKIN)] = Checkin.schemas();
     schemas[FACILITY] = Facility.schema();

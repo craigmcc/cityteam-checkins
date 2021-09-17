@@ -18,6 +18,7 @@ export const APPLICATION_JSON = "application/json";
 // ***** Model Names *****
 
 export const ACCESS_TOKEN = "AccessToken";
+export const ASSIGN = "Assign";
 export const CHECKIN = "Checkin";
 export const ERROR = "Error";
 export const FACILITY = "Facility";
@@ -29,6 +30,7 @@ export const USER = "User";
 
 export const MODELS = [
 //    ACCESS_TOKEN,
+    ASSIGN,
     CHECKIN,
     FACILITY,
     GUEST,

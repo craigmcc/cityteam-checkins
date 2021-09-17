@@ -112,6 +112,25 @@ describe("GuestServices Functional Tests", () => {
 
     })
 
+    describe("GuestServices.checkins()", () => {
+
+        it("should pass on all Checkins", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const guest = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_FIRST, SeedData.GUEST_LAST_NAME_FIRST);
+
+            const checkins = await GuestServices.checkins(facility.id, guest.id);
+            checkins.forEach(checkin => {
+                expect(checkin.facilityId).to.equal(facility.id);
+                expect(checkin.guestId).to.equal(guest.id);
+            })
+
+        })
+
+
+
+    })
+
     describe("GuestServices.exact()", () => {
 
         it("should fail on invalid name", async () => {

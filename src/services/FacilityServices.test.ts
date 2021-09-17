@@ -61,12 +61,10 @@ describe("FacilityServices Functional Tests", () => {
             });
             OUTPUTS.forEach(OUTPUT => {
                 expect(OUTPUT.checkins).to.exist;
-/* TODO - load seed checkins
                 expect(OUTPUT.checkins.length).to.be.greaterThan(0);
                 OUTPUT.checkins.forEach(checkin => {
                     expect(checkin.facilityId).to.equal(OUTPUT.id);
                 });
-*/
                 expect(OUTPUT.guests).to.exist;
                 expect(OUTPUT.guests.length).to.be.greaterThan(0);
                 OUTPUT.guests.forEach(guest => {
@@ -114,16 +112,15 @@ describe("FacilityServices Functional Tests", () => {
 
     describe("FacilityServices.checkins()", () => {
 
-        it("should pass on available Checkins", async () => {
-            // TODO - available Checkins on specified date
-        })
-
         it("should pass on all Checkins", async () => {
-            // TODO - all Checkins on specified Date
-        })
 
-        it("should pass on paginated Checkins", async () => {
-            // TODO - paginated Checkins on specified Date
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+
+            const checkins = await FacilityServices.checkins(facility.id);
+            checkins.forEach(checkin => {
+                expect(checkin.facilityId).to.equal(facility.id);
+            })
+
         })
 
     })

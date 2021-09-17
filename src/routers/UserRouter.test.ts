@@ -4,7 +4,6 @@
 
 // External Modules ----------------------------------------------------------
 
-
 const chai = require("chai");
 const expect = chai.expect;
 import chaiHttp = require("chai-http");

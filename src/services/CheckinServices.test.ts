@@ -112,6 +112,166 @@ describe("CheckinServices Functional Tests", () => {
 
     })
 
+    describe("CheckinServices.assign()", () => {
+
+        it("should fail on already assigned Checkin", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            });
+
+            checkins.forEach(async checkin => {
+                if (checkin.guestId) {
+                    try {
+                        await CheckinServices.assign(facility.id, checkin.id, {});
+                        expect.fail(`Should have thrown BadRequest`);
+                    } catch (error) {
+                        if (error instanceof BadRequest) {
+                            expect(error.message).to.include(`guestId: Checkin ${checkin.id} is already assigned to Guest ${checkin.guestId}`);
+                        } else {
+                            expect.fail(`Should not have thrown '${error}'`);
+                        }
+                    }
+                }
+            })
+
+        })
+
+        it.skip("should fail on already assigned Guest", async () => {
+            // TODO - should fail on already assigned Guest
+        })
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.assign(facility.id, INVALID_ID, {});
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid data", async () => {
+
+            // NOTE - this test is highly dependent on the seed data!
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_TWO
+            });
+            // Selected Checkin MUST be unassigned
+            const oldCheckin = checkins[0];
+            // Selected Guest MUST be unassigned
+            const guest = await lookupGuest(facility.id, SeedData.GUEST_FIRST_NAME_FIRST, SeedData.GUEST_LAST_NAME_FIRST);
+            const assign = {
+                comments: "Newly Assigned Guest",
+                guestId: guest.id,
+                paymentAmount: "5.00",
+                paymentType: "$$",
+                showerTime: "05:00:00",
+                wakeupTime: "04:30:45",
+            }
+
+            const newCheckin = await CheckinServices.assign(facility.id, oldCheckin.id, assign);
+            // Values that should not have changed
+            expect(newCheckin.id).to.equal(oldCheckin.id);
+            expect(newCheckin.checkinDate).to.equal(oldCheckin.checkinDate);
+            expect(newCheckin.facilityId).to.equal(oldCheckin.facilityId);
+            expect(newCheckin.features).to.equal(oldCheckin.features);
+            expect(newCheckin.matNumber).to.equal(oldCheckin.matNumber);
+            // Values that should have changed
+            expect(newCheckin.comments).to.equal(assign.comments);
+            expect(newCheckin.guestId).to.equal(assign.guestId);
+            expect(newCheckin.paymentAmount).to.equal(assign.paymentAmount);
+            expect(newCheckin.paymentType).to.equal(assign.paymentType);
+            expect(newCheckin.showerTime).to.equal(assign.showerTime);
+            expect(newCheckin.wakeupTime).to.equal(assign.wakeupTime);
+
+        })
+
+    })
+
+    describe("CheckinServices.deassign()", () => {
+
+        it("should fail on already unassigned Checkin", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            });
+
+            checkins.forEach(async checkin => {
+                if (!checkin.guestId) {
+                    try {
+                        await CheckinServices.deassign(facility.id, checkin.id);
+                        expect.fail(`Should have thrown BadRequest`);
+                    } catch (error) {
+                        if (error instanceof BadRequest) {
+                            expect(error.message).to.include(`checkinId: Checkin ${checkin.id} is not currently assigned`);
+                        } else {
+                            expect.fail(`Should not have thrown '${error}'`);
+                        }
+                    }
+                }
+            })
+
+        })
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.deassign(facility.id, INVALID_ID);
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid data", async () => {
+
+            // NOTE - this test is highly dependent on the seed data!
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            });
+            // Selected Checkin MUST be assigned
+            const oldCheckin = checkins[0];
+
+            const newCheckin = await CheckinServices.deassign(facility.id, oldCheckin.id);
+            // Values that should not have changed
+            expect(newCheckin.id).to.equal(oldCheckin.id);
+            expect(newCheckin.checkinDate).to.equal(oldCheckin.checkinDate);
+            expect(newCheckin.facilityId).to.equal(oldCheckin.facilityId);
+            expect(newCheckin.features).to.equal(oldCheckin.features);
+            expect(newCheckin.matNumber).to.equal(oldCheckin.matNumber);
+            // Values that should have changed
+            expect(newCheckin.comments).to.be.null;
+            expect(newCheckin.guestId).to.be.null;
+            expect(newCheckin.paymentAmount).to.be.null;
+            expect(newCheckin.paymentType).to.be.null;
+            expect(newCheckin.showerTime).to.be.null;
+            expect(newCheckin.wakeupTime).to.be.null;
+
+        })
+
+    })
+
     describe("CheckinServices.find()", () => {
 
         it("should fail on invalid ID", async () => {
@@ -315,6 +475,103 @@ describe("CheckinServices Functional Tests", () => {
 
             const OUTPUT = await CheckinServices.insert(facility.id, INPUT);
             compareCheckinNew(OUTPUT, INPUT);
+
+        })
+
+    })
+
+    describe("CheckinServices.reassign()", () => {
+
+        it("should fail on already unassigned Checkin", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            });
+
+            checkins.forEach(async checkin => {
+                if (!checkin.guestId) {
+                    try {
+                        await CheckinServices.reassign(facility.id, checkin.id, {});
+                        expect.fail(`Should have thrown BadRequest`);
+                    } catch (error) {
+                        if (error instanceof BadRequest) {
+                            expect(error.message).to.include(`checkinId: Checkin ${checkin.id} is not currently assigned`);
+                        } else {
+                            expect.fail(`Should not have thrown '${error}'`);
+                        }
+                    }
+                }
+            })
+
+        })
+
+        it("should fail on invalid ID", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+            const INVALID_ID = -1;
+
+            try {
+                await CheckinServices.reassign(facility.id, INVALID_ID, {});
+                expect.fail(`Should have thrown NotFound`);
+            } catch (error) {
+                if (error instanceof NotFound) {
+                    expect(error.message).to.include(`checkinId: Missing Checkin ${INVALID_ID}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
+        })
+
+        it("should pass on valid data", async () => {
+
+            // NOTE - this test is highly dependent on the seed data!
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_THIRD);
+            const checkins = await CheckinServices.all(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            });
+            // Selected Checkins MUST be assigned (from) and unassigned (to)
+            const fromCheckin = checkins[0];
+            const toCheckin = checkins[1];
+            const assign = {
+                checkinId: toCheckin.id,
+                comments: "Newly Reassigned Guest",
+                paymentAmount: "5.00",
+                paymentType: "$$",
+                showerTime: "05:00:00",
+                wakeupTime: "04:30:45",
+            }
+
+            const newCheckin = await CheckinServices.reassign(facility.id, fromCheckin.id, assign);
+            // Values that should not have changed
+            expect(newCheckin.id).to.equal(toCheckin.id);
+            expect(newCheckin.checkinDate).to.equal(toCheckin.checkinDate);
+            expect(newCheckin.facilityId).to.equal(toCheckin.facilityId);
+            expect(newCheckin.features).to.equal(toCheckin.features);
+            expect(newCheckin.matNumber).to.equal(toCheckin.matNumber);
+            // Values that should have changed
+            expect(newCheckin.comments).to.equal(assign.comments);
+            expect(newCheckin.guestId).to.equal(fromCheckin.guestId); // Now reassigned
+            expect(newCheckin.paymentAmount).to.equal(assign.paymentAmount);
+            expect(newCheckin.paymentType).to.equal(assign.paymentType);
+            expect(newCheckin.showerTime).to.equal(assign.showerTime);
+            expect(newCheckin.wakeupTime).to.equal(assign.wakeupTime);
+
+            const oldCheckin = await CheckinServices.find(facility.id, fromCheckin.id);
+            // Values that should not have changed
+            expect(oldCheckin.id).to.equal(fromCheckin.id);
+            expect(oldCheckin.checkinDate).to.equal(fromCheckin.checkinDate);
+            expect(oldCheckin.facilityId).to.equal(fromCheckin.facilityId);
+            expect(oldCheckin.features).to.equal(fromCheckin.features);
+            expect(oldCheckin.matNumber).to.equal(fromCheckin.matNumber);
+            // Values that should have changed
+            expect(oldCheckin.comments).to.be.null;
+            expect(oldCheckin.guestId).to.be.null; // Now unassigned
+            expect(oldCheckin.paymentAmount).to.be.null;
+            expect(oldCheckin.paymentType).to.be.null;
+            expect(oldCheckin.showerTime).to.be.null;
+            expect(oldCheckin.wakeupTime).to.be.null;
 
         })
 

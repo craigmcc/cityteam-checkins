@@ -74,7 +74,39 @@ CheckinRouter.get("/:facilityId/:checkinId",
 CheckinRouter.put("/:facilityId/:checkinId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await CheckinServices.find(
+        res.send(await CheckinServices.update(
+            parseInt(req.params.facilityId, 10),
+            parseInt(req.params.checkinId, 10),
+            req.body
+        ));
+    });
+
+// Model-Specific Routes (with checkinId) ------------------------------------
+
+CheckinRouter.post("/:facilityId/:checkinId/assignment",
+    requireRegular,
+    async (req: Request, res: Response) => {
+        res.send(await CheckinServices.assign(
+            parseInt(req.params.facilityId, 10),
+            parseInt(req.params.checkinId, 10),
+            req.body
+        ));
+    });
+
+CheckinRouter.delete("/:facilityId/:checkinId/assignment",
+    requireRegular,
+    async (req: Request, res: Response) => {
+        res.send(await CheckinServices.deassign(
+            parseInt(req.params.facilityId, 10),
+            parseInt(req.params.checkinId, 10)
+        ));
+    });
+
+
+CheckinRouter.put("/:facilityId/:checkinId/assignment",
+    requireRegular,
+    async (req: Request, res: Response) => {
+        res.send(await CheckinServices.reassign(
             parseInt(req.params.facilityId, 10),
             parseInt(req.params.checkinId, 10),
             req.body

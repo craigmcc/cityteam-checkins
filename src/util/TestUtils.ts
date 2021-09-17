@@ -83,9 +83,9 @@ export const loadTestData = async (options: Partial<OPTIONS> = {}): Promise<void
             const guestsSecond = await loadGuests(facilitySecond, SeedData.GUESTS);
             const guestsThird = await loadGuests(facilityThird, SeedData.GUESTS);
             if (options.withCheckins) {
-                loadCheckins(facilityFirst, guestsFirst);
-                loadCheckins(facilitySecond, guestsSecond);
-                loadCheckins(facilityThird, guestsThird);
+                await loadCheckins(facilityFirst, guestsFirst);
+                await loadCheckins(facilitySecond, guestsSecond);
+                await loadCheckins(facilityThird, guestsThird);
             }
         }
         if (options.withTemplates) {
@@ -93,7 +93,6 @@ export const loadTestData = async (options: Partial<OPTIONS> = {}): Promise<void
             await loadTemplates(facilitySecond, SeedData.TEMPLATES);
             await loadTemplates(facilityThird, SeedData.TEMPLATES);
         }
-        // TODO - other child data
     }
 
 }

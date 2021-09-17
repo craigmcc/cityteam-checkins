@@ -9,6 +9,7 @@ import {FindOptions, Op, ValidationError} from "sequelize";
 // Internal Modules ----------------------------------------------------------
 
 import AbstractChildServices from "./AbstractChildServices";
+import Assign from "../models/Assign";
 import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
@@ -156,6 +157,110 @@ class CheckinServices extends AbstractChildServices<Checkin> {
     // Model-Specific Methods ------------------------------------------------
 
     /**
+     * Assign a specified Guest to the specified Checkin, with details
+     * described in the Assign body.
+     */
+    public async assign(facilityId: number, checkinId: number, assign: Assign): Promise<Checkin> {
+
+        // Validate the incoming parameters
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "CheckinServices.assign"
+            );
+        }
+        const checkin = await Checkin.findOne({
+            where: {
+                id: checkinId,
+                facilityId: facilityId,
+            }
+        });
+        if (!checkin) {
+            throw new NotFound(
+                `checkinId: Missing Checkin ${checkinId}`,
+                "CheckinServices.assign"
+            );
+        }
+        if (checkin.guestId) {
+            throw new BadRequest(
+                `checkinId: Checkin ${checkinId} is already assigned to Guest ${checkin.guestId}`
+            );
+        }
+        const guest = await Guest.findOne({
+            where: {
+                id: assign.guestId,
+                facilityId: facilityId,
+            }
+        });
+        if (!guest) {
+            throw new NotFound(
+                `guestId: Missing Guest ${assign.guestId}`,
+                "CheckinServices.assign"
+            );
+        }
+
+        // TODO - verify not checked in elsewhere on this date
+
+        // Update and persist the relevant information
+        const update = {
+            comments: assign.comments,
+            guestId: assign.guestId,
+            paymentAmount: assign.paymentAmount,
+            paymentType: assign.paymentType,
+            showerTime: assign.showerTime,
+            wakeupTime: assign.wakeupTime,
+        }
+        return await this.update(facilityId, checkinId, update);
+
+    }
+
+    /**
+     * Deassign the Guest currently assigned to the specified Checkin, and erase
+     * any corresponding details.
+     */
+    public async deassign(facilityId: number, checkinId: number): Promise<Checkin> {
+
+        // Validate the incoming parameters
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "CheckinServices.assign"
+            );
+        }
+        const checkin = await Checkin.findOne({
+            where: {
+                id: checkinId,
+                facilityId: facilityId,
+            }
+        });
+        if (!checkin) {
+            throw new NotFound(
+                `checkinId: Missing Checkin ${checkinId}`,
+                "CheckinServices.assign"
+            );
+        }
+        if (!checkin.guestId) {
+            throw new BadRequest(
+                `checkinId: Checkin ${checkinId} is not currently assigned`
+            );
+        }
+
+        // Update and persist the relevant information
+        const update = {
+            comments: null,
+            guestId: null,
+            paymentAmount: null,
+            paymentType: null,
+            showerTime: null,
+            wakeupTime: null,
+        }
+        return this.update(facilityId, checkinId, update);
+
+    }
+
+    /**
      * Generate empty Checkins for the specified checkinDate, using the
      * specified templateId as the basis.
      */
@@ -232,6 +337,87 @@ class CheckinServices extends AbstractChildServices<Checkin> {
             fields: ["checkinDate", "facilityId", "features", "matNumber"]
         })
         return outputs;
+
+    }
+
+    /**
+     * Reassign the Guest currently assigned to the specified Checkin to the
+     * new Checkin specified in the corresponding details, deassigning that
+     * Guest from the previously assigned Checkin.
+     */
+    public async reassign(facilityId: number, checkinId: number, assign: Assign): Promise<Checkin> {
+
+        // Validate the incoming parameters
+        const facility = await Facility.findByPk(facilityId);
+        if (!facility) {
+            throw new NotFound(
+                `facilityId: Missing Facility ${facilityId}`,
+                "CheckinServices.reassign"
+            );
+        }
+        const oldCheckin = await Checkin.findOne({
+            where: {
+                id: checkinId,
+                facilityId: facilityId,
+            }
+        });
+        if (!oldCheckin) {
+            throw new NotFound(
+                `checkinId: Missing Checkin ${checkinId}`,
+                "CheckinServices.reassign"
+            );
+        }
+        if (!oldCheckin.guestId) {
+            throw new BadRequest(
+                `guestId: Checkin ${checkinId} is not currently assigned`,
+                "CheckinServices.reassign"
+            );
+        }
+        const newCheckin = await Checkin.findOne({
+            where: {
+                id: assign.checkinId,
+                facilityId: facilityId,
+            }
+        })
+        if (!newCheckin) {
+            throw new NotFound(
+                `checkinId: Missing Checkin ${assign.checkinId}`,
+                "CheckinServices.reassign"
+            );
+        }
+        if (newCheckin.checkinDate !== oldCheckin.checkinDate) {
+            throw new BadRequest(
+                `checkinDate: Cannot reassign from '${oldCheckin.checkinDate}' to '${newCheckin.checkinDate}`,
+                "CheckinServices.reassign"
+            );
+        }
+        if (newCheckin.guestId) {
+            throw new BadRequest(
+                `guestId: Checkin ${assign.checkinId} is already assigned to Guest ${newCheckin.guestId}`,
+                "CheckinServices.reassign"
+            );
+        }
+
+        // Set up updates and persist them
+        const oldUpdate = {
+            comments: null,
+            guestId: null,
+            paymentAmount: null,
+            paymentType: null,
+            showerTime: null,
+            wakeupTime: null,
+        }
+        await this.update(facilityId, checkinId, oldUpdate);
+        const newUpdate = {
+            comments: assign.comments,
+            guestId: oldCheckin.guestId, // Reassigning the same Guest
+            paymentAmount: assign.paymentAmount,
+            paymentType: assign.paymentType,
+            showerTime: assign.showerTime,
+            wakeupTime: assign.wakeupTime,
+        }
+        // @ts-ignore - we already verified assign.checkinId
+        return await this.update(facilityId, assign.checkinId, newUpdate);
 
     }
 

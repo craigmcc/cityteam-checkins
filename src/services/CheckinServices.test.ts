@@ -17,6 +17,7 @@ import {fromDateObject, toDateObject} from "../util/Dates";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import * as Times from "../util/Times";
+import FacilityServices from "./FacilityServices";
 
 // Test Specifications -------------------------------------------------------
 
@@ -138,8 +139,31 @@ describe("CheckinServices Functional Tests", () => {
 
         })
 
-        it.skip("should fail on already assigned Guest", async () => {
-            // TODO - should fail on already assigned Guest
+        it("should fail on already assigned checkinDate+guestId", async () => {
+
+            // This test depends on deep knowledge of the seed data!
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const checkins = await FacilityServices.checkins(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            })
+            expect(checkins[0].guestId).to.exist;
+            expect(checkins[1].guestId).to.not.exist;
+            const INPUT = {
+                comments: "Assign comment",
+                guestId: checkins[0].guestId,
+            }
+
+            try {
+                await CheckinServices.assign(facility.id, checkins[1].id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(`guestId: Guest ${INPUT.guestId} is already assigned on date ${checkins[1].checkinDate}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
         })
 
         it("should fail on invalid ID", async () => {
@@ -419,8 +443,32 @@ describe("CheckinServices Functional Tests", () => {
 
     describe("CheckinServices.insert()", () => {
 
-        it.skip("should fail on already assigned checkinDate+guestId", async () => {
-            // TODO - already assigned checkinDate+guestId
+        it("should fail on already assigned checkinDate+guestId", async () => {
+
+            // This test depends on deep knowledge of the seed data!
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+            const checkins = await FacilityServices.checkins(facility.id, {
+                date: SeedData.CHECKIN_DATE_ONE
+            })
+            expect(checkins[0].guestId).to.exist;
+            const INPUT = {
+                checkinDate: SeedData.CHECKIN_DATE_ONE,
+                facilityId: facility.id,
+                guestId: checkins[0].guestId,
+                matNumber: checkins.length + 1,
+            }
+
+            try {
+                await CheckinServices.insert(facility.id, INPUT);
+                expect.fail(`Should have thrown BadRequest`);
+            } catch (error) {
+                if (error instanceof BadRequest) {
+                    expect(error.message).to.include(`guestId: Guest ${INPUT.guestId} is already assigned on date ${INPUT.checkinDate}`);
+                } else {
+                    expect.fail(`Should not have thrown '${error}'`);
+                }
+            }
+
         })
 
         it("should fail on duplicate checkinDate+matNumber", async () => {

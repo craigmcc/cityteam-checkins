@@ -41,6 +41,23 @@ export const validateAccessTokenTokenUnique
     }
 }
 
+export const validateCheckinGuestUnique
+    = async (facilityId: number, checkinId: number | null, checkinDate: Date, guestId: number) =>
+{
+    let options: any = {
+        where: {
+            checkinDate: checkinDate,
+            facilityId: facilityId,
+            guestId: guestId,
+        }
+    };
+    if (checkinId) {
+        options.where.id = { [Op.ne]: checkinId }
+    }
+    const results = await Checkin.findAll(options);
+    return (results.length === 0);
+}
+
 export const validateCheckinKeyUnique
     = async (checkin: Checkin): Promise<boolean> =>
 {

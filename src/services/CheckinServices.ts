@@ -19,6 +19,7 @@ import {BadRequest, NotFound, ServerError} from "../util/HttpErrors";
 import MatsList from "../util/MatsList";
 import {appendPaginationOptions} from "../util/QueryParameters";
 import * as SortOrder from "../util/SortOrders";
+import {validateCheckinGuestUnique} from "../util/AsyncValidators";
 
 // Public Objects ------------------------------------------------------------
 
@@ -62,6 +63,7 @@ class CheckinServices extends AbstractChildServices<Checkin> {
     }
 
     public async insert(facilityId: number, checkin: any): Promise<Checkin> {
+
         const facility = await Facility.findByPk(facilityId);
         if (!facility) {
             throw new NotFound(
@@ -70,6 +72,15 @@ class CheckinServices extends AbstractChildServices<Checkin> {
             );
         }
         checkin.facilityId = facilityId; // No cheating
+        if (checkin.guestId) {
+            if (!(await validateCheckinGuestUnique(facility.id, null, checkin.checkinDate, checkin.guestId))) {
+                throw new BadRequest(
+                    `guestId: Guest ${checkin.guestId} is already assigned on date ${checkin.checkinDate}`,
+                    "CheckinServices.insert"
+                );
+            }
+        }
+
         try {
             return await Checkin.create(checkin, {
                 fields: FIELDS,
@@ -196,6 +207,13 @@ class CheckinServices extends AbstractChildServices<Checkin> {
         if (!guest) {
             throw new NotFound(
                 `guestId: Missing Guest ${assign.guestId}`,
+                "CheckinServices.assign"
+            );
+        }
+        // @ts-ignore - already checked assign.guestId
+        if (!(await validateCheckinGuestUnique(facility.id, checkinId, checkin.checkinDate, assign.guestId))) {
+            throw new BadRequest(
+                `guestId: Guest ${guest.id} is already assigned on date ${checkin.checkinDate}`,
                 "CheckinServices.assign"
             );
         }

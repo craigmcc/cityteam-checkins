@@ -16,8 +16,10 @@ import {
 // Internal Modules ----------------------------------------------------------
 
 import OAuthOrchestrator from "./OAuthOrchestrator";
+import Facility from "../models/Facility";
 import {Forbidden} from "../util/HttpErrors";
 import logger from "../util/ServerLogger";
+import FacilityServices from "../services/FacilityServices";
 
 const AUTHORIZATION_HEADER = "Authorization";
 const NODE_ENV: string | undefined = process.env.NODE_ENV;
@@ -87,7 +89,7 @@ export const requireAdmin: RequestHandler =
                     "OAuthMiddleware.requireAdmin"
                 );
             }
-            const required = mapFacilityId(req) + ":admin";
+            const required = (await mapFacilityId(req)) + ":admin";
             await authorizeToken(token, required);
             res.locals.token = token;
             next();
@@ -158,7 +160,7 @@ export const requireRegular: RequestHandler =
                     "OAuthMiddleware.requireRegular"
                 );
             }
-            const required = mapFacilityId(req) + ":regular";
+            const required = (await mapFacilityId(req)) + ":regular";
             await authorizeToken(token, required);
             res.locals.token = token;
             next();
@@ -234,15 +236,15 @@ const extractToken = (req: Request) : string | null => {
     return fields[1];
 }
 
-// TODO - need to dynamically load the facilityId->scope information
-// TODO - and keep it up to date
+// TODO - keep it up to date when facilities info changes
 const mapping = new Map<number, string>();
-mapping.set(1, "phi");
-mapping.set(2, "oak");
-mapping.set(3, "pdx");
-mapping.set(4, "sfo");
-mapping.set(5, "sjc");
-mapping.set(6, "test");
+
+const mapFacilitiesLoad = async (): Promise<void> => {
+    const facilities = await FacilityServices.all();
+    facilities.forEach(facility => {
+        mapping.set(facility.id, facility.scope);
+    })
+}
 
 /**
  * Map the libraryId parameter on this request to a corresponding scope value
@@ -252,12 +254,15 @@ mapping.set(6, "test");
  *
  * @returns scope value to be included in the authorize request.
  */
-const mapFacilityId = (req: Request): string => {
+const mapFacilityId = async (req: Request): Promise<string> => {
+    if (mapping.size === 0) {
+        await mapFacilitiesLoad();
+    }
     const facilityId: string | null = req.params.facilityId;
     if (!facilityId) {
         return "notincluded";
     }
-    const scope: string | undefined = mapping.get(parseInt(facilityId));
+    const scope: string | undefined = mapping.get(parseInt(facilityId, 10));
     if (!scope) {
         return "notknown";
     }

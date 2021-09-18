@@ -28,10 +28,12 @@ export const AUTHORIZATION = "Authorization"; // HTTP header name
 /**
  * Return an authenticated OAuth bearer token for the specified user,
  * in the form to be transmitted in an HTTP "Authorization" header.
+ * If the caller wishes to use this header value more than once, they
+ * should cache it locally.
  *
  * @param username Username of the user to be authenticated
  */
-export const authorization = async (username: string, scope?: string): Promise<string> => {
+export const authorization = async (username: string): Promise<string> => {
     const user = await lookupUser(username);
     const request: PasswordTokenRequest = {
         grant_type: "password",

@@ -90,6 +90,7 @@ export const requireAdmin: RequestHandler =
                 );
             }
             const required = (await mapFacilityId(req)) + ":admin";
+            await authorizeToken(token, required);
             res.locals.token = token;
             next();
         } else {

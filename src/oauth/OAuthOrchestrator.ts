@@ -4,6 +4,8 @@
 
 // External Modules ----------------------------------------------------------
 
+const customEnv = require("custom-env");
+customEnv.env(true);
 import {Orchestrator} from "@craigmcc/oauth-orchestrator";
 
 // Internal Modules ----------------------------------------------------------

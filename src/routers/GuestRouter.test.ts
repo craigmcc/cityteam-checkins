@@ -4,6 +4,10 @@
 
 // External Modules ----------------------------------------------------------
 
+// Unfortunately, this is required on any test for superuser access
+const customEnv = require("custom-env");
+customEnv.env(true);
+
 const chai = require("chai");
 const expect = chai.expect;
 import chaiHttp = require("chai-http");
@@ -39,6 +43,19 @@ describe("GuestRouter Functional Tests", () => {
 
         const PATH = "/api/guests/:facilityId";
 
+        it("should fail for other facility admin", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
+
+            const response = await chai.request(app)
+                .get(PATH.replace(":facilityId", "" + facility.id))
+                .set(AUTHORIZATION, await authorization(SeedData.USER_USERNAME_FIRST_ADMIN));
+            expect(response).to.have.status(FORBIDDEN);
+            expect(response).to.be.json;
+            expect(response.body.message).to.include("Required scope not authorized");
+
+        })
+
         it("should fail for other facility regular", async () => {
 
             const facility = await lookupFacility(SeedData.FACILITY_NAME_SECOND);
@@ -52,8 +69,17 @@ describe("GuestRouter Functional Tests", () => {
 
         })
 
-        it.skip("should pass for current Facility admin", async () => {
-            // TODO - should pass for current Facility admin (admin should inherit regular)
+        it("should pass for current Facility admin", async () => {
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+
+            const response = await chai.request(app)
+                .get(PATH.replace(":facilityId", "" + facility.id))
+                .set(AUTHORIZATION, await authorization(SeedData.USER_USERNAME_FIRST_ADMIN));
+            expect(response).to.have.status(OK);
+            expect(response).to.be.json;
+            expect(response.body.length).to.be.greaterThan(0);
+
         })
 
         it("should pass for current Facility regular", async () => {
@@ -69,8 +95,20 @@ describe("GuestRouter Functional Tests", () => {
 
         })
 
+        // Unfortunately this works individually, but not when you do "npm run test"
+        // because the SUPERUSER_SCOPE environment variable is not picked up properly
+        // by OAuthOrchestrator for some reason.
         it.skip("should pass for superuser", async () => {
-            // TODO - should pass for current Facility admin (admin should inherit regular)
+
+            const facility = await lookupFacility(SeedData.FACILITY_NAME_FIRST);
+
+            const response = await chai.request(app)
+                .get(PATH.replace(":facilityId", "" + facility.id))
+                .set(AUTHORIZATION, await authorization(SeedData.USER_USERNAME_SUPERUSER));
+            expect(response).to.have.status(OK);
+            expect(response).to.be.json;
+            expect(response.body.length).to.be.greaterThan(0);
+
         })
 
     })

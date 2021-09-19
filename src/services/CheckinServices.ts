@@ -218,8 +218,6 @@ class CheckinServices extends AbstractChildServices<Checkin> {
             );
         }
 
-        // TODO - verify not checked in elsewhere on this date
-
         // Update and persist the relevant information
         const update = {
             comments: assign.comments,

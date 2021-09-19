@@ -17,7 +17,7 @@ import {
     removeOperation, schemaRef, updateOperation
 } from "./Common";
 import {
-    ACTIVE, API_PREFIX, COMMENTS,
+    ACTIVE, API_PREFIX, CHECKIN, COMMENTS,
     FACILITY, FACILITY_ID, FAVORITE,
     FIRST_NAME, GUEST, GUEST_ID,
     ID, LAST_NAME, MATCH_ACTIVE,
@@ -82,7 +82,7 @@ export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
         .addProperty(ID, idSchema(GUEST))
         .addProperty(ACTIVE, activeSchema(GUEST))
-        // TODO - checkins
+        .addProperty(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
         .addProperty(COMMENTS, commentsSchema(GUEST))
         .addProperty(FACILITY.toLowerCase(), schemaRef(FACILITY))
         .addProperty(FACILITY_ID, facilityIdSchema(GUEST))

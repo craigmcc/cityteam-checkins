@@ -10,6 +10,7 @@ const expect = chai.expect;
 // Internal Modules ----------------------------------------------------------
 
 import AccessTokenServices from "./AccessTokenServices";
+import AccessToken from "../models/AccessToken";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupUser} from "../util/TestUtils";
@@ -245,7 +246,48 @@ describe("AccessTokenServices Functional Tests", () => {
 
     })
 
-    // TODO - purge()
+    describe("AccessTokenServices.purge()", () => {
+
+        it("should only purge old expired AccessTokens", async () => {
+
+            const ONE_DAY = 24 * 60 * 60 * 1000; // One day (milliseconds)
+            const ONE_HOUR = 60 * 60 * 1000;     // One hour (milliseconds)
+            const user = await lookupUser(SeedData.USER_USERNAME_FIRST_REGULAR);
+            await AccessToken.bulkCreate([
+                {
+                    expires: new Date(new Date().getTime() - (ONE_DAY * 2)),
+                    scope: "oldertoken",
+                    token: "two-days-old",
+                    userId: user.id,
+                },
+                {
+                    expires: new Date(new Date().getTime() - (ONE_DAY * 3)),
+                    scope: "oldertoken",
+                    token: "three-days-old",
+                    userId: user.id,
+                },
+                {
+                    expires: new Date(new Date().getTime() - ONE_HOUR),
+                    scope: "newertoken",
+                    token: "one-hour-old",
+                    userId: user.id,
+                }
+            ])
+            const originals = await AccessToken.findAll({
+                where: { userId: user.id }
+            });
+            expect(originals.length).to.equal(3);
+
+            await AccessTokenServices.purge();
+            const leftovers = await AccessToken.findAll({
+                where: { userId: user.id }
+            });
+            expect(leftovers.length).to.equal(1);
+            expect(leftovers[0].scope).to.equal("newertoken");
+
+        })
+
+    })
 
     describe("AccessTokenServices.remove()", () => {
 

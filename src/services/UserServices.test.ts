@@ -273,7 +273,7 @@ describe("UserServices Functional Tests", () => {
 
     describe("UserServices.insert()", () => {
 
-        it("should fail on duplicate username", async () => { // TODO - weirdness
+        it("should fail on duplicate username", async () => {
 
             const EXISTING = await lookupUser(SeedData.USER_USERNAME_SUPERUSER);
             const INPUT = {

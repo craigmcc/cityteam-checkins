@@ -54,26 +54,26 @@ describe("FacilityServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const OUTPUTS = await FacilityServices.all({
+            const facilities = await FacilityServices.all({
                 withCheckins: "",
                 withGuests: "",
                 withTemplates: "",
             });
-            OUTPUTS.forEach(OUTPUT => {
-                expect(OUTPUT.checkins).to.exist;
-                expect(OUTPUT.checkins.length).to.be.greaterThan(0);
-                OUTPUT.checkins.forEach(checkin => {
-                    expect(checkin.facilityId).to.equal(OUTPUT.id);
+            facilities.forEach(facility => {
+                expect(facility.checkins).to.exist;
+                expect(facility.checkins.length).to.be.greaterThan(0);
+                facility.checkins.forEach(checkin => {
+                    expect(checkin.facilityId).to.equal(facility.id);
                 });
-                expect(OUTPUT.guests).to.exist;
-                expect(OUTPUT.guests.length).to.be.greaterThan(0);
-                OUTPUT.guests.forEach(guest => {
-                    expect(guest.facilityId).to.equal(OUTPUT.id);
+                expect(facility.guests).to.exist;
+                expect(facility.guests.length).to.be.greaterThan(0);
+                facility.guests.forEach(guest => {
+                    expect(guest.facilityId).to.equal(facility.id);
                 });
-                expect(OUTPUT.templates).to.exist;
-                expect(OUTPUT.templates.length).to.be.greaterThan(0);
-                OUTPUT.templates.forEach(template => {
-                    expect(template.facilityId).to.equal(OUTPUT.id);
+                expect(facility.templates).to.exist;
+                expect(facility.templates.length).to.be.greaterThan(0);
+                facility.templates.forEach(template => {
+                    expect(template.facilityId).to.equal(facility.id);
                 });
             });
 
@@ -147,13 +147,24 @@ describe("FacilityServices Functional Tests", () => {
 
         it("should pass on included children", async () => {
 
-            const OUTPUTS = await FacilityServices.all({
+            const facilities = await FacilityServices.all({
                 withCheckins: "",
                 withGuests: "",
                 withTemplates: "",
             });
-            OUTPUTS.forEach(async OUTPUT => {
-                // TODO - check each OUTPUT for appropriate children
+            facilities.forEach(async facility => {
+                expect(facility.checkins).to.exist;
+                facility.checkins.forEach(checkin => {
+                    expect(checkin.facilityId).to.equal(facility.id);
+                });
+                expect(facility.guests).to.exist;
+                facility.guests.forEach(guest => {
+                    expect(guest.facilityId).to.equal(facility.id);
+                });
+                expect(facility.templates).to.exist;
+                facility.templates.forEach(template => {
+                    expect(template.facilityId).to.equal(facility.id);
+                })
             });
 
         })
@@ -201,7 +212,18 @@ describe("FacilityServices Functional Tests", () => {
 
             INPUTS.forEach(async INPUT => {
                 const OUTPUT = await FacilityServices.find(INPUT.id);
-                // TODO - check each OUTPUT for appropriate children
+                expect(OUTPUT.checkins).to.exist;
+                OUTPUT.checkins.forEach(checkin => {
+                    expect(checkin.facilityId).to.equal(INPUT.id);
+                });
+                expect(OUTPUT.guests).to.exist;
+                OUTPUT.guests.forEach(guest => {
+                    expect(guest.facilityId).to.equal(INPUT.id);
+                });
+                expect(OUTPUT.templates).to.exist;
+                OUTPUT.templates.forEach(template => {
+                    expect(template.facilityId).to.equal(INPUT.id);
+                })
             })
 
         })

@@ -4,7 +4,6 @@
 
 // External Modules ----------------------------------------------------------
 
-import UserServices from "./UserServices";
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -12,6 +11,7 @@ const expect = chai.expect;
 // Internal Modules ----------------------------------------------------------
 
 import RefreshTokenServices from "./RefreshTokenServices";
+import RefreshToken from "../models/RefreshToken";
 import {BadRequest, NotFound} from "../util/HttpErrors";
 import * as SeedData from "../util/SeedData";
 import {loadTestData, lookupUser} from "../util/TestUtils";
@@ -247,7 +247,49 @@ describe("RefreshTokenServices Functional Tests", () => {
 
     })
 
-    // TODO - purge()
+    describe("RefreshTokenServices.purge()", () => {
+
+        it("should only purge old expired RefreshTokens", async () => {
+
+            const ONE_DAY = 24 * 60 * 60 * 1000; // One day (milliseconds)
+            const ONE_HOUR = 60 * 60 * 1000;     // One hour (milliseconds)
+            const user = await lookupUser(SeedData.USER_USERNAME_SECOND_REGULAR);
+            await RefreshToken.bulkCreate([
+                {
+                    accessToken: "old1",
+                    expires: new Date(new Date().getTime() - (ONE_DAY * 2)),
+                    token: "two-days-old",
+                    userId: user.id,
+                },
+                {
+                    accessToken: "old2",
+                    expires: new Date(new Date().getTime() - (ONE_DAY * 3)),
+                    token: "three-days-old",
+                    userId: user.id,
+                },
+                {
+                    accessToken: "new1",
+                    expires: new Date(new Date().getTime() - ONE_HOUR),
+                    token: "one-hour-old",
+                    userId: user.id,
+                }
+            ])
+            const originals = await RefreshToken.findAll({
+                where: { userId: user.id }
+            });
+            expect(originals.length).to.equal(3);
+
+            await RefreshTokenServices.purge();
+            const leftovers = await RefreshToken.findAll({
+                where: { userId: user.id }
+            });
+            expect(leftovers.length).to.equal(1);
+            expect(leftovers[0].accessToken).to.equal("new1");
+
+        })
+
+    })
+
 
     describe("RefreshTokenServices.remove()", () => {
 

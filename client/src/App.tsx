@@ -1,25 +1,71 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// App -----------------------------------------------------------------------
 
+// Overall implementation of the entire client application.
+
+// External Modules ----------------------------------------------------------
+
+import React from 'react';
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+//import NavDropdown from "react-bootstrap/cjs/NavDropdown";
+import NavItem from "react-bootstrap/NavItem";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {LinkContainer} from "react-router-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+// Internal Modules ----------------------------------------------------------
+
+import HomeView from "./views/HomeView";
+import OpenApiView from "./views/OpenApiView";
+
+// Component Details ---------------------------------------------------------
+
+// TODO - will need to surround <Router/> with context providers
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Router>
+
+        <Navbar
+            bg="info"
+            className="mb-3"
+            expand="lg"
+            sticky="top"
+            variant="dark"
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+          <Navbar.Brand>
+            <img
+                alt="CityTeam Logo"
+                height={66}
+                src="./CityTeamDarkBlue.png"
+                width={160}
+            />
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-brand"/>
+
+          <Navbar.Collapse id="basic-navbar-brand">
+            <Nav className="mr-auto">
+              <LinkContainer to="/">
+                <NavItem className="nav-link">Home</NavItem>
+              </LinkContainer>
+              <LinkContainer to="/open-api">
+                <NavItem className="nav-link">OpenAPI Docs</NavItem>
+              </LinkContainer>
+            </Nav>
+          </Navbar.Collapse>
+
+        </Navbar>
+
+        <Switch>
+          <Route exact path="/open-api">
+            <OpenApiView/>
+          </Route>
+          <Route path="/">
+            <HomeView/>
+          </Route>
+        </Switch>
+
+      </Router>
   );
 }
 

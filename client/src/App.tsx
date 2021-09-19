@@ -15,8 +15,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Internal Modules ----------------------------------------------------------
 
-import HomeView from "./views/HomeView";
-import OpenApiView from "./views/OpenApiView";
+import HomeView from "./components/views/HomeView";
+import OpenApiView from "./components/views/OpenApiView";
 
 // Component Details ---------------------------------------------------------
 

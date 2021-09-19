@@ -16,7 +16,7 @@ import {Levels} from "../types";
 
 // Public Objects ------------------------------------------------------------
 
-export let LOG_LEVEL: number = 30;  // Default to info level
+export let LOG_LEVEL: number = 20;  // Default to debug level (TODO - go back to info later)
 
 export const logger = require("pino")({
     base: null, // Remove "name", "pid", and "hostname" since we do not need them

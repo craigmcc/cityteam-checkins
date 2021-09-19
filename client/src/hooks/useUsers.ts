@@ -42,6 +42,11 @@ const useUsers = (props: Props): State => {
 
     useEffect(() => {
 
+        logger.debug({
+            context: "useUsers.useEffect",
+            props: props,
+        });
+
         const fetchUsers = async () => {
 
             setError(null);
@@ -99,11 +104,12 @@ const useUsers = (props: Props): State => {
 
     }, [props])
 
-    return ({
+    const state: State = {
         error: error ? error : null,
         loading: loading,
         users: users,
-    });
+    }
+    return state;
 
 }
 

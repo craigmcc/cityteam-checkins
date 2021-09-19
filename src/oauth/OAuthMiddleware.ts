@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import {OAuthError} from "@craigmcc/oauth-orchestrator";
+import {InvalidScopeError, OAuthError} from "@craigmcc/oauth-orchestrator";
 import {
     ErrorRequestHandler,
     NextFunction,
@@ -90,7 +90,6 @@ export const requireAdmin: RequestHandler =
                 );
             }
             const required = (await mapFacilityId(req)) + ":admin";
-            await authorizeToken(token, required);
             res.locals.token = token;
             next();
         } else {
@@ -149,6 +148,7 @@ export const requireNotProduction: RequestHandler =
 
 /**
  * Require "regular" scope (for a specific Facility) to handle this request.
+ * If the token has "admin" scope for this Facility, it will also pass.
  */
 export const requireRegular: RequestHandler =
     async (req: Request, res: Response, next: NextFunction) => {
@@ -161,7 +161,15 @@ export const requireRegular: RequestHandler =
                 );
             }
             const required = (await mapFacilityId(req)) + ":regular";
-            await authorizeToken(token, required);
+            try {
+                await authorizeToken(token, required);
+            } catch (error) {
+                if (error instanceof InvalidScopeError) {
+                    await authorizeToken(token, required.replace(":regular", ":admin"));
+                } else {
+                    throw error;
+                }
+            }
             res.locals.token = token;
             next();
         } else {

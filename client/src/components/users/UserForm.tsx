@@ -80,31 +80,31 @@ const UserForm = (props: Props) => {
     // NOTE - there is no server-side equivalent for this because there is
     // not an individual logged-in user performing the request
     // TODO - needs LoginContext to provide validateScope() method
-/*
     const validateRequestedScope = (requested: string | undefined): boolean => {
+        return true; // TODO
+/*
         if (!requested || ("" === requested)) {
             return true;  // Not asking for scope but should be required
         } else {
             // TODO - deal with log:<level> pseudo-scopes
             return loginContext.validateScope(requested);
         }
-    }
 */
+    }
 
     const validationSchema = () => {
         return Yup.object().shape({
             active: Yup.boolean(),
             name: Yup.string()
                 .required("Name is required"),
-            password: Yup.string(),
+            password: Yup.string(), // TODO - required on add, optional on edit
             scope: Yup.string()
                 .required("Scope is required")
-                /*
                 .test("allowed-scope",
                     "You are not allowed to assign a scope you do not possess",
                     function(value) {
                         return validateRequestedScope(value);
-                    })*/,
+                    }),
             username: Yup.string()
                 .required("Username is required")
                 .test("unique-username",

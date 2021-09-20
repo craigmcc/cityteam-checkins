@@ -11,7 +11,7 @@ import {toAccessTokens, toRefreshTokens} from "../util/ToModelTypes";
 
 // Public Objects ------------------------------------------------------------
 
-export const USERS_BASE = "/api/users";
+export const USERS_BASE = "/users";
 
 class User extends Model {
 

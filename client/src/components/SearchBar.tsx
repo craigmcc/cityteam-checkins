@@ -18,7 +18,6 @@ export interface Props {
     disabled?: boolean;             // Should element be disabled? [false]
     handleChange?: HandleValue;     // Handle (value) on each change [no handler]
     handleValue?: HandleValue;      // Handle (value) on enter [no handler]
-    htmlSize?: number;              // Number of characters to show [50]
     initialValue?: string;          // Initial value to display [""]
     label?: string;                 // Element label [none]
     placeholder?: string;           // Placeholder text [none]
@@ -57,7 +56,6 @@ const SearchBar = (props: Props) => {
             <Form.Control
                 autoFocus={props.autoFocus ? props.autoFocus : undefined}
                 disabled={props.disabled ? props.disabled : undefined}
-                htmlSize={props.htmlSize ? props.htmlSize : 50}
                 id="searchBar"
                 onChange={onChange}
                 onKeyDown={onKeyDown}

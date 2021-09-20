@@ -27,7 +27,6 @@ import {listValue} from "../../util/Transformations";
 
 export interface Props {
     handleAdd: OnAction;                // Handle request to add a User
-    handleEdit: HandleUser;             // Handle request to edit a User
     handleSelect: HandleUser;           // Handle request to select a User
 }
 
@@ -68,16 +67,16 @@ const UsersList = (props: Props) => {
     return (
         <Container fluid id="UsersList">
 
-            <Row className="ml-1 mr-1 mb-3">
-                <Col className="col-8">
+            <Row className="mb-3">
+                <Col className="col-10">
                     <SearchBar
                         autoFocus
                         handleChange={handleChange}
-                        label="Search For Volumes:"
+                        label="Search For Users:"
                         placeholder="Search by all or part of name"
                     />
                 </Col>
-                <Col className="col-2">
+                <Col className="col-1">
                     <Pagination
                         currentPage={currentPage}
                         lastPage={(usersState.users.length === 0) ||
@@ -87,7 +86,7 @@ const UsersList = (props: Props) => {
                         variant="secondary"
                     />
                 </Col>
-                <Col className="col-2">
+                <Col className="col-1">
                     <Button
                         onClick={props.handleAdd}
                         size="sm"

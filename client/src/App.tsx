@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Internal Modules ----------------------------------------------------------
 
+import UsersView from "./components/users/UsersView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 
@@ -48,6 +49,9 @@ function App() {
               <LinkContainer to="/">
                 <NavItem className="nav-link">Home</NavItem>
               </LinkContainer>
+              <LinkContainer to="/users">
+                <NavItem className="nav-link">Users</NavItem>
+              </LinkContainer>
               <LinkContainer to="/open-api">
                 <NavItem className="nav-link">OpenAPI Docs</NavItem>
               </LinkContainer>
@@ -60,6 +64,9 @@ function App() {
           <Route exact path="/open-api">
             <OpenApiView/>
           </Route>
+            <Route exact path="/users">
+                <UsersView/>
+            </Route>
           <Route path="/">
             <HomeView/>
           </Route>

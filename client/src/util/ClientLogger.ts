@@ -14,6 +14,24 @@
 import LogClient from "../clients/LogClient";
 import {Levels} from "../types";
 
+// Private Objects -----------------------------------------------------------
+
+// Map log level names to log level values
+const LOG_LEVEL_MAP = new Map<string, number>();
+LOG_LEVEL_MAP.set(Levels.DEBUG, 20);
+LOG_LEVEL_MAP.set(Levels.ERROR, 50);
+LOG_LEVEL_MAP.set(Levels.FATAL, 60);
+LOG_LEVEL_MAP.set(Levels.INFO, 30);
+LOG_LEVEL_MAP.set(Levels.TRACE, 10);
+LOG_LEVEL_MAP.set(Levels.WARN, 40);
+
+// Transmit the specified object so that it can be logged (if level is loggable)
+const write = (object: any, level: number): void => {
+    if (level >= LOG_LEVEL) {
+        object.level = level;
+        LogClient.log(object);
+    }
+}
 // Public Objects ------------------------------------------------------------
 
 export let LOG_LEVEL: number = 20;  // Default to debug level (TODO - go back to info later)
@@ -47,21 +65,3 @@ setLevel("info"); // Set the default log level
 
 export default logger;
 
-// Private Objects -----------------------------------------------------------
-
-// Map log level names to log level values
-const LOG_LEVEL_MAP = new Map<string, number>();
-LOG_LEVEL_MAP.set(Levels.DEBUG, 20);
-LOG_LEVEL_MAP.set(Levels.ERROR, 50);
-LOG_LEVEL_MAP.set(Levels.FATAL, 60);
-LOG_LEVEL_MAP.set(Levels.INFO, 30);
-LOG_LEVEL_MAP.set(Levels.TRACE, 10);
-LOG_LEVEL_MAP.set(Levels.WARN, 40);
-
-// Transmit the specified object so that it can be logged (if level is loggable)
-const write = (object: any, level: number): void => {
-    if (level >= LOG_LEVEL) {
-        object.level = level;
-        LogClient.log(object);
-    }
-}

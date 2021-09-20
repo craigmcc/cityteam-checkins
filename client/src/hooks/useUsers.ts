@@ -102,7 +102,8 @@ const useUsers = (props: Props): State => {
 
         fetchUsers();
 
-    }, [props])
+    }, [props, props.active, props.currentPage, props.pageSize, props.username,
+        props.withAccessTokens, props.withRefreshTokens]);
 
     const state: State = {
         error: error ? error : null,

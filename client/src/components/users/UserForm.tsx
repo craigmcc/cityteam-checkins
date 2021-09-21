@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {/*useContext, */useState} from "react";
+import React, {/*useContext, */useEffect, useState} from "react";
 import {Formik,FormikHelpers,FormikValues} from "formik";
 import Button from "react-bootstrap/button";
 import Col from "react-bootstrap/Col";
@@ -19,6 +19,8 @@ import * as Yup from "yup";
 import {HandleUser} from "../../types";
 import User from "../../models/User";
 import {validateUserUsernameUnique} from "../../util/AsyncValidators";
+import logger from "../../util/ClientLogger";
+import {toUser} from "../../util/ToModelTypes";
 import {toEmptyStrings, toNullValues} from "../../util/Transformations";
 
 // Incoming Properties ------------------------------------------------------
@@ -42,11 +44,19 @@ const UserForm = (props: Props) => {
     const [initialValues] = useState(toEmptyStrings(props.user));
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
+    useEffect(() => {
+        logger.debug({
+            context: "UserForm.useEffect",
+            user: props.user,
+            values: initialValues,
+        });
+    }, [props.user, initialValues]);
+
     const handleSubmit = (values: FormikValues, actions: FormikHelpers<FormikValues>): void => {
         if (adding) {
-            props.handleInsert(toUser(values));
+            props.handleInsert(toUser(toNullValues(values)));
         } else {
-            props.handleUpdate(toUser(values));
+            props.handleUpdate(toUser(toNullValues(values)));
         }
     }
 
@@ -61,20 +71,6 @@ const UserForm = (props: Props) => {
     const onConfirmPositive = (): void => {
         setShowConfirm(false);
         props.handleRemove(props.user)
-    }
-
-    const toUser = (values: FormikValues): User => {
-        const nulled = toNullValues(values);
-        const result = new User({
-            name: nulled.name,
-            password: nulled.password,
-            scope: nulled.scope,
-            username: nulled.username,
-        });
-        if (nulled.active !== undefined) {
-            result.active = nulled.active;
-        }
-        return result;
     }
 
     // NOTE - there is no server-side equivalent for this because there is
@@ -110,7 +106,7 @@ const UserForm = (props: Props) => {
                 .test("unique-username",
                     "That username is already in use",
                     async function (this) {
-                        return await validateUserUsernameUnique(toUser(this.parent))
+                        return await validateUserUsernameUnique(toUser(toNullValues(this.parent)))
                     }),
         });
     }

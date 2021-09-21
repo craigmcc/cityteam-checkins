@@ -15,7 +15,7 @@ const HomeView = () => {
 
     return (
         <Container fluid id="HomeView">
-            <p><strong>Welcome to the CityTeam Guests Checkin App!</strong></p>
+            <span><strong>Welcome to the CityTeam Guests Checkin App!</strong></span>
         </Container>
     )
 

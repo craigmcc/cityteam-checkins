@@ -34,7 +34,6 @@ const CheckBox = (props: Props) => {
 
     const onChange: OnChangeInput = (event): void => {
         const theValue = event.target.checked;
-        console.log("New value is", theValue);
         setCurrentValue(theValue);
         if (props.handleChange) {
             props.handleChange(theValue);

@@ -72,7 +72,7 @@ const useFetchUser = (props: Props): State => {
                     user.refreshTokens = Sorters.REFRESH_TOKENS(user.refreshTokens);
                 }
                 logger.debug({
-                    context: "useUser.fetchUser",
+                    context: "useFetchUser.fetchUser",
                     userId: props.userId ? props.userId : undefined,
                     username: props.username ? props.username : undefined,
                     user: Abridgers.USER(user),
@@ -80,7 +80,7 @@ const useFetchUser = (props: Props): State => {
 
             } catch (error) {
                 logger.error({
-                    context: "useUser.fetchUser",
+                    context: "useFetchUser.fetchUser",
                     userId: props.userId ? props.userId : undefined,
                     username: props.username ? props.username : undefined,
                     error: error,

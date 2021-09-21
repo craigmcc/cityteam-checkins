@@ -72,7 +72,7 @@ const useFetchUsers = (props: Props): State => {
                     }
                 });
                 logger.debug({
-                    context: "useUsers.fetchUsers",
+                    context: "useFetchUsers.fetchUsers",
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
                     username: props.username ? props.username : undefined,
@@ -81,7 +81,7 @@ const useFetchUsers = (props: Props): State => {
 
             } catch (error) {
                 logger.error({
-                    context: "useUsers.fetchUsers",
+                    context: "useFetchUsers.fetchUsers",
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
                     username: props.username ? props.username : undefined,
@@ -97,7 +97,7 @@ const useFetchUsers = (props: Props): State => {
 
         fetchUsers();
 
-    }, [/*props, */props.active, props.currentPage, props.pageSize, props.username,
+    }, [props.active, props.currentPage, props.pageSize, props.username,
         props.withAccessTokens, props.withRefreshTokens]);
 
     return {

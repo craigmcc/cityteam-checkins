@@ -52,10 +52,6 @@ const UsersList = (props: Props) => {
     }, []);
 
     const handleActive: HandleBoolean = (theActive) => {
-        logger.trace({
-            context: "UsersList.handleActive",
-            active: theActive,
-        });
         setActive(theActive);
     }
 

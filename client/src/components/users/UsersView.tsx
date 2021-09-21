@@ -15,8 +15,8 @@ import Row from "react-bootstrap/Row";
 import UserForm from "./UserForm";
 import UsersList from "./UsersList";
 import {HandleUser, OnAction/*, Scopes*/} from "../../types";
+import useMutateUser from "../../hooks/useMutateUser";
 import User from "../../models/User";
-//import * as Abridgers from "../../util/Abridgers";
 import logger from "../../util/ClientLogger";
 
 // Component Details ---------------------------------------------------------
@@ -26,7 +26,9 @@ const UsersView = () => {
     const [canRemove/*, setCanRemove*/] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
 
-    // TODO - hook for mutating state
+    const mutateUser = useMutateUser({
+        user: user ? user : new User(),
+    });
 
     useEffect(() => {
 
@@ -34,9 +36,9 @@ const UsersView = () => {
             context: "UsersView.useEffect",
         });
 
-// TODO       setCanRemove(loginContext.validateScope(Scopes.SUPERUSER));
+        // TODO setCanRemove(loginContext.validateScope(Scopes.SUPERUSER));
 
-    }, []); // TODO - add dependencies as needed
+    }, []);
 
     const handleAdd: OnAction = () => {
         setUser(new User({
@@ -49,12 +51,12 @@ const UsersView = () => {
     }
 
     const handleInsert: HandleUser = async (theUser) => {
-//        const inserted = await performInsert(theUser);
+        /*const inserted = */await mutateUser.insert(theUser);
         setUser(null);
     }
 
     const handleRemove: HandleUser = async (theUser) => {
-//        const removed = await performRemove(theUser);
+        /*const removed = */await mutateUser.remove(theUser);
         setUser(null);
     }
 
@@ -63,7 +65,7 @@ const UsersView = () => {
     }
 
     const handleUpdate: HandleUser = async (theUser) => {
-//        const updated = await performUpdate(theUser);
+        /*const updated = */await mutateUser.update(theUser);
         setUser(null);
     }
 
@@ -75,8 +77,8 @@ const UsersView = () => {
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <Col className="text-center text-black">
-                            <span>Select or Create User</span>
+                        <Col className="text-left">
+                            <span><strong>Select or Create User</strong></span>
                         </Col>
                     </Row>
 
@@ -96,14 +98,12 @@ const UsersView = () => {
 
                     <Row className="mb-3 ml-1 mr-1">
                         <Col className="text-left">
-                            <span className="text-black">
                             {(user.id > 0) ? (
-                                <span>Edit Existing</span>
+                                <span><strong>Edit Existing</strong></span>
                             ) : (
-                                <span>Add New</span>
+                                <span><strong>Add New</strong></span>
                             )}
-                                &nbsp;User
-                            </span>
+                            <span><strong>&nbsp;User</strong></span>
                         </Col>
                         <Col className="text-right">
                             <Button
@@ -131,7 +131,6 @@ const UsersView = () => {
 
         </Container>
     )
-
 
 }
 

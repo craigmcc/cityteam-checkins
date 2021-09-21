@@ -18,7 +18,7 @@ class User extends Model {
     constructor(data: any = {}) {
 
         super(data);
-        this.active = data.active ? data.active : true;
+        this.active = (data.active !== undefined) ? data.active : true;
         this.name = data.name ? data.name : null;
         this.password = data.password ? data.password : null;
         this.scope = data.scope ? data.scope : null;

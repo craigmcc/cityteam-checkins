@@ -1,4 +1,4 @@
-// useUser -------------------------------------------------------------------
+// useFetchUser --------------------------------------------------------------
 
 // Custom hook to fetch the specified User object that corresponds to
 // input properties.
@@ -34,7 +34,7 @@ export interface State {
 
 // Component Details ---------------------------------------------------------
 
-const useUser = (props: Props): State => {
+const useFetchUser = (props: Props): State => {
 
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -105,4 +105,4 @@ const useUser = (props: Props): State => {
 
 }
 
-export default useUser;
+export default useFetchUser;

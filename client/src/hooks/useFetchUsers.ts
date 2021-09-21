@@ -1,4 +1,4 @@
-// useUsers ------------------------------------------------------------------
+// useFetchUsers -------------------------------------------------------------
 
 // Custom hook to fetch User objects that correspond to input properties.
 
@@ -34,20 +34,13 @@ export interface State {
 
 // Hook Details --------------------------------------------------------------
 
-const useUsers = (props: Props): State => {
+const useFetchUsers = (props: Props): State => {
 
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
-
-/*
-        logger.info({
-            context: "useUsers.useEffect",
-            props: props,
-        });
-*/
 
         const fetchUsers = async () => {
 
@@ -78,7 +71,7 @@ const useUsers = (props: Props): State => {
                         theUser.refreshTokens = Sorters.REFRESH_TOKENS(theUser.refreshTokens);
                     }
                 });
-                logger.info({
+                logger.debug({
                     context: "useUsers.fetchUsers",
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
@@ -107,13 +100,12 @@ const useUsers = (props: Props): State => {
     }, [/*props, */props.active, props.currentPage, props.pageSize, props.username,
         props.withAccessTokens, props.withRefreshTokens]);
 
-    const state: State = {
+    return {
         error: error ? error : null,
         loading: loading,
         users: users,
-    }
-    return state;
+    };
 
 }
 
-export default useUsers;
+export default useFetchUsers;

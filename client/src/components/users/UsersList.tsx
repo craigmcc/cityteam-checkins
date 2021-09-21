@@ -18,9 +18,7 @@ import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
 import {HandleBoolean, HandleUser, HandleValue, OnAction} from "../../types";
-import useUsers from "../../hooks/useUsers";
-//import User from "../../models/User";
-//import * as Abridgers from "../../util/Abridgers";
+import useFetchUsers from "../../hooks/useFetchUsers";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
 
@@ -40,7 +38,7 @@ const UsersList = (props: Props) => {
     const [pageSize] = useState<number>(25);
     const [searchText, setSearchText] = useState<string>("");
 
-    const usersState = useUsers({
+    const fetchUsers = useFetchUsers({
         active: active,
         currentPage: currentPage,
         pageSize: pageSize,
@@ -48,13 +46,13 @@ const UsersList = (props: Props) => {
     });
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "UserList.useEffect"
         });
     }, []);
 
     const handleActive: HandleBoolean = (theActive) => {
-        logger.info({
+        logger.trace({
             context: "UsersList.handleActive",
             active: theActive,
         });
@@ -96,8 +94,8 @@ const UsersList = (props: Props) => {
                 <Col className="text-right">
                     <Pagination
                         currentPage={currentPage}
-                        lastPage={(usersState.users.length === 0) ||
-                            (usersState.users.length < pageSize)}
+                        lastPage={(fetchUsers.users.length === 0) ||
+                            (fetchUsers.users.length < pageSize)}
                         onNext={onNext}
                         onPrevious={onPrevious}
                         variant="secondary"
@@ -130,7 +128,7 @@ const UsersList = (props: Props) => {
                     </thead>
 
                     <tbody>
-                    {usersState.users.map((user, rowIndex) => (
+                    {fetchUsers.users.map((user, rowIndex) => (
                         <tr
                             className="table-default"
                             key={1000 + (rowIndex * 100)}

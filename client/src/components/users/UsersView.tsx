@@ -30,7 +30,7 @@ const UsersView = () => {
 
     useEffect(() => {
 
-        logger.info({
+        logger.debug({
             context: "UsersView.useEffect",
         });
 

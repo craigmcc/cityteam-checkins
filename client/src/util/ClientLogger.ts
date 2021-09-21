@@ -61,7 +61,7 @@ export const setLevel = (newName: string): void => {
         LOG_LEVEL = newLevel ? newLevel : 30;
     }
 }
-setLevel("info"); // Set the default log level
+setLevel("debug"); // Set the default log level
 
 export default logger;
 

@@ -14,9 +14,10 @@ import Table from "react-bootstrap/Table";
 
 // Internal Modules ----------------------------------------------------------
 
+import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
-import {HandleUser, HandleValue, OnAction} from "../../types";
+import {HandleBoolean, HandleUser, HandleValue, OnAction} from "../../types";
 import useUsers from "../../hooks/useUsers";
 //import User from "../../models/User";
 //import * as Abridgers from "../../util/Abridgers";
@@ -34,7 +35,7 @@ export interface Props {
 
 const UsersList = (props: Props) => {
 
-    const [active/*, setActive*/] = useState<boolean>(false);
+    const [active, setActive] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(25);
     const [searchText, setSearchText] = useState<string>("");
@@ -52,6 +53,14 @@ const UsersList = (props: Props) => {
         });
     }, []);
 
+    const handleActive: HandleBoolean = (theActive) => {
+        logger.info({
+            context: "UsersList.handleActive",
+            active: theActive,
+        });
+        setActive(theActive);
+    }
+
     const handleChange: HandleValue = (theSearchText) => {
         setSearchText(theSearchText);
     }
@@ -67,8 +76,8 @@ const UsersList = (props: Props) => {
     return (
         <Container fluid id="UsersList">
 
-            <Row className="mb-3">
-                <Col className="col-10">
+            <Row className="mb-3 ml-1 mr-1">
+                <Col className="col-6">
                     <SearchBar
                         autoFocus
                         handleChange={handleChange}
@@ -76,7 +85,15 @@ const UsersList = (props: Props) => {
                         placeholder="Search by all or part of username"
                     />
                 </Col>
-                <Col className="col-1">
+                <Col>
+                    <CheckBox
+                        handleChange={handleActive}
+                        id="activeOnly"
+                        initialValue={active}
+                        label="Active Users Only?"
+                    />
+                </Col>
+                <Col className="text-right">
                     <Pagination
                         currentPage={currentPage}
                         lastPage={(usersState.users.length === 0) ||
@@ -86,7 +103,7 @@ const UsersList = (props: Props) => {
                         variant="secondary"
                     />
                 </Col>
-                <Col className="col-1">
+                <Col className="text-right">
                     <Button
                         onClick={props.handleAdd}
                         size="sm"

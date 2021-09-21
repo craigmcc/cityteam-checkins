@@ -73,7 +73,7 @@ const UsersList = (props: Props) => {
                         autoFocus
                         handleChange={handleChange}
                         label="Search For Users:"
-                        placeholder="Search by all or part of name"
+                        placeholder="Search by all or part of username"
                     />
                 </Col>
                 <Col className="col-1">

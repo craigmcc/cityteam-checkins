@@ -75,7 +75,7 @@ const UsersView = () => {
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <Col className="text-center">
+                        <Col className="text-center text-black">
                             <span>Select or Create User</span>
                         </Col>
                     </Row>
@@ -95,13 +95,15 @@ const UsersView = () => {
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <Col className="text-center">
+                        <Col className="text-left">
+                            <span className="text-black">
                             {(user.id > 0) ? (
                                 <span>Edit Existing</span>
                             ) : (
                                 <span>Add New</span>
                             )}
-                            &nbsp;User
+                                &nbsp;User
+                            </span>
                         </Col>
                         <Col className="text-right">
                             <Button

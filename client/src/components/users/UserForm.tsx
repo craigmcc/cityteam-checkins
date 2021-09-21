@@ -144,12 +144,12 @@ const UserForm = (props: Props) => {
                        }) => (
 
                         <Form
-                            className={"mx-auto"}
+                            id="UserForm"
                             noValidate
                             onSubmit={handleSubmit}
                         >
 
-                            <Form.Row id="NameRow">
+                            <Form.Row id="nameRow">
                                 <Form.Group as={Col} controlId="name" id="nameGroup">
                                     <Form.Label>Name:</Form.Label>
                                     <Form.Control
@@ -235,7 +235,7 @@ const UserForm = (props: Props) => {
                                 </Form.Group>
                             </Form.Row>
 
-                            <Form.Row id="activeRow">
+                            <Form.Row className="mb-3" id="activeRow">
                                 <Form.Group as={Col} controlId="active" id="activeGroup">
                                     <Form.Check
                                         feedback={errors.active}
@@ -250,7 +250,7 @@ const UserForm = (props: Props) => {
                             </Form.Row>
 
                             <Row className="mb-3">
-                                <Col className="col-10">
+                                <Col className="col text-left">
                                     <Button
                                         disabled={isSubmitting}
                                         size="sm"
@@ -260,7 +260,7 @@ const UserForm = (props: Props) => {
                                         Save
                                     </Button>
                                 </Col>
-                                <Col className="col-2 float-right">
+                                <Col className="col text-right">
                                     <Button
                                         disabled={adding || !canRemove}
                                         onClick={onConfirm}

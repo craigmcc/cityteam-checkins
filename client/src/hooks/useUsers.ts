@@ -18,7 +18,7 @@ import * as Sorters from "../util/Sorters";
 // Incoming Properties and Outgoing State ------------------------------------
 
 export interface Props {
-    active?: boolean;                   // Select only active Users [false]
+    active?: boolean;                   // Select only active Users? [false]
     currentPage?: number;               // One-relative current page number [1]
     pageSize?: number;                  // Number of entries per page [25]
     username?: string;                  // Select Users matching pattern [none]
@@ -42,16 +42,18 @@ const useUsers = (props: Props): State => {
 
     useEffect(() => {
 
-        logger.debug({
+/*
+        logger.info({
             context: "useUsers.useEffect",
             props: props,
         });
+*/
 
         const fetchUsers = async () => {
 
             setError(null);
             setLoading(true);
-            let users: User[] = [];
+            let theUsers: User[] = [];
 
             try {
 
@@ -66,22 +68,22 @@ const useUsers = (props: Props): State => {
                     withRefreshTokens: props.withRefreshTokens ? "" : undefined,
                 };
 
-                users = (await Api.get(USERS_BASE
+                theUsers = (await Api.get(USERS_BASE
                     + `${queryParameters(parameters)}`)).data;
-                users.forEach(user => {
-                    if (user.accessTokens && (user.accessTokens.length > 0)) {
-                        user.accessTokens = Sorters.ACCESS_TOKENS(user.accessTokens);
+                theUsers.forEach(theUser => {
+                    if (theUser.accessTokens && (theUser.accessTokens.length > 0)) {
+                        theUser.accessTokens = Sorters.ACCESS_TOKENS(theUser.accessTokens);
                     }
-                    if (user.refreshTokens && (user.refreshTokens.length > 0)) {
-                        user.refreshTokens = Sorters.REFRESH_TOKENS(user.refreshTokens);
+                    if (theUser.refreshTokens && (theUser.refreshTokens.length > 0)) {
+                        theUser.refreshTokens = Sorters.REFRESH_TOKENS(theUser.refreshTokens);
                     }
                 });
-                logger.debug({
+                logger.info({
                     context: "useUsers.fetchUsers",
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
                     username: props.username ? props.username : undefined,
-                    users: Abridgers.USERS(users),
+                    users: Abridgers.USERS(theUsers),
                 });
 
             } catch (error) {
@@ -96,13 +98,13 @@ const useUsers = (props: Props): State => {
             }
 
             setLoading(false);
-            setUsers(users);
+            setUsers(theUsers);
 
         }
 
         fetchUsers();
 
-    }, [props, props.active, props.currentPage, props.pageSize, props.username,
+    }, [/*props, */props.active, props.currentPage, props.pageSize, props.username,
         props.withAccessTokens, props.withRefreshTokens]);
 
     const state: State = {

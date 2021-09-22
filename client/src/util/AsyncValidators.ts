@@ -15,11 +15,45 @@
 // Internal Modules ----------------------------------------------------------
 
 import Api from "../clients/Api";
+import Facility, {FACILITIES_BASE} from "../models/Facility";
 import User, {USERS_BASE} from "../models/User";
+import {toFacilities} from "./ToModelTypes";
+import {query} from "express";
+import {queryParameters} from "./QueryParameters";
+
+export const validateFacilityNameUnique = async (facility: Facility): Promise<boolean> => {
+    if (facility && facility.name) {
+        try {
+            const result = (await Api.get(FACILITIES_BASE
+                + `/exact/${facility.name}`)).data;
+            return (result.id === facility.id);
+        } catch (error) {
+            return true; // Definitely unique
+        }
+    } else {
+        return true;
+    }
+}
+
+export const validateFacilityScopeUnique = async (facility: Facility): Promise<boolean> => {
+    if (facility && facility.scope) {
+        try {
+            const parameters = {
+                scope: facility.scope,
+            }
+            const results = (await Api.get(FACILITIES_BASE
+                + `${queryParameters(parameters)}`)).data;
+            return (results.length === 0) || (results[0].id === facility.id);
+        } catch (error) {
+            return true; // Definitely unique
+        }
+    } else {
+        return true;
+    }
+}
 
 export const validateUserUsernameUnique = async (user: User): Promise<boolean> => {
     if (user && user.username) {
-        // TODO - does Axios really throw an Error on non-200 responses?
         try {
             const result = (await Api.get(USERS_BASE
                 + `/exact/${user.username}`)).data;

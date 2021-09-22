@@ -5,6 +5,7 @@
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Facility from "../models/Facility";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
 
@@ -20,6 +21,18 @@ export const ACCESS_TOKENS = (accessTokens: AccessToken[]): AccessToken[] => {
             return 0;
         }
     })
+}
+
+export const FACILITIES = (facilities: Facility[]): Facility[] => {
+    return facilities.sort(function (a, b) {
+        if (a.name > b.name) {
+            return 1;
+        } else if (a.name < b.name) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
 }
 
 export const REFRESH_TOKENS = (refreshTokens: RefreshToken[]): RefreshToken[] => {

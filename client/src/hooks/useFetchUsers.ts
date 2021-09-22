@@ -22,8 +22,8 @@ export interface Props {
     currentPage?: number;               // One-relative current page number [1]
     pageSize?: number;                  // Number of entries per page [25]
     username?: string;                  // Select Users matching pattern [none]
-    withAccessTokens?: boolean;         // Include child AccessTokens [false]
-    withRefreshTokens?: boolean;        // Include nested RefreshTokens [false]
+    withAccessTokens?: boolean;         // Include child AccessTokens? [false]
+    withRefreshTokens?: boolean;        // Include nested RefreshTokens? [false]
 }
 
 export interface State {

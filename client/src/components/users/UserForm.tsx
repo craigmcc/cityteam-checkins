@@ -27,7 +27,7 @@ import {toEmptyStrings, toNullValues} from "../../util/Transformations";
 
 export interface Props {
     autoFocus?: boolean;                // First element receive autoFocus? [false]
-    canRemove?: boolean;                // Can Remove be performed? [false]
+    canRemove?: boolean;                // Can remove be performed? [false]
     handleInsert: HandleUser;           // Handle User insert request
     handleRemove: HandleUser;           // Handle User remove request
     handleUpdate: HandleUser;           // Handle User update request

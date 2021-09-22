@@ -20,16 +20,16 @@ import * as Sorters from "../util/Sorters";
 
 // Either userId or username must be specified
 export interface Props {
-    userId?: number;                    // ID of user to fetch
-    username?: string;                  // Exact username of user to fetch
-    withAccessTokens?: boolean;         // Include child AccessTokens [false]
-    withRefreshTokens?: boolean;        // Include nested RefreshTokens [false]
+    userId?: number;                    // ID of User to fetch
+    username?: string;                  // Exact username of User to fetch
+    withAccessTokens?: boolean;         // Include child AccessTokens? [false]
+    withRefreshTokens?: boolean;        // Include nested RefreshTokens? [false]
 }
 
 export interface State {
     error: Error | null;                // I/O error (if any)
-    loading: boolean;                   // Are we currently loaded
-    user: User;                         // Fetched user (or id=-1 for none)
+    loading: boolean;                   // Are we currently loading?
+    user: User;                         // Fetched User (or id<0 for none)
 }
 
 // Component Details ---------------------------------------------------------

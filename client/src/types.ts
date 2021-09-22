@@ -8,6 +8,7 @@ import React from "react";
 
 // Internal Modules ----------------------------------------------------------
 
+import Facility from "./models/Facility";
 import User from "./models/User";
 
 // Enumerations --------------------------------------------------------------
@@ -48,6 +49,6 @@ export type HandleValue = (newValue: string) => void;
 
 // Model Object Handlers -----------------------------------------------------
 
+export type HandleFacility = (facility: Facility) => void;
 export type HandleUser = (user: User) => void;
-export type HandleUserOptional = (user: User | null) => void;
 

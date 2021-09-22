@@ -15,16 +15,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Internal Modules ----------------------------------------------------------
 
+import FacilitySelector from "./components/facilities/FacilitySelector";
 import FacilitiesView from "./components/facilities/FacilitiesView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 import UsersView from "./components/users/UsersView";
+import {FacilityContextProvider} from "./contexts/FacilityContext";
 
 // Component Details ---------------------------------------------------------
 
 // TODO - will need to surround <Router/> with context providers
 function App() {
   return (
+      <>
+      <FacilityContextProvider>
+
       <Router>
 
         <Navbar
@@ -62,6 +67,8 @@ function App() {
             </Nav>
           </Navbar.Collapse>
 
+          <FacilitySelector/>
+
         </Navbar>
 
         <Switch>
@@ -80,6 +87,9 @@ function App() {
         </Switch>
 
       </Router>
+
+      </FacilityContextProvider>
+      </>
   );
 }
 

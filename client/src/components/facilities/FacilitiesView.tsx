@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {/*useContext, */useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -15,6 +15,7 @@ import Row from "react-bootstrap/Row";
 import FacilityForm from "./FacilityForm";
 import FacilitiesList from "./FacilitiesList";
 import {HandleFacility, OnAction/*, Scopes*/} from "../../types";
+import FacilityContext from "../../contexts/FacilityContext";
 import useMutateFacility from "../../hooks/useMutateFacility";
 import Facility from "../../models/Facility";
 import logger from "../../util/ClientLogger";
@@ -22,6 +23,8 @@ import logger from "../../util/ClientLogger";
 // Component Details ---------------------------------------------------------
 
 const FacilitiesView = () => {
+
+    const facilityContext = useContext(FacilityContext);
 
     const [canRemove/*, setCanRemove*/] = useState<boolean>(false);
     const [facility, setFacility] = useState<Facility | null>(null);
@@ -52,11 +55,13 @@ const FacilitiesView = () => {
 
     const handleInsert: HandleFacility = async (theFacility) => {
         /*const inserted = */await mutateFacility.insert(theFacility);
+        facilityContext.handleRefresh();
         setFacility(null);
     }
 
     const handleRemove: HandleFacility = async (theFacility) => {
         /*const removed = */await mutateFacility.remove(theFacility);
+        facilityContext.handleRefresh();
         setFacility(null);
     }
 
@@ -66,6 +71,7 @@ const FacilitiesView = () => {
 
     const handleUpdate: HandleFacility = async (theFacility) => {
         /*const updated = */await mutateFacility.update(theFacility);
+        facilityContext.handleRefresh();
         setFacility(null);
     }
 

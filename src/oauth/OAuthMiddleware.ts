@@ -107,13 +107,13 @@ export const requireAdmin: RequestHandler =
 export const requireAny: RequestHandler =
     async (req: Request, res: Response, next: NextFunction) => {
         const token = extractToken(req);
-        if (!token) {
-            throw new Forbidden(
-                "No access token presented",
-                "OAuthMiddleware.requireAny"
-            );
-        }
         if (oauthEnabled) {
+            if (!token) {
+                throw new Forbidden(
+                    "No access token presented",
+                    "OAuthMiddleware.requireAny"
+                );
+            }
             const required = "";
             await authorizeToken(token, required);
             res.locals.token = token;

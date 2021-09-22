@@ -10,19 +10,21 @@ import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
 
-export const ANY = (model: Model): Model => {
-    if (model instanceof User) {
+export const ANY = (model: Model): object => {
+    if (model instanceof Facility) {
+        return FACILITY(model);
+    } else if (model instanceof User) {
         return USER(model);
     } else {
         return model;
     }
 }
 
-export const FACILITY = (facility: Facility) => {
-    return new Facility({
+export const FACILITY = (facility: Facility): object => {
+    return {
         id: facility.id,
         name: facility.name,
-    });
+    };
 }
 
 export const FACILITIES = (facilities: Facility[]): object[] => {
@@ -33,11 +35,11 @@ export const FACILITIES = (facilities: Facility[]): object[] => {
     return results;
 }
 
-export const USER = (user: User): User => {
-    return new User({
+export const USER = (user: User): object => {
+    return {
         id: user.id,
         username: user.username,
-    });
+    };
 }
 
 export const USERS = (users: User[]): object[] => {

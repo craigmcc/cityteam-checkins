@@ -17,8 +17,6 @@
 import Api from "../clients/Api";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
 import User, {USERS_BASE} from "../models/User";
-import {toFacilities} from "./ToModelTypes";
-import {query} from "express";
 import {queryParameters} from "./QueryParameters";
 
 export const validateFacilityNameUnique = async (facility: Facility): Promise<boolean> => {

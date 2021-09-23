@@ -48,7 +48,7 @@ const FacilitiesView = () => {
         setCanRemove(isSuperuser);
         setCanUpdate(isSuperuser);
 
-    }, []);
+    }, [loginContext]);
 
     const handleAdd: OnAction = () => {
         setFacility(new Facility({

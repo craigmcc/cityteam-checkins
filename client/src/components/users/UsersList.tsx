@@ -25,6 +25,9 @@ import {listValue} from "../../util/Transformations";
 // Incoming Properties -------------------------------------------------------
 
 export interface Props {
+    canInsert: boolean;                 // Can this user add Users?
+    canRemove: boolean;                 // Can this user remove Users?
+    canUpdate: boolean;                 // Can this user edit Users?
     handleAdd: OnAction;                // Handle request to add a User
     handleSelect: HandleUser;           // Handle request to select a User
 }
@@ -99,6 +102,7 @@ const UsersList = (props: Props) => {
                 </Col>
                 <Col className="text-right">
                     <Button
+                        disabled={!props.canInsert}
                         onClick={props.handleAdd}
                         size="sm"
                         variant="primary"

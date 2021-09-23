@@ -27,7 +27,8 @@ import {toEmptyStrings, toNullValues} from "../../util/Transformations";
 
 export interface Props {
     autoFocus?: boolean;                // First element receive autoFocus? [false]
-    canRemove?: boolean;                // Can remove be performed? [false]
+    canRemove: boolean;                 // Can remove be performed? [false]
+    canSave: boolean;                   // Can save be performed? [false]
     handleInsert: HandleUser;           // Handle User insert request
     handleRemove: HandleUser;           // Handle User remove request
     handleUpdate: HandleUser;           // Handle User update request
@@ -39,8 +40,6 @@ export interface Props {
 const UserForm = (props: Props) => {
 
     const [adding] = useState<boolean>(props.user.id < 0);
-    const [canRemove] = useState<boolean>
-        (props.canRemove !== undefined ? props.canRemove : false);
     const [initialValues] = useState(toEmptyStrings(props.user));
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
@@ -249,7 +248,7 @@ const UserForm = (props: Props) => {
                             <Row className="mb-3">
                                 <Col className="col text-left">
                                     <Button
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || !props.canSave}
                                         size="sm"
                                         type="submit"
                                         variant="primary"
@@ -259,7 +258,7 @@ const UserForm = (props: Props) => {
                                 </Col>
                                 <Col className="col text-right">
                                     <Button
-                                        disabled={adding || !canRemove}
+                                        disabled={adding || !props.canRemove}
                                         onClick={onConfirm}
                                         size="sm"
                                         type="button"

@@ -4,7 +4,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {/*useContext, */useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -14,7 +14,8 @@ import Row from "react-bootstrap/Row";
 
 import UserForm from "./UserForm";
 import UsersList from "./UsersList";
-import {HandleUser, OnAction/*, Scopes*/} from "../../types";
+import {HandleUser, OnAction, Scopes} from "../../types";
+import LoginContext from "../../contexts/LoginContext";
 import useMutateUser from "../../hooks/useMutateUser";
 import User from "../../models/User";
 import logger from "../../util/ClientLogger";
@@ -23,7 +24,11 @@ import logger from "../../util/ClientLogger";
 
 const UsersView = () => {
 
-    const [canRemove/*, setCanRemove*/] = useState<boolean>(false);
+    const loginContext = useContext(LoginContext);
+
+    const [canInsert, setCanInsert] = useState<boolean>(false);
+    const [canRemove, setCanRemove] = useState<boolean>(false);
+    const [canUpdate, setCanUpdate] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
 
     const mutateUser = useMutateUser({
@@ -36,9 +41,12 @@ const UsersView = () => {
             context: "UsersView.useEffect",
         });
 
-        // TODO setCanRemove(loginContext.validateScope(Scopes.SUPERUSER));
+        const isSuperuser = loginContext.validateScope(Scopes.SUPERUSER);
+        setCanInsert(isSuperuser);
+        setCanRemove(isSuperuser);
+        setCanUpdate(isSuperuser);
 
-    }, []);
+    }, [loginContext]);
 
     const handleAdd: OnAction = () => {
         setUser(new User({
@@ -84,6 +92,9 @@ const UsersView = () => {
 
                     <Row className="mb-3 ml-1 mr-1">
                         <UsersList
+                            canInsert={canInsert}
+                            canRemove={canRemove}
+                            canUpdate={canUpdate}
                             handleAdd={handleAdd}
                             handleSelect={handleSelect}
                         />
@@ -119,6 +130,7 @@ const UsersView = () => {
                         <UserForm
                             autoFocus={true}
                             canRemove={canRemove}
+                            canSave={canInsert || canRemove}
                             handleInsert={handleInsert}
                             handleRemove={handleRemove}
                             handleUpdate={handleUpdate}

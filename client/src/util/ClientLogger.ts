@@ -12,18 +12,18 @@
 // Internal Modules ----------------------------------------------------------
 
 import LogClient from "../clients/LogClient";
-import {Levels} from "../types";
+import {Level} from "../types";
 
 // Private Objects -----------------------------------------------------------
 
 // Map log level names to log level values
 const LOG_LEVEL_MAP = new Map<string, number>();
-LOG_LEVEL_MAP.set(Levels.DEBUG, 20);
-LOG_LEVEL_MAP.set(Levels.ERROR, 50);
-LOG_LEVEL_MAP.set(Levels.FATAL, 60);
-LOG_LEVEL_MAP.set(Levels.INFO, 30);
-LOG_LEVEL_MAP.set(Levels.TRACE, 10);
-LOG_LEVEL_MAP.set(Levels.WARN, 40);
+LOG_LEVEL_MAP.set(Level.DEBUG, 20);
+LOG_LEVEL_MAP.set(Level.ERROR, 50);
+LOG_LEVEL_MAP.set(Level.FATAL, 60);
+LOG_LEVEL_MAP.set(Level.INFO, 30);
+LOG_LEVEL_MAP.set(Level.TRACE, 10);
+LOG_LEVEL_MAP.set(Level.WARN, 40);
 
 // Transmit the specified object so that it can be logged (if level is loggable)
 const write = (object: any, level: number): void => {
@@ -57,7 +57,7 @@ export const setLevel = (newName: string): void => {
     if (newLevel) {
         LOG_LEVEL = newLevel;
     } else {
-        newLevel = LOG_LEVEL_MAP.get(Levels.INFO);
+        newLevel = LOG_LEVEL_MAP.get(Level.INFO);
         LOG_LEVEL = newLevel ? newLevel : 30;
     }
 }

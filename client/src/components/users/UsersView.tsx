@@ -14,7 +14,7 @@ import Row from "react-bootstrap/Row";
 
 import UserForm from "./UserForm";
 import UsersList from "./UsersList";
-import {HandleUser, OnAction, Scopes} from "../../types";
+import {HandleUser, OnAction, Scope} from "../../types";
 import LoginContext from "../../contexts/LoginContext";
 import useMutateUser from "../../hooks/useMutateUser";
 import User from "../../models/User";
@@ -41,7 +41,7 @@ const UsersView = () => {
             context: "UsersView.useEffect",
         });
 
-        const isSuperuser = loginContext.validateScope(Scopes.SUPERUSER);
+        const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
         setCanInsert(isSuperuser);
         setCanRemove(isSuperuser);
         setCanUpdate(isSuperuser);

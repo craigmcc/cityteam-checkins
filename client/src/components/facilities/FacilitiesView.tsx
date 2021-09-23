@@ -14,7 +14,7 @@ import Row from "react-bootstrap/Row";
 
 import FacilityForm from "./FacilityForm";
 import FacilitiesList from "./FacilitiesList";
-import {HandleFacility, OnAction, Scopes} from "../../types";
+import {HandleFacility, OnAction, Scope} from "../../types";
 import FacilityContext from "../../contexts/FacilityContext";
 import LoginContext from "../../contexts/LoginContext";
 import useMutateFacility from "../../hooks/useMutateFacility";
@@ -43,7 +43,7 @@ const FacilitiesView = () => {
             context: "FacilitiesView.useEffect",
         });
 
-        const isSuperuser = loginContext.validateScope(Scopes.SUPERUSER);
+        const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
         setCanInsert(isSuperuser);
         setCanRemove(isSuperuser);
         setCanUpdate(isSuperuser);

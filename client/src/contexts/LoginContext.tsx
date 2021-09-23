@@ -10,9 +10,11 @@ import React, {createContext, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
+import {Scope} from "../types";
 import TokenResponse from "../models/TokenResponse";
 import Facility from "../models/Facility";
 import logger, {setLevel} from "../util/ClientLogger";
+import {Debugger} from "inspector";
 
 // Context Properties -------------------------------------------------------
 
@@ -30,7 +32,7 @@ export interface State {
     data: Data;
     handleLogin: (username: string, tokenResponse: TokenResponse) => void;
     handleLogout: () => void;
-    validateFacility: (facility: Facility) => boolean;
+    validateFacility: (facility: Facility, scope?: Scope) => boolean;
                                         // Can the logged in User access this Facility?
     validateScope: (scope: string) => boolean;
                                         // Does the logged in User have the specified scope?
@@ -141,11 +143,13 @@ export const LoginContextProvider = (props: any) => {
     }
 
     // Does the currently logged in User possess access to the specified Facility?
-    const validateFacility = (facility: Facility): boolean => {
-
-        return validateScope(`${facility.scope}:admin`)
-            || validateScope(`${facility.scope}:regular`);
-
+    const validateFacility = (facility: Facility, scope?: Scope): boolean => {
+        if (scope) {
+            return validateScope(`${facility.scope}:${scope}`);
+        } else {
+            return validateScope(`${facility.scope}:${Scope.ADMIN}`)
+                || validateScope(`${facility.scope}:${Scope.REGULAR}`);
+        }
     }
 
     // Does the currently logged in User possess the requested scope permissions?
@@ -157,7 +161,7 @@ export const LoginContextProvider = (props: any) => {
         }
 
         // Special handling for superuser scope
-        if (alloweds.includes("superuser")) {
+        if (alloweds.includes(Scope.SUPERUSER)) {
             return true;
         }
 

@@ -13,7 +13,7 @@ import User from "./models/User";
 
 // Enumerations --------------------------------------------------------------
 
-export enum Levels {
+export enum Level {
     TRACE = "trace",
     DEBUG = "debug",
     INFO = "info",
@@ -22,7 +22,7 @@ export enum Levels {
     FATAL = "fatal",
 }
 
-export enum Scopes {
+export enum Scope {
     ADMIN = "admin",
     ANY = "any",
     REGULAR = "regular",

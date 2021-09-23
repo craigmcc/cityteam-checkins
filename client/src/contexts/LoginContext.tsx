@@ -14,7 +14,6 @@ import {Scope} from "../types";
 import TokenResponse from "../models/TokenResponse";
 import Facility from "../models/Facility";
 import logger, {setLevel} from "../util/ClientLogger";
-import {Debugger} from "inspector";
 
 // Context Properties -------------------------------------------------------
 

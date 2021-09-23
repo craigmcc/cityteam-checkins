@@ -19,6 +19,7 @@ import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
 import {HandleBoolean, HandleUser, HandleValue, OnAction} from "../../types";
 import useFetchUsers from "../../hooks/useFetchUsers";
+import User from "../../models/User";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
 
@@ -40,6 +41,7 @@ const UsersList = (props: Props) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(25);
     const [searchText, setSearchText] = useState<string>("");
+    const [visibles, setVisibles] = useState<User[]>([]);
 
     const fetchUsers = useFetchUsers({
         active: active,
@@ -49,10 +51,16 @@ const UsersList = (props: Props) => {
     });
 
     useEffect(() => {
-        logger.debug({
+        logger.info({
             context: "UserList.useEffect"
         });
-    }, []);
+        if (props.canInsert) {
+            setVisibles(fetchUsers.users);
+        } else {
+            setVisibles([]);
+        }
+
+    }, [props.canInsert, fetchUsers.users]);
 
     const handleActive: HandleBoolean = (theActive) => {
         setActive(theActive);
@@ -128,7 +136,7 @@ const UsersList = (props: Props) => {
                     </thead>
 
                     <tbody>
-                    {fetchUsers.users.map((user, rowIndex) => (
+                    {visibles.map((user, rowIndex) => (
                         <tr
                             className="table-default"
                             key={1000 + (rowIndex * 100)}

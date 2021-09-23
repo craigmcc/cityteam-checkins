@@ -5,10 +5,11 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {createContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
+import LoginContext from "./LoginContext";
 import {HandleAction, HandleFacility} from "../types";
 import useFetchFacilities from "../hooks/useFetchFacilities";
 import Facility from "../models/Facility";
@@ -37,6 +38,8 @@ export const FacilityContextProvider = (props: any) => {
 
     const UNSELECTED_FACILITY = new Facility({name: "(Please Select)"});
 
+    const loginContext = useContext(LoginContext);
+
     const [active, setActive] = useState<boolean>(true);
     const [availables, setAvailables] = useState<Facility[]>([]);
     const [facility, setFacility] = useState<Facility>(UNSELECTED_FACILITY);
@@ -49,34 +52,46 @@ export const FacilityContextProvider = (props: any) => {
 
     useEffect(() => {
 
+        // Offer only those Facilities available to the logged-in User
         const theAvailables: Facility[] = [];
-        fetchFacilities.facilities.forEach(theAvailable => {
-            // TODO - keep only if available to the current user
-            theAvailables.push(theAvailable);
-        });
-
-        logger.debug({
+        if (loginContext.data.loggedIn) {
+            fetchFacilities.facilities.forEach(theAvailable => {
+                if (loginContext.validateFacility(theAvailable)) {
+                    theAvailables.push(theAvailable);
+                }
+            });
+        }
+        logger.info({
             context: "FacilityContext.useEffect",
             availables: Abridgers.FACILITIES(theAvailables),
         });
         setAvailables(theAvailables);
 
-        if (facility.id > 0) {
+        // Select or reselect the appropriate Facility
+        if (theAvailables.length === 1) {
+            logger.info({
+                context: "FacilityContext.useEffect",
+                msg: "Autoselect the only available facility",
+                facility: Abridgers.FACILITY(theAvailables[0]),
+            });
+            setFacility(theAvailables[0]);
+        } else if (facility.id > 0) {
             let found: Facility = new Facility({id: -1, name: "NOT SELECTED"});
             theAvailables.forEach(option => {
                 if (facility.id === option.id) {
                     found = option;
                 }
             });
-            logger.debug({
+            logger.info({
                 context: "FacilityContext.useEffect",
-                msg: "Resetting currently selected Facility",
-                facility: found,
+                msg: "Reset to currently selected Facility",
+                facility: Abridgers.FACILITY(found),
             });
             setFacility(found);
         }
 
-    }, [active, facility.id, fetchFacilities.facilities]);
+    }, [active, facility.id, fetchFacilities.facilities,
+            loginContext, loginContext.data.loggedIn]);
 
     const handleRefresh: HandleAction = () => {
         logger.info({
@@ -114,7 +129,7 @@ export const FacilityContextProvider = (props: any) => {
     }
 
     const facilityContext: State = {
-        facilities: fetchFacilities.facilities, // TODO - filter by available to this user
+        facilities: availables,
         facility: facility,
         handleRefresh: handleRefresh,
         handleSelect: handleSelect,

@@ -38,9 +38,13 @@ export const FacilitySelector = (props: Props) => {
     useEffect(() => {
         const theOptions: Facility[] = [];
         theOptions.push(new Facility({id: -1, name: "(Please Select)"}));
+        setIndex(0);
         facilityContext.facilities.forEach(facility => {
+            if (facility.id === facilityContext.facility.id) {
+                setIndex(theOptions.length);    // Set currently shown option
+            }
             theOptions.push(facility);
-        })
+        });
         setOptions(theOptions);
         logger.debug({
             context: "FacilitySelector.useEffect",

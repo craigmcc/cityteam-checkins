@@ -149,6 +149,7 @@ const UserForm = (props: Props) => {
                                 <Form.Group as={Col} controlId="name" id="nameGroup">
                                     <Form.Label>Name:</Form.Label>
                                     <Form.Control
+                                        autoFocus={(props.autoFocus !== undefined) ? props.autoFocus : undefined}
                                         isInvalid={touched.name && !!errors.name}
                                         isValid={!errors.name}
                                         name="name"

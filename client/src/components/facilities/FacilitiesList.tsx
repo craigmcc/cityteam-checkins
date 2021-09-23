@@ -25,8 +25,11 @@ import {listValue} from "../../util/Transformations";
 // Incoming Properties -------------------------------------------------------
 
 export interface Props {
+    canInsert: boolean;                 // Can this user add Facilities?
+    canRemove: boolean;                 // Can this user remove Facilities?
+    canUpdate: boolean;                 // Can this user edit Facilities?
     handleAdd: OnAction;                // Handle request to add a Facility
-    handleSelect: HandleFacility;           // Handle request to select a Facility
+    handleSelect: HandleFacility;       // Handle request to select a Facility
 }
 
 // Component Details ---------------------------------------------------------
@@ -99,6 +102,7 @@ const FacilitiesList = (props: Props) => {
                 </Col>
                 <Col className="text-right">
                     <Button
+                        disabled={!props.canInsert}
                         onClick={props.handleAdd}
                         size="sm"
                         variant="primary"

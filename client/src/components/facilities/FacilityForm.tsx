@@ -37,6 +37,7 @@ import {
 export interface Props {
     autoFocus?: boolean;                // First element receive autoFocus? [false]
     canRemove?: boolean;                // Can remove be performed? [false]
+    canSave?: boolean;                  // Can save be performed? [false]
     handleInsert: HandleFacility;       // Handle Facility insert request
     handleRemove: HandleFacility;       // Handle Facility remove request
     handleUpdate: HandleFacility;       // Handle Facility update request
@@ -50,6 +51,8 @@ const FacilityForm = (props: Props) => {
     const [adding] = useState<boolean>(props.facility.id < 0);
     const [canRemove] = useState<boolean>
         (props.canRemove !== undefined ? props.canRemove : false);
+    const [canSave] = useState<boolean>
+        (props.canSave !== undefined ? props.canSave : false);
     const [initialValues] = useState(toEmptyStrings(props.facility));
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
@@ -168,6 +171,7 @@ const FacilityForm = (props: Props) => {
                                 <Form.Group as={Col} controlId="name" id="nameGroup">
                                     <Form.Label>Name:</Form.Label>
                                     <Form.Control
+                                        autoFocus={(props.autoFocus !== undefined) ? props.autoFocus : undefined}
                                         isInvalid={touched.name && !!errors.name}
                                         isValid={!errors.name}
                                         name="name"
@@ -343,7 +347,7 @@ const FacilityForm = (props: Props) => {
                             <Row className="mb-3">
                                 <Col className="col text-left">
                                     <Button
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || !canSave}
                                         size="sm"
                                         type="submit"
                                         variant="primary"

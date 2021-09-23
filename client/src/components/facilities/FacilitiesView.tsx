@@ -14,8 +14,9 @@ import Row from "react-bootstrap/Row";
 
 import FacilityForm from "./FacilityForm";
 import FacilitiesList from "./FacilitiesList";
-import {HandleFacility, OnAction/*, Scopes*/} from "../../types";
+import {HandleFacility, OnAction, Scopes} from "../../types";
 import FacilityContext from "../../contexts/FacilityContext";
+import LoginContext from "../../contexts/LoginContext";
 import useMutateFacility from "../../hooks/useMutateFacility";
 import Facility from "../../models/Facility";
 import logger from "../../util/ClientLogger";
@@ -25,8 +26,11 @@ import logger from "../../util/ClientLogger";
 const FacilitiesView = () => {
 
     const facilityContext = useContext(FacilityContext);
+    const loginContext = useContext(LoginContext);
 
-    const [canRemove/*, setCanRemove*/] = useState<boolean>(false);
+    const [canInsert, setCanInsert] = useState<boolean>(false);
+    const [canRemove, setCanRemove] = useState<boolean>(false);
+    const [canUpdate, setCanUpdate] = useState<boolean>(false);
     const [facility, setFacility] = useState<Facility | null>(null);
 
     const mutateFacility = useMutateFacility({
@@ -39,7 +43,10 @@ const FacilitiesView = () => {
             context: "FacilitiesView.useEffect",
         });
 
-        // TODO setCanRemove(loginContext.validateScope(Scopes.SUPERUSER));
+        const isSuperuser = loginContext.validateScope(Scopes.SUPERUSER);
+        setCanInsert(isSuperuser);
+        setCanRemove(isSuperuser);
+        setCanUpdate(isSuperuser);
 
     }, []);
 
@@ -90,6 +97,9 @@ const FacilitiesView = () => {
 
                     <Row className="mb-3 ml-1 mr-1">
                         <FacilitiesList
+                            canInsert={canInsert}
+                            canRemove={canRemove}
+                            canUpdate={canUpdate}
                             handleAdd={handleAdd}
                             handleSelect={handleSelect}
                         />
@@ -125,6 +135,7 @@ const FacilitiesView = () => {
                         <FacilityForm
                             autoFocus={true}
                             canRemove={canRemove}
+                            canSave={canInsert || canUpdate}
                             handleInsert={handleInsert}
                             handleRemove={handleRemove}
                             handleUpdate={handleUpdate}

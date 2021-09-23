@@ -17,10 +17,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import FacilitySelector from "./components/facilities/FacilitySelector";
 import FacilitiesView from "./components/facilities/FacilitiesView";
+import LoggedInUser from "./components/login/LoggedInUser";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 import UsersView from "./components/users/UsersView";
 import {FacilityContextProvider} from "./contexts/FacilityContext";
+import {LoginContextProvider} from "./contexts/LoginContext";
 
 // Component Details ---------------------------------------------------------
 
@@ -28,6 +30,7 @@ import {FacilityContextProvider} from "./contexts/FacilityContext";
 function App() {
   return (
       <>
+      <LoginContextProvider>
       <FacilityContextProvider>
 
       <Router>
@@ -67,6 +70,8 @@ function App() {
             </Nav>
           </Navbar.Collapse>
 
+          <LoggedInUser/>
+          <span className="mr-4"/>
           <FacilitySelector/>
 
         </Navbar>
@@ -89,6 +94,7 @@ function App() {
       </Router>
 
       </FacilityContextProvider>
+      </LoginContextProvider>
       </>
   );
 }

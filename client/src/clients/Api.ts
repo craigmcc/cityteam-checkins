@@ -9,7 +9,7 @@ import axios, {AxiosInstance} from "axios";
 
 // Internal Modules ----------------------------------------------------------
 
-const CURRENT_ACCESS_TOKEN: string | null = null; // TODO - Import from somewhere
+import {LOGIN_DATA} from "../contexts/LoginContext";
 
 // Public Objects ------------------------------------------------------------
 
@@ -21,8 +21,8 @@ const Api: AxiosInstance = axios.create({
 });
 
 Api.interceptors.request.use(function (config) {
-    if (CURRENT_ACCESS_TOKEN) {
-        config.headers["Authorization"] = `Bearer ${CURRENT_ACCESS_TOKEN}`;
+    if (LOGIN_DATA.accessToken) {
+        config.headers["Authorization"] = `Bearer ${LOGIN_DATA.accessToken}`;
     }
     return config;
 })

@@ -26,7 +26,6 @@ import {LoginContextProvider} from "./contexts/LoginContext";
 
 // Component Details ---------------------------------------------------------
 
-// TODO - will need to surround <Router/> with context providers
 function App() {
   return (
       <>

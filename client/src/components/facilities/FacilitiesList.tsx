@@ -5,7 +5,7 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {/* useContext, */useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
@@ -17,7 +17,10 @@ import Table from "react-bootstrap/Table";
 import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
-import {HandleBoolean, HandleFacility, HandleValue, OnAction} from "../../types";
+import {HandleBoolean, HandleFacility, HandleValue, OnAction, Scope} from "../../types";
+import FacilityContext from "../../contexts/FacilityContext";
+import LoginContext from "../../contexts/LoginContext";
+import Facility from "../../models/Facility";
 import useFetchFacilities from "../../hooks/useFetchFacilities";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
@@ -36,9 +39,14 @@ export interface Props {
 
 const FacilitiesList = (props: Props) => {
 
+    const facilityContext = useContext(FacilityContext);
+    const loginContext = useContext(LoginContext);
+
     const [active, setActive] = useState<boolean>(false);
+    const [availables, setAvailables] = useState<Facility[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [pageSize] = useState<number>(25);
+//    const [isSuperuser, setIsSuperuser] = useState<boolean>(false);
+    const [pageSize] = useState<number>(100);
     const [searchText, setSearchText] = useState<string>("");
 
     const fetchFacilities = useFetchFacilities({
@@ -49,10 +57,19 @@ const FacilitiesList = (props: Props) => {
     });
 
     useEffect(() => {
-        logger.debug({
+
+        logger.info({
             context: "FacilityList.useEffect"
         });
-    }, []);
+
+        const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
+        if (isSuperuser) {
+            setAvailables(fetchFacilities.facilities);
+        } else {
+            setAvailables(facilityContext.facilities);
+        }
+
+    }, [facilityContext.facilities, fetchFacilities.facilities, loginContext]);
 
     const handleActive: HandleBoolean = (theActive) => {
         setActive(theActive);
@@ -129,7 +146,7 @@ const FacilitiesList = (props: Props) => {
                     </thead>
 
                     <tbody>
-                    {fetchFacilities.facilities.map((facility, rowIndex) => (
+                    {availables.map((facility, rowIndex) => (
                         <tr
                             className="table-default"
                             key={1000 + (rowIndex * 100)}

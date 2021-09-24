@@ -135,7 +135,7 @@ const FacilitiesView = () => {
                         <FacilityForm
                             autoFocus={true}
                             canRemove={canRemove}
-                            canSave={canInsert || canUpdate}
+                            canSave={canInsert || canUpdate || loginContext.validateFacility(facility, Scope.ADMIN)}
                             handleInsert={handleInsert}
                             handleRemove={handleRemove}
                             handleUpdate={handleUpdate}

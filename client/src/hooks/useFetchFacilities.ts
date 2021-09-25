@@ -71,11 +71,9 @@ const useFetchFacilities = (props: Props): State => {
                         theFacility.checkins = Sorters.CHECKINS(theFacility.checkins);
                     }
 */
-/*
                     if (theFacility.guests && (theFacility.guests.length > 0)) {
                         theFacility.guests = Sorters.GUESTS(theFacility.guests);
                     }
-*/
                     if (theFacility.templates && (theFacility.templates.length > 0)) {
                         theFacility.templates = Sorters.TEMPLATES(theFacility.templates);
                     }

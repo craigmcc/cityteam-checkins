@@ -5,9 +5,10 @@
 // Internal Modules ----------------------------------------------------------
 
 import Facility from "../models/Facility";
+import Guest from "../models/Guest";
 import Model from "../models/Model";
-import User from "../models/User";
 import Template from "../models/Template";
+import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
 
@@ -34,6 +35,23 @@ export const FACILITY = (facility: Facility): object => {
         id: facility.id,
         name: facility.name,
     };
+}
+
+export const GUEST = (guest: Guest): object => {
+    return {
+        id: guest.id,
+        facilityId: guest.facilityId,
+        firstName: guest.firstName,
+        lastName: guest.lastName,
+    };
+}
+
+export const GUESTS = (guests: Guest[]): object[] => {
+    const results: object[] = [];
+    guests.forEach(guest => {
+        results.push(GUEST(guest));
+    });
+    return results;
 }
 
 export const TEMPLATE = (template: Template): object => {

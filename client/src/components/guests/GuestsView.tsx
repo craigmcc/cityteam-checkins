@@ -1,6 +1,6 @@
-// TemplatesView -------------------------------------------------------------
+// GuestsView -------------------------------------------------------------
 
-// Top-level view for managing Template objects.
+// Top-level view for managing Guest objects.
 
 // External Modules ----------------------------------------------------------
 
@@ -12,18 +12,18 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ----------------------------------------------------------
 
-import TemplateForm from "./TemplateForm";
-import TemplatesList from "./TemplatesList";
-import {HandleTemplate, OnAction, Scope} from "../../types";
+import GuestForm from "./GuestForm";
+import GuestsList from "./GuestsList";
+import {HandleGuest, OnAction, Scope} from "../../types";
 import FacilityContext from "../../contexts/FacilityContext";
 import LoginContext from "../../contexts/LoginContext";
-import useMutateTemplate from "../../hooks/useMutateTemplate";
-import Template from "../../models/Template";
+import useMutateGuest from "../../hooks/useMutateGuest";
+import Guest from "../../models/Guest";
 import logger from "../../util/ClientLogger";
 
 // Component Details ---------------------------------------------------------
 
-const TemplatesView = () => {
+const GuestsView = () => {
 
     const facilityContext = useContext(FacilityContext);
     const loginContext = useContext(LoginContext);
@@ -31,71 +31,70 @@ const TemplatesView = () => {
     const [canInsert, setCanInsert] = useState<boolean>(false);
     const [canRemove, setCanRemove] = useState<boolean>(false);
     const [canUpdate, setCanUpdate] = useState<boolean>(false);
-    const [template, setTemplate] = useState<Template | null>(null);
+    const [guest, setGuest] = useState<Guest | null>(null);
 
-    const mutateTemplate = useMutateTemplate({});
+    const mutateGuest = useMutateGuest({});
 
     useEffect(() => {
 
         logger.debug({
-            context: "TemplatesView.useEffect",
+            context: "GuestsView.useEffect",
         });
 
         const isAdmin = loginContext.validateFacility(facilityContext.facility, Scope.ADMIN);
+        const isRegular = loginContext.validateFacility(facilityContext.facility, Scope.REGULAR);
         const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
-        setCanInsert(isAdmin || isSuperuser);
+        setCanInsert(isAdmin || isRegular);
         setCanRemove(isSuperuser);
-        setCanUpdate(isAdmin || isSuperuser);
+        setCanUpdate(isAdmin || isRegular);
 
     }, [facilityContext.facility, loginContext]);
 
     const handleAdd: OnAction = () => {
-        setTemplate(new Template({
+        setGuest(new Guest({
             active: true,
-            allMats: null,
+            comments: null,
             facilityId: facilityContext.facility.id,
-            handicapMats: null,
-            name: null,
-            socketMats: null,
-            workMats: null,
+            firstName: null,
+            lastName: null,
         }));
     }
 
-    const handleInsert: HandleTemplate = async (theTemplate) => {
-        /*const inserted = */await mutateTemplate.insert(theTemplate);
-        setTemplate(null);
+    const handleInsert: HandleGuest = async (theGuest) => {
+        /*const inserted = */await mutateGuest.insert(theGuest);
+        setGuest(null);
     }
 
-    const handleRemove: HandleTemplate = async (theTemplate) => {
-        /*const removed = */await mutateTemplate.remove(theTemplate);
-        setTemplate(null);
+    const handleRemove: HandleGuest = async (theGuest) => {
+        /*const removed = */await mutateGuest.remove(theGuest);
+        setGuest(null);
     }
 
-    const handleSelect: HandleTemplate = (theTemplate) => {
-        setTemplate(theTemplate);
+    const handleSelect: HandleGuest = (theGuest) => {
+        setGuest(theGuest);
     }
 
-    const handleUpdate: HandleTemplate = async (theTemplate) => {
-        /*const updated = */await mutateTemplate.update(theTemplate);
-        setTemplate(null);
+    const handleUpdate: HandleGuest = async (theGuest) => {
+        /*const updated = */await mutateGuest.update(theGuest);
+        setGuest(null);
     }
 
     return (
-        <Container fluid id="TemplatesView">
+        <Container fluid id="GuestsView">
 
             {/* List View */}
-            {(!template) ? (
+            {(!guest) ? (
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
                         <Col className="text-left">
-                            <span><strong>Select or Create Templates for Facility&nbsp;</strong></span>
+                            <span><strong>Select or Create Guests for Facility&nbsp;</strong></span>
                             <span className="text-info"><strong>{facilityContext.facility.name}</strong></span>
                         </Col>
                     </Row>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <TemplatesList
+                        <GuestsList
                             canInsert={canInsert}
                             canRemove={canRemove}
                             canUpdate={canUpdate}
@@ -109,22 +108,22 @@ const TemplatesView = () => {
             ) : null }
 
             {/* Detail View */}
-            {(template) ? (
+            {(guest) ? (
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
                         <Col className="text-left">
-                            {(template.id > 0) ? (
+                            {(guest.id > 0) ? (
                                 <span><strong>Edit Existing</strong></span>
                             ) : (
                                 <span><strong>Add New</strong></span>
                             )}
-                            <span><strong>&nbsp;Template for Facility&nbsp;</strong></span>
+                            <span><strong>&nbsp;Guest for Facility&nbsp;</strong></span>
                             <span className="text-info"><strong>{facilityContext.facility.name}</strong></span>
                         </Col>
                         <Col className="text-right">
                             <Button
-                                onClick={() => setTemplate(null)}
+                                onClick={() => setGuest(null)}
                                 size="sm"
                                 type="button"
                                 variant="secondary"
@@ -133,14 +132,14 @@ const TemplatesView = () => {
                     </Row>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <TemplateForm
+                        <GuestForm
                             autoFocus={true}
                             canRemove={canRemove}
                             canSave={canInsert || canUpdate}
                             handleInsert={handleInsert}
                             handleRemove={handleRemove}
                             handleUpdate={handleUpdate}
-                            template={template}
+                            guest={guest}
                         />
                     </Row>
 
@@ -153,4 +152,4 @@ const TemplatesView = () => {
 
 }
 
-export default TemplatesView;
+export default GuestsView;

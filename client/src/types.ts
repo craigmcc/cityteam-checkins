@@ -9,6 +9,7 @@ import React from "react";
 // Internal Modules ----------------------------------------------------------
 
 import Facility from "./models/Facility";
+import Guest from "./models/Guest";
 import Template from "./models/Template";
 import User from "./models/User";
 
@@ -51,6 +52,7 @@ export type HandleValue = (newValue: string) => void;
 // Model Object Handlers -----------------------------------------------------
 
 export type HandleFacility = (facility: Facility) => void;
+export type HandleGuest = (guest: Guest) => void;
 export type HandleTemplate = (template: Template) => void;
 export type HandleUser = (user: User) => void;
 

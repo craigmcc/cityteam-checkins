@@ -14,7 +14,7 @@ import Facility, {FACILITIES_BASE} from "../models/Facility";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
-//import * as Sorters from "../util/Sorters";
+import * as Sorters from "../util/Sorters";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -72,16 +72,12 @@ const useFetchFacility = (props: Props): State => {
                     facility.checkins = Sorters.CHECKINS(facility.checkins);
                 }
 */
-/*
                 if (facility.guests && (facility.guests.length > 0)) {
                     facility.guests = Sorters.GUESTS(facility.guests);
                 }
-*/
-/*
                 if (facility.templates && (facility.templates.length > 0)) {
                     facility.templates = Sorters.TEMPLATES(facility.templates);
                 }
-*/
                 logger.debug({
                     context: "useFetchFacility.fetchFacility",
                     facilityId: props.facilityId ? props.facilityId : undefined,

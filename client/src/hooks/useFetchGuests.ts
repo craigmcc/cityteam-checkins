@@ -1,6 +1,6 @@
-// useFetchTemplates ---------------------------------------------------------
+// useFetchGuests ------------------------------------------------------------
 
-// Custom hook to fetch Template objects that correspond to input properties.
+// Custom hook to fetch Guest objects that correspond to input properties.
 
 // External Modules ----------------------------------------------------------
 
@@ -10,7 +10,7 @@ import {useEffect, useState} from "react";
 
 import Api from "../clients/Api";
 import Facility from "../models/Facility";
-import Template, {TEMPLATES_BASE} from "../models/Template";
+import Guest, {GUESTS_BASE} from "../models/Guest";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
@@ -22,55 +22,57 @@ export interface Props {
     currentPage?: number;               // One-relative current page number [1]
     facility: Facility;                 // Parent Facility
     pageSize?: number;                  // Number of entries per page [25]
-    name?: string;                      // Select Templates matching pattern [none]
+    name?: string;                      // Select Guests matching pattern [none]
     withFacility?: boolean;             // Include parent Facility? [false]
 }
 
 export interface State {
     error: Error | null;                // I/O error (if any)
+    guests: Guest[];                    // Fetched Guests
     loading: boolean;                   // Are we currently loading?
-    templates: Template[];              // Fetched Templates
 }
 
 // Hook Details --------------------------------------------------------------
 
-const useFetchTemplates = (props: Props): State => {
+const useFetchGuests = (props: Props): State => {
 
     const [error, setError] = useState<Error | null>(null);
+    const [guests, setGuests] = useState<Guest[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [templates, setTemplates] = useState<Template[]>([]);
 
     useEffect(() => {
 
-        const fetchTemplates = async () => {
+        const fetchGuests = async () => {
 
             setError(null);
             setLoading(true);
-            let theTemplates: Template[] = [];
+            let theGuests: Guest[] = [];
 
             try {
-                const limit = props.pageSize ? props.pageSize : 25;
-                const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                const parameters = {
-                    active: props.active ? "" : undefined,
-                    limit: limit,
-                    offset: offset,
-                    name: props.name ? props.name : undefined,
-                    withFacility: props.withFacility ? "" : undefined,
+                if (props.name) { // Too many Guests for a useful non-filtered fetch
+                    const limit = props.pageSize ? props.pageSize : 25;
+                    const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+                    const parameters = {
+                        active: props.active ? "" : undefined,
+                        limit: limit,
+                        offset: offset,
+                        name: props.name ? props.name : undefined,
+                        withFacility: props.withFacility ? "" : undefined,
+                    }
+                    theGuests = (await Api.get(GUESTS_BASE
+                        + `/${props.facility.id}${queryParameters(parameters)}`)).data;
+                    logger.debug({
+                        context: "useFetchGuests.fetchGuests",
+                        facility: Abridgers.FACILITY(props.facility),
+                        active: props.active ? props.active : undefined,
+                        currentPage: props.currentPage ? props.currentPage : undefined,
+                        name: props.name ? props.name : undefined,
+                        guests: Abridgers.GUESTS(theGuests),
+                    });
                 }
-                theTemplates = (await Api.get(TEMPLATES_BASE
-                    + `/${props.facility.id}${queryParameters(parameters)}`)).data;
-                logger.debug({
-                    context: "useFetchTemplates.fetchTemplates",
-                    facility: Abridgers.FACILITY(props.facility),
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    name: props.name ? props.name : undefined,
-                    templates: Abridgers.TEMPLATES(theTemplates),
-                });
             } catch (error) {
                 logger.error({
-                    context: "useFetchTemplates.fetchTemplates",
+                    context: "useFetchGuests.fetchGuests",
                     facility: Abridgers.FACILITY(props.facility),
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
@@ -81,22 +83,21 @@ const useFetchTemplates = (props: Props): State => {
             }
 
             setLoading(false);
-            setTemplates(theTemplates);
+            setGuests(theGuests);
 
         }
 
-        fetchTemplates();
+        fetchGuests();
 
     }, [props.active, props.currentPage, props.facility,
-            props.pageSize, props.name, props.withFacility]);
-
+        props.pageSize, props.name, props.withFacility]);
 
     return {
         error: error ? error : null,
+        guests: guests,
         loading: loading,
-        templates: templates,
     }
 
 }
 
-export default useFetchTemplates;
+export default useFetchGuests;

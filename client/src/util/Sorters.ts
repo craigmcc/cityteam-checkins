@@ -6,6 +6,7 @@
 
 import AccessToken from "../models/AccessToken";
 import Facility from "../models/Facility";
+import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
 import Template from "../models/Template";
 import User from "../models/User";
@@ -32,6 +33,24 @@ export const FACILITIES = (facilities: Facility[]): Facility[] => {
             return -1;
         } else {
             return 0;
+        }
+    });
+}
+
+export const GUESTS = (guests: Guest[]): Guest[] => {
+    return guests.sort(function (a, b) {
+        if (a.lastName > b.lastName) {
+            return 1;
+        } else if (a.lastName < b.lastName) {
+            return -1;
+        } else {
+            if (a.firstName > b.firstName) {
+                return 1;
+            } else if (a.firstName < b.firstName) {
+                return -1;
+            } else {
+                return 0;
+            }
         }
     });
 }

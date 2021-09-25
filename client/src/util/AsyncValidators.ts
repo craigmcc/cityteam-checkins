@@ -16,6 +16,7 @@
 
 import Api from "../clients/Api";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
+import Guest, {GUESTS_BASE} from "../models/Guest";
 import Template, {TEMPLATES_BASE} from "../models/Template";
 import User, {USERS_BASE} from "../models/User";
 import {queryParameters} from "./QueryParameters";
@@ -43,6 +44,20 @@ export const validateFacilityScopeUnique = async (facility: Facility): Promise<b
             const results = (await Api.get(FACILITIES_BASE
                 + `${queryParameters(parameters)}`)).data;
             return (results.length === 0) || (results[0].id === facility.id);
+        } catch (error) {
+            return true; // Definitely unique
+        }
+    } else {
+        return true;
+    }
+}
+
+export const validateGuestNameUnique = async (guest: Guest): Promise<boolean> => {
+    if (guest && guest.facilityId && guest.firstName && guest.lastName) {
+        try {
+            const result = (await Api.get(GUESTS_BASE
+                + `/${guest.facilityId}/exact/${guest.firstName}/${guest.lastName}`)).data;
+            return (result.id === guest.id);
         } catch (error) {
             return true; // Definitely unique
         }

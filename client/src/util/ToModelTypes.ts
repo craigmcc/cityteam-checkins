@@ -6,9 +6,10 @@
 
 import AccessToken from "../models/AccessToken";
 import Facility from "../models/Facility";
+import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
-import User from "../models/User";
 import Template from "../models/Template";
+import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
 
@@ -32,6 +33,18 @@ export const toFacilities = (values: object[]): Facility[] => {
     const results: Facility[] = [];
     values.forEach(value => {
         results.push(new Facility(value));
+    });
+    return results;
+}
+
+export const toGuest = (value: object): Guest => {
+    return new Guest(value);
+}
+
+export const toGuests = (values: object[]): Guest[] => {
+    const results: Guest[] = [];
+    values.forEach(value => {
+        results.push(new Guest(value));
     });
     return results;
 }

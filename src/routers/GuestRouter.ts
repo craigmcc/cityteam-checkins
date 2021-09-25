@@ -75,7 +75,7 @@ GuestRouter.get("/:facilityId/:guestId",
 GuestRouter.put("/:facilityId/:guestId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await GuestServices.find(
+        res.send(await GuestServices.update(
             parseInt(req.params.facilityId, 10),
             parseInt(req.params.guestId, 10),
             req.body

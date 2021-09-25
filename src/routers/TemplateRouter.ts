@@ -74,7 +74,7 @@ TemplateRouter.get("/:facilityId/:templateId",
 TemplateRouter.put("/:facilityId/:templateId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await TemplateServices.find(
+        res.send(await TemplateServices.update(
             parseInt(req.params.facilityId, 10),
             parseInt(req.params.templateId, 10),
             req.body

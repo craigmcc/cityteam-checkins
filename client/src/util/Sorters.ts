@@ -7,6 +7,7 @@
 import AccessToken from "../models/AccessToken";
 import Facility from "../models/Facility";
 import RefreshToken from "../models/RefreshToken";
+import Template from "../models/Template";
 import User from "../models/User";
 
 // Public Objects ------------------------------------------------------------
@@ -45,6 +46,18 @@ export const REFRESH_TOKENS = (refreshTokens: RefreshToken[]): RefreshToken[] =>
             return 0;
         }
     })
+}
+
+export const TEMPLATES = (templates: Template[]): Template[] => {
+    return templates.sort(function (a, b) {
+        if (a.name > b.name) {
+            return 1;
+        } else if (a.name < b.name) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
 }
 
 export const USERS = (users: User[]): User[] => {

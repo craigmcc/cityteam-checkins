@@ -1,6 +1,6 @@
-// FacilitiesView -----------------------------------------------------------------
+// TemplatesView -------------------------------------------------------------
 
-// Top-level view for managing Facility objects.
+// Top-level view for managing Template objects.
 
 // External Modules ----------------------------------------------------------
 
@@ -12,18 +12,18 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ----------------------------------------------------------
 
-import FacilityForm from "./FacilityForm";
-import FacilitiesList from "./FacilitiesList";
-import {HandleFacility, OnAction, Scope} from "../../types";
+import TemplateForm from "./TemplateForm";
+import TemplatesList from "./TemplatesList";
+import {HandleTemplate, OnAction, Scope} from "../../types";
 import FacilityContext from "../../contexts/FacilityContext";
 import LoginContext from "../../contexts/LoginContext";
-import useMutateFacility from "../../hooks/useMutateFacility";
-import Facility from "../../models/Facility";
+import useMutateTemplate from "../../hooks/useMutateTemplate";
+import Template from "../../models/Template";
 import logger from "../../util/ClientLogger";
 
 // Component Details ---------------------------------------------------------
 
-const FacilitiesView = () => {
+const TemplatesView = () => {
 
     const facilityContext = useContext(FacilityContext);
     const loginContext = useContext(LoginContext);
@@ -31,78 +31,75 @@ const FacilitiesView = () => {
     const [canInsert, setCanInsert] = useState<boolean>(false);
     const [canRemove, setCanRemove] = useState<boolean>(false);
     const [canUpdate, setCanUpdate] = useState<boolean>(false);
-    const [facility, setFacility] = useState<Facility | null>(null);
+    const [template, setTemplate] = useState<Template | null>(null);
 
-    const mutateFacility = useMutateFacility({});
+    const mutateTemplate = useMutateTemplate({});
 
     useEffect(() => {
 
         logger.debug({
-            context: "FacilitiesView.useEffect",
+            context: "TemplatesView.useEffect",
         });
 
+        const isAdmin = loginContext.validateFacility(facilityContext.facility, Scope.ADMIN);
         const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
-        setCanInsert(isSuperuser);
+        setCanInsert(isAdmin || isSuperuser);
         setCanRemove(isSuperuser);
-        setCanUpdate(isSuperuser);
+        setCanUpdate(isAdmin || isSuperuser);
 
-    }, [loginContext]);
+    }, [facilityContext.facility, loginContext]);
 
     const handleAdd: OnAction = () => {
-        setFacility(new Facility({
+        setTemplate(new Template({
             active: true,
-            address1: null,
-            address2: null,
-            city: null,
-            email: null,
+            allMats: null,
+            facilityId: facilityContext.facility.id,
+            handicapMats: null,
             name: null,
-            phone: null,
-            scope: null,
-            state: null,
-            zipCode: null,
+            socketMats: null,
+            workMats: null,
         }));
     }
 
-    const handleInsert: HandleFacility = async (theFacility) => {
-        /*const inserted = */await mutateFacility.insert(theFacility);
-        facilityContext.handleRefresh();
-        setFacility(null);
+    const handleInsert: HandleTemplate = async (theTemplate) => {
+        /*const inserted = */await mutateTemplate.insert(theTemplate);
+        setTemplate(null);
     }
 
-    const handleRemove: HandleFacility = async (theFacility) => {
-        /*const removed = */await mutateFacility.remove(theFacility);
-        facilityContext.handleRefresh();
-        setFacility(null);
+    const handleRemove: HandleTemplate = async (theTemplate) => {
+        /*const removed = */await mutateTemplate.remove(theTemplate);
+        setTemplate(null);
     }
 
-    const handleSelect: HandleFacility = (theFacility) => {
-        setFacility(theFacility);
+    const handleSelect: HandleTemplate = (theTemplate) => {
+        setTemplate(theTemplate);
     }
 
-    const handleUpdate: HandleFacility = async (theFacility) => {
-        /*const updated = */await mutateFacility.update(theFacility);
-        facilityContext.handleRefresh();
-        setFacility(null);
+    const handleUpdate: HandleTemplate = async (theTemplate) => {
+        /*const updated = */await mutateTemplate.update(theTemplate);
+        setTemplate(null);
     }
 
     return (
-        <Container fluid id="FacilitiesView">
+        <Container fluid id="TemplatesView">
 
             {/* List View */}
-            {(!facility) ? (
+            {(!template) ? (
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
                         <Col className="text-left">
-                            <span><strong>Select or Create Facility</strong></span>
+                            <span><strong>Select or Create Template for Facility&nbsp;</strong></span>
+                            <span className="text-info"><strong>{facilityContext.facility.name}</strong></span>
                         </Col>
                     </Row>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <FacilitiesList
+                        <TemplatesList
                             canInsert={canInsert}
                             canRemove={canRemove}
                             canUpdate={canUpdate}
+                            facility={facilityContext.facility}
                             handleAdd={handleAdd}
                             handleSelect={handleSelect}
                         />
@@ -112,21 +109,22 @@ const FacilitiesView = () => {
             ) : null }
 
             {/* Detail View */}
-            {(facility) ? (
+            {(template) ? (
                 <>
 
                     <Row className="mb-3 ml-1 mr-1">
                         <Col className="text-left">
-                            {(facility.id > 0) ? (
+                            {(template.id > 0) ? (
                                 <span><strong>Edit Existing</strong></span>
                             ) : (
                                 <span><strong>Add New</strong></span>
                             )}
-                            <span><strong>&nbsp;Facility</strong></span>
+                            <span><strong>&nbsp;Template for Facility&nbsp;</strong></span>
+                            <span className="text-info"><strong>{facilityContext.facility.name}</strong></span>
                         </Col>
                         <Col className="text-right">
                             <Button
-                                onClick={() => setFacility(null)}
+                                onClick={() => setTemplate(null)}
                                 size="sm"
                                 type="button"
                                 variant="secondary"
@@ -135,14 +133,14 @@ const FacilitiesView = () => {
                     </Row>
 
                     <Row className="mb-3 ml-1 mr-1">
-                        <FacilityForm
+                        <TemplateForm
                             autoFocus={true}
                             canRemove={canRemove}
-                            canSave={canInsert || canUpdate || loginContext.validateFacility(facility, Scope.ADMIN)}
+                            canSave={canInsert || canUpdate}
                             handleInsert={handleInsert}
                             handleRemove={handleRemove}
                             handleUpdate={handleUpdate}
-                            facility={facility}
+                            template={template}
                         />
                     </Row>
 
@@ -150,8 +148,9 @@ const FacilitiesView = () => {
             ) : null }
 
         </Container>
+
     )
 
 }
 
-export default FacilitiesView;
+export default TemplatesView;

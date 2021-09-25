@@ -1,11 +1,11 @@
-// FacilitiesList -----------------------------------------------------------------
+// TemplatesList -------------------------------------------------------------
 
-// List Facilities that match search criteria, offering callbacks for adding,
-// editing, and removing Facilities.
+// List Templates that match search criteria, offering callbacks for adding,
+// editing, and removing Templates.
 
 // External Modules ----------------------------------------------------------
 
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
@@ -17,58 +17,47 @@ import Table from "react-bootstrap/Table";
 import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
-import {HandleBoolean, HandleFacility, HandleValue, OnAction, Scope} from "../../types";
-import FacilityContext from "../../contexts/FacilityContext";
-import LoginContext from "../../contexts/LoginContext";
+import {HandleBoolean, HandleTemplate, HandleValue, OnAction} from "../../types";
 import Facility from "../../models/Facility";
-import useFetchFacilities from "../../hooks/useFetchFacilities";
+import useFetchTemplates from "../../hooks/useFetchTemplates";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
 
 // Incoming Properties -------------------------------------------------------
 
 export interface Props {
-    canInsert: boolean;                 // Can this user add Facilities?
-    canRemove: boolean;                 // Can this user remove Facilities?
-    canUpdate: boolean;                 // Can this user edit Facilities?
-    handleAdd: OnAction;                // Handle request to add a Facility
-    handleSelect: HandleFacility;       // Handle request to select a Facility
+    canInsert: boolean;                 // Can this user add Templates?
+    canRemove: boolean;                 // Can this user remove Templates?
+    canUpdate: boolean;                 // Can this user update Templates?
+    facility: Facility;                 // Parent Facility
+    handleAdd: OnAction;                // Handle request to add a Template
+    handleSelect: HandleTemplate;       // Handle request to select a Template
 }
 
 // Component Details ---------------------------------------------------------
 
-const FacilitiesList = (props: Props) => {
-
-    const facilityContext = useContext(FacilityContext);
-    const loginContext = useContext(LoginContext);
+const TemplatesList = (props: Props) => {
 
     const [active, setActive] = useState<boolean>(false);
-    const [availables, setAvailables] = useState<Facility[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(100);
     const [searchText, setSearchText] = useState<string>("");
 
-    const fetchFacilities = useFetchFacilities({
+    const fetchTemplates = useFetchTemplates({
         active: active,
         currentPage: currentPage,
+        facility: props.facility,
         name: (searchText.length > 0) ? searchText : undefined,
         pageSize: pageSize,
     });
 
     useEffect(() => {
 
-        logger.info({
-            context: "FacilitiesList.useEffect"
+        logger.debug({
+            context: "TemplatesList.useEffect"
         });
 
-        const isSuperuser = loginContext.validateScope(Scope.SUPERUSER);
-        if (isSuperuser) {
-            setAvailables(fetchFacilities.facilities);
-        } else {
-            setAvailables(facilityContext.facilities);
-        }
-
-    }, [facilityContext.facilities, fetchFacilities.facilities, loginContext]);
+    }, [fetchTemplates.templates]);
 
     const handleActive: HandleBoolean = (theActive) => {
         setActive(theActive);
@@ -87,14 +76,14 @@ const FacilitiesList = (props: Props) => {
     }
 
     return (
-        <Container fluid id="FacilitiesList">
+        <Container fluid id="TemplatesList">
 
             <Row className="mb-3 ml-1 mr-1">
                 <Col className="col-6">
                     <SearchBar
                         autoFocus
                         handleChange={handleChange}
-                        label="Search For Facilities:"
+                        label="Search For Templates:"
                         placeholder="Search by all or part of name"
                     />
                 </Col>
@@ -103,14 +92,14 @@ const FacilitiesList = (props: Props) => {
                         handleChange={handleActive}
                         id="activeOnly"
                         initialValue={active}
-                        label="Active Facilities Only?"
+                        label="Active Templates Only?"
                     />
                 </Col>
                 <Col className="text-right">
                     <Pagination
                         currentPage={currentPage}
-                        lastPage={(fetchFacilities.facilities.length === 0) ||
-                        (fetchFacilities.facilities.length < pageSize)}
+                        lastPage={(fetchTemplates.templates.length === 0) ||
+                            (fetchTemplates.templates.length < pageSize)}
                         onNext={onNext}
                         onPrevious={onPrevious}
                         variant="secondary"
@@ -138,33 +127,41 @@ const FacilitiesList = (props: Props) => {
                     <tr className="table-secondary">
                         <th scope="col">Name</th>
                         <th scope="col">Active</th>
-                        <th scope="col">City</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Scope</th>
+                        <th scope="col">Comments</th>
+                        <th scope="col">All Mats</th>
+                        <th scope="col">Handicap Mats</th>
+                        <th scope="col">Socket Mats</th>
+                        <th scope="col">Work Mats</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    {availables.map((facility, rowIndex) => (
+                    {fetchTemplates.templates.map((template, rowIndex) => (
                         <tr
                             className="table-default"
                             key={1000 + (rowIndex * 100)}
-                            onClick={() => props.handleSelect(facility)}
+                            onClick={() => props.handleSelect(template)}
                         >
                             <td key={1000 + (rowIndex * 100) + 1}>
-                                {facility.name}
+                                {template.name}
                             </td>
                             <td key={1000 + (rowIndex * 100) + 2}>
-                                {listValue(facility.active)}
+                                {listValue(template.active)}
                             </td>
                             <td key={1000 + (rowIndex * 100) + 3}>
-                                {facility.city}
+                                {template.comments}
                             </td>
                             <td key={1000 + (rowIndex * 100) + 4}>
-                                {facility.state}
+                                {template.allMats}
                             </td>
                             <td key={1000 + (rowIndex * 100) + 5}>
-                                {facility.scope}
+                                {template.handicapMats}
+                            </td>
+                            <td key={1000 + (rowIndex * 100) + 6}>
+                                {template.socketMats}
+                            </td>
+                            <td key={1000 + (rowIndex * 100) + 7}>
+                                {template.workMats}
                             </td>
                         </tr>
                     ))}
@@ -178,4 +175,4 @@ const FacilitiesList = (props: Props) => {
 
 }
 
-export default FacilitiesList;
+export default TemplatesList;

@@ -8,6 +8,7 @@ import AccessToken from "../models/AccessToken";
 import Facility from "../models/Facility";
 import RefreshToken from "../models/RefreshToken";
 import User from "../models/User";
+import Template from "../models/Template";
 
 // Public Objects ------------------------------------------------------------
 
@@ -43,6 +44,18 @@ export const toRefreshTokens = (values: object[]): RefreshToken[] => {
     const results: RefreshToken[] = [];
     values.forEach(value => {
         results.push(new RefreshToken(value));
+    });
+    return results;
+}
+
+export const toTemplate = (value: object): Template => {
+    return new Template(value);
+}
+
+export const toTemplates = (values: object[]): Template[] => {
+    const results: Template[] = [];
+    values.forEach(value => {
+        results.push(new Template(value));
     });
     return results;
 }

@@ -18,6 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FacilitySelector from "./components/facilities/FacilitySelector";
 import FacilitiesView from "./components/facilities/FacilitiesView";
 import LoggedInUser from "./components/login/LoggedInUser";
+import TemplatesView from "./components/templates/TemplatesView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 import UsersView from "./components/users/UsersView";
@@ -60,6 +61,9 @@ function App() {
               <LinkContainer to="/facilities">
                 <NavItem className="nav-link">Facilities</NavItem>
               </LinkContainer>
+              <LinkContainer to="/templates">
+                <NavItem className="nav-link">Templates</NavItem>
+              </LinkContainer>
               <LinkContainer to="/users">
                 <NavItem className="nav-link">Users</NavItem>
               </LinkContainer>
@@ -81,6 +85,9 @@ function App() {
           </Route>
           <Route exact path="/facilities">
             <FacilitiesView/>
+          </Route>
+          <Route exact path="/templates">
+            <TemplatesView/>
           </Route>
           <Route exact path="/users">
             <UsersView/>

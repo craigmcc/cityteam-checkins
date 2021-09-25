@@ -1,10 +1,10 @@
-// FacilityForm ------------------------------------------------------------------
+// TemplateForm --------------------------------------------------------------
 
-// Detail editing form for Facility objects.
+// Detail editing form for Template objects.
 
 // External Modules ----------------------------------------------------------
 
-import React, {/*useContext, */useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Formik,FormikHelpers,FormikValues} from "formik";
 import Button from "react-bootstrap/button";
 import Col from "react-bootstrap/Col";
@@ -16,55 +16,55 @@ import * as Yup from "yup";
 
 // Internal Modules ----------------------------------------------------------
 
-import {HandleFacility} from "../../types";
-import Facility from "../../models/Facility";
+import {HandleTemplate} from "../../types";
+import Template from "../../models/Template";
 import {
-    validateFacilityNameUnique,
-    validateFacilityScopeUnique
-} from "../../util/AsyncValidators";
+    validateMatsList,
+    validateMatsSubset
+} from "../../util/ApplicationValidators";
+import {validateTemplateNameUnique} from "../../util/AsyncValidators";
 import logger from "../../util/ClientLogger";
-import {toFacility} from "../../util/ToModelTypes";
+import {toTemplate} from "../../util/ToModelTypes";
 import {toEmptyStrings, toNullValues} from "../../util/Transformations";
-import {
-    validateEmail,
-    validatePhone,
-    validateState,
-    validateZipCode
-} from "../../util/Validators";
 
-// Incoming Properties ------------------------------------------------------
+// Incoming Properties -------------------------------------------------------
 
 export interface Props {
     autoFocus?: boolean;                // First element receive autoFocus? [false]
     canRemove: boolean;                 // Can remove be performed? [false]
     canSave: boolean;                   // Can save be performed? [false]
-    handleInsert: HandleFacility;       // Handle Facility insert request
-    handleRemove: HandleFacility;       // Handle Facility remove request
-    handleUpdate: HandleFacility;       // Handle Facility update request
-    facility: Facility;                 // Initial values (id < 0 for adding)
+    handleInsert: HandleTemplate;       // Handle Template insert request
+    handleRemove: HandleTemplate;       // Handle Template remove request
+    handleUpdate: HandleTemplate;       // Handle Template update request
+    template: Template;                 // Initial values (id < 0 for adding)
 }
 
 // Component Details ---------------------------------------------------------
 
-const FacilityForm = (props: Props) => {
+const TemplateForm = (props: Props) => {
 
-    const [adding] = useState<boolean>(props.facility.id < 0);
-    const [initialValues] = useState(toEmptyStrings(props.facility));
+    const [adding] = useState<boolean>(props.template.id < 0);
+    const [initialValues] = useState(toEmptyStrings(props.template));
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     useEffect(() => {
-        logger.debug({
-            context: "FacilityForm.useEffect",
-            facility: props.facility,
+        logger.info({
+            context: "TemplateForm.useEffect",
+            template: props.template,
             values: initialValues,
         });
-    }, [props.facility, initialValues]);
+    }, [props.template, initialValues]);
 
     const handleSubmit = (values: FormikValues, actions: FormikHelpers<FormikValues>): void => {
+        logger.debug({
+            context: "TemplateForm.handleSubmit",
+            template: toTemplate(toNullValues(values)),
+            values: values,
+        });
         if (adding) {
-            props.handleInsert(toFacility(toNullValues(values)));
+            props.handleInsert(toTemplate(toNullValues(values)));
         } else {
-            props.handleUpdate(toFacility(toNullValues(values)));
+            props.handleUpdate(toTemplate(toNullValues(values)));
         }
     }
 
@@ -78,53 +78,63 @@ const FacilityForm = (props: Props) => {
 
     const onConfirmPositive = (): void => {
         setShowConfirm(false);
-        props.handleRemove(props.facility);
+        props.handleRemove(props.template);
     }
 
     const validationSchema = () => {
         return Yup.object().shape({
             active: Yup.boolean(),
-            address1: Yup.string(),
-            address2: Yup.string(),
-            city: Yup.string(),
-            email: Yup.string()
-                .test("valid-email",
-                    "Invalid email format",
+            allMats: Yup.string()
+                .required("All Mats is required")
+                .test("valid-all-mats",
+                    "Invalid mats list format",
+                    function(value) {
+                        return validateMatsList(value ? value : "");
+                    }),
+            comments: Yup.string(),
+            handicapMats: Yup.string()
+                .test("valid-handicap-mats",
+                    "Invalid mats list format",
                     function (value) {
-                        return validateEmail(value ? value : "");
+                        return validateMatsList(value ? value : "");
+                    })
+                .test("subset-handicap-mats",
+                    "Not a subset of all mats",
+                    function (this) {
+                        return validateMatsSubset
+                        (this.parent.allMats, this.parent.handicapMats)
                     }),
             name: Yup.string()
                 .required("Name is required")
                 .test("unique-name",
-                    "That name is already in use",
+                    "That name is already in use within this Facility",
                     async function (this) {
-                        return await validateFacilityNameUnique(toFacility(this.parent));
+                        return await validateTemplateNameUnique(toTemplate(this.parent));
                     }
                 ),
-            phone: Yup.string()
-                .test("valid-phone",
-                    "Invalid phone number format",
+            socketMats: Yup.string()
+                .test("valid-socket-mats",
+                    "Invalid mats list format",
                     function (value) {
-                        return validatePhone(value ? value : "");
+                        return validateMatsList(value ? value : "");
+                    })
+                .test("subset-socket-mats",
+                    "Not a subset of all mats",
+                    function (this) {
+                        return validateMatsSubset
+                        (this.parent.allMats, this.parent.socketMats)
                     }),
-            scope: Yup.string()
-                .required("Scope is required")
-                .test("unique-scope",
-                    "That scope is already in use",
-                    function(value) {
-                        return validateFacilityScopeUnique(toFacility(this.parent));
-                    }),
-            state: Yup.string()
-                .test("valid-state",
-                    "Invalid state abbreviation",
-                    function(value) {
-                        return validateState(value ? value : "");
-                    }),
-            zipCode: Yup.string()
-                .test("valid-zip-code",
-                    "Invalid zip code format",
-                    function(value) {
-                        return validateZipCode(value ? value : "");
+            workMats: Yup.string()
+                .test("valid-work-mats",
+                    "Invalid mats list format",
+                    function (value) {
+                        return validateMatsList(value ? value : "");
+                    })
+                .test("subset-work-mats",
+                    "Not a subset of all mats",
+                    function (this) {
+                        return validateMatsSubset
+                        (this.parent.allMats, this.parent.workMats)
                     }),
         });
     }
@@ -134,7 +144,7 @@ const FacilityForm = (props: Props) => {
         <>
 
             {/* Details Form */}
-            <Container id="FacilityForm">
+            <Container id="TemplateForm">
 
                 <Formik
                     initialValues={initialValues}
@@ -158,12 +168,12 @@ const FacilityForm = (props: Props) => {
                        }) => (
 
                         <Form
-                            id="FacilityForm"
+                            id="TemplateForm"
                             noValidate
                             onSubmit={handleSubmit}
                         >
 
-                            <Form.Row id="nameScopeRow">
+                            <Form.Row id="nameRow">
                                 <Form.Group as={Col} controlId="name" id="nameGroup">
                                     <Form.Label>Name:</Form.Label>
                                     <Form.Control
@@ -178,155 +188,116 @@ const FacilityForm = (props: Props) => {
                                         value={values.name}
                                     />
                                     <Form.Control.Feedback type="valid">
-                                        Name of this Facility.
+                                        Name is required and must be unique.
                                     </Form.Control.Feedback>
                                     <Form.Control.Feedback type="invalid">
                                         {errors.name}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group as={Col} controlId="name" id="scopeGroup">
-                                    <Form.Label>Scope:</Form.Label>
+                            </Form.Row>
+
+                            <Form.Row id="commentsRow">
+                                <Form.Group as={Col} controlId="name" id="commentsGroup">
+                                    <Form.Label>Comments:</Form.Label>
                                     <Form.Control
-                                        isInvalid={touched.scope && !!errors.scope}
-                                        isValid={!errors.scope}
-                                        name="scope"
+                                        isInvalid={touched.comments && !!errors.comments}
+                                        isValid={!errors.comments}
+                                        name="comments"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         size="sm"
                                         type="text"
-                                        value={values.scope}
+                                        value={values.comments}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.comments}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Form.Row>
+
+                            <Form.Row id="allMatsHandicapMatsRow">
+                                <Form.Group as={Col} controlId="name" id="allMatsGroup">
+                                    <Form.Label>All Mats:</Form.Label>
+                                    <Form.Control
+                                        isInvalid={touched.allMats && !!errors.allMats}
+                                        isValid={!errors.allMats}
+                                        name="allMats"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        size="sm"
+                                        type="text"
+                                        value={values.allMats}
                                     />
                                     <Form.Control.Feedback type="valid">
-                                        Scope required and to access this Facility.
+                                        Mats that should be generated for this template.
                                     </Form.Control.Feedback>
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.scope}
+                                        {errors.allMats}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                                <Form.Group as={Col} controlId="name" id="handicapMatsGroup">
+                                    <Form.Label>Handicap Mats:</Form.Label>
+                                    <Form.Control
+                                        isInvalid={touched.handicapMats && !!errors.handicapMats}
+                                        isValid={!errors.handicapMats}
+                                        name="handicapMats"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        size="sm"
+                                        type="text"
+                                        value={values.handicapMats}
+                                    />
+                                    <Form.Control.Feedback type="valid">
+                                        Mats that should be marked "H" (handicap accessible).
+                                    </Form.Control.Feedback>
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.handicapMats}
                                     </Form.Control.Feedback>
                                 </Form.Group>
                             </Form.Row>
 
-                            <Form.Row id="addressRow">
-                                <Form.Group as={Col} controlId="address1" id="address1Group">
-                                    <Form.Label>Address 1:</Form.Label>
+                            <Form.Row id="socketMatsWorkMatsRow">
+                                <Form.Group as={Col} controlId="name" id="socketMatsGroup">
+                                    <Form.Label>Socket Mats:</Form.Label>
                                     <Form.Control
-                                        isInvalid={touched.address1 && !!errors.address1}
-                                        isValid={!errors.address1}
-                                        name="address1"
+                                        isInvalid={touched.socketMats && !!errors.socketMats}
+                                        isValid={!errors.socketMats}
+                                        name="socketMats"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         size="sm"
                                         type="text"
-                                        value={values.address1}
+                                        value={values.socketMats}
                                     />
+                                    <Form.Control.Feedback type="valid">
+                                        Mats that should be marked "S" (socket nearby).
+                                    </Form.Control.Feedback>
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.address1}
+                                        {errors.socketMats}
                                     </Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group as={Col} controlId="address2" id="address2Group">
-                                    <Form.Label>Address 2:</Form.Label>
+                                <Form.Group as={Col} controlId="name" id="workMatsGroup">
+                                    <Form.Label>Work Mats:</Form.Label>
                                     <Form.Control
-                                        isInvalid={touched.address2 && !!errors.address2}
-                                        isValid={!errors.address2}
-                                        name="address2"
+                                        isInvalid={touched.workMats && !!errors.workMats}
+                                        isValid={!errors.workMats}
+                                        name="workMats"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         size="sm"
                                         type="text"
-                                        value={values.address2}
+                                        value={values.workMats}
                                     />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.address2}
+                                    <Form.Control.Feedback type="valid">
+                                        Mats that should be marked "W" (work mats).
                                     </Form.Control.Feedback>
-                                </Form.Group>
-                            </Form.Row>
-
-                            <Form.Row id="cityStateZipRow">
-                                <Form.Group as={Col} className="col-6" controlId="city" id="city">
-                                    <Form.Label>City:</Form.Label>
-                                    <Form.Control
-                                        isInvalid={touched.city && !!errors.city}
-                                        isValid={!errors.city}
-                                        name="city"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        size="sm"
-                                        type="text"
-                                        value={values.city}
-                                    />
                                     <Form.Control.Feedback type="invalid">
-                                        {errors.city}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="state" id="state">
-                                    <Form.Label>State:</Form.Label>
-                                    <Form.Control
-                                        isInvalid={touched.state && !!errors.state}
-                                        isValid={!errors.state}
-                                        name="state"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        size="sm"
-                                        type="text"
-                                        value={values.state}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.state}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="zipCode" id="zipCode">
-                                    <Form.Label>Zip Code:</Form.Label>
-                                    <Form.Control
-                                        isInvalid={touched.zipCode && !!errors.zipCode}
-                                        isValid={!errors.zipCode}
-                                        name="city"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        size="sm"
-                                        type="text"
-                                        value={values.zipCode}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.zipCode}
+                                        {errors.workMats}
                                     </Form.Control.Feedback>
                                 </Form.Group>
                             </Form.Row>
 
-                            <Form.Row id="emailPhoneRow">
-                                <Form.Group as={Col} controlId="email" id="email">
-                                    <Form.Label>Email Address:</Form.Label>
-                                    <Form.Control
-                                        isInvalid={touched.email && !!errors.email}
-                                        isValid={!errors.email}
-                                        name="email"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        size="sm"
-                                        type="text"
-                                        value={values.email}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.email}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                                <Form.Group as={Col} controlId="phone" id="phone">
-                                    <Form.Label>Phone Number:</Form.Label>
-                                    <Form.Control
-                                        isInvalid={touched.phone && !!errors.phone}
-                                        isValid={!errors.phone}
-                                        name="phone"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        size="sm"
-                                        type="text"
-                                        value={values.phone}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.phone}
-                                    </Form.Control.Feedback>
-                                </Form.Group>
-                            </Form.Row>
-
-                            <Form.Row className="mb-3" id="activeRow">
+                            <Form.Row id="activeRow">
                                 <Form.Group as={Col} controlId="active" id="activeGroup">
                                     <Form.Check
                                         feedback={errors.active}
@@ -387,12 +358,12 @@ const FacilityForm = (props: Props) => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                        Removing this Facility is not reversible, and
+                        Removing this Template is not reversible, and
                         <strong>
                             &nbsp;will also remove ALL related information.
                         </strong>.
                     </p>
-                    <p>Consider marking this Facility as inactive instead.</p>
+                    <p>Consider marking this Template as inactive instead.</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
@@ -417,6 +388,7 @@ const FacilityForm = (props: Props) => {
         </>
 
     )
+
 }
 
-export default FacilityForm;
+export default TemplateForm;

@@ -7,8 +7,8 @@
 // import Checkin from "./Checkin";
 // import Guest from "./Guest";
 import Model from "./Model";
-// import Template from "./Template";
-// import {toCheckins, toGuests, toTemplates} from "../util/ToModelTypes";
+import Template from "./Template";
+import {/*toCheckins, toGuests, */toTemplates} from "../util/ToModelTypes";
 
 // Public Objects ------------------------------------------------------------
 
@@ -30,6 +30,8 @@ class Facility extends Model {
         this.state = data.state ? data.state : null;
         this.zipCode = data.zipCode ? data.zipCode : null;
 
+        this.templates = data.templates ? toTemplates(data.templates) : undefined;
+
     }
 
     active!: boolean;
@@ -43,9 +45,9 @@ class Facility extends Model {
     state?: string;
     zipCode?: string;
 
-    // checkins: Checkin[];
-    // guests: Guest[];
-    // templates: Template[];
+    // checkins?: Checkin[];
+    // guests?: Guest[];
+    templates?: Template[];
 
 }
 

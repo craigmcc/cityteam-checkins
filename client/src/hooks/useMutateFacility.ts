@@ -11,13 +11,11 @@ import {useEffect, useState} from "react";
 import {HandleFacility} from "../types";
 import Api from "../clients/Api";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
-import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
 export interface Props {
-    facility: Facility;                 // Facility on which to perform operations
 }
 
 export interface State {
@@ -38,9 +36,8 @@ const useMutateFacility = (props: Props): State => {
     useEffect(() => {
         logger.debug({
             context: "useMutateFacility.useEffect",
-            facility: Abridgers.FACILITY(props.facility),
         });
-    }, [props.facility]);
+    });
 
     const insert: HandleFacility = async (theFacility): Promise<Facility> => {
 
@@ -57,7 +54,7 @@ const useMutateFacility = (props: Props): State => {
         } catch (error) {
             logger.error({
                 context: "useMutateFacility.insert",
-                facility: props.facility,
+                facility: theFacility,
                 error: error,
             })
             setError(error as Error);
@@ -76,15 +73,15 @@ const useMutateFacility = (props: Props): State => {
 
         try {
             removed = (await Api.delete(FACILITIES_BASE
-                + `/${props.facility.id}`)).data;
+                + `/${theFacility.id}`)).data;
             logger.debug({
                 context: "useMutateFacility.remove",
                 facility: removed,
             });
         } catch (error) {
             logger.error({
-                context: "useMutateFacility.update",
-                facility: props.facility,
+                context: "useMutateFacility.remove",
+                facility: theFacility,
                 error: error,
             });
             setError(error as Error);
@@ -103,7 +100,7 @@ const useMutateFacility = (props: Props): State => {
 
         try {
             updated = (await Api.put(FACILITIES_BASE
-                + `/${props.facility.id}`, theFacility)).data;
+                + `/${theFacility.id}`, theFacility)).data;
             logger.debug({
                 context: "useMutateFacility.update",
                 facility: updated,
@@ -111,7 +108,7 @@ const useMutateFacility = (props: Props): State => {
         } catch (error) {
             logger.error({
                 context: "useMutateFacility.update",
-                facility: props.facility,
+                facility: theFacility,
                 error: error,
             });
             setError(error as Error);

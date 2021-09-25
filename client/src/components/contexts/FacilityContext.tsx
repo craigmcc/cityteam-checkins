@@ -10,11 +10,11 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 // Internal Modules ----------------------------------------------------------
 
 import LoginContext from "./LoginContext";
-import {HandleAction, HandleFacility} from "../types";
-import useFetchFacilities from "../hooks/useFetchFacilities";
-import Facility from "../models/Facility";
-import * as Abridgers from "../util/Abridgers";
-import logger from "../util/ClientLogger";
+import {HandleAction, HandleFacility} from "../../types";
+import useFetchFacilities from "../../hooks/useFetchFacilities";
+import Facility from "../../models/Facility";
+import * as Abridgers from "../../util/Abridgers";
+import logger from "../../util/ClientLogger";
 
 // Context Properties --------------------------------------------------------
 

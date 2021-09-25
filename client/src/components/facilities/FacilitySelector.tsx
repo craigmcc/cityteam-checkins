@@ -11,8 +11,8 @@ import Form from "react-bootstrap/Form";
 
 // Internal Modules ----------------------------------------------------------
 
+import FacilityContext from "../contexts/FacilityContext";
 import {HandleFacility, OnChangeSelect} from "../../types";
-import FacilityContext from "../../contexts/FacilityContext";
 import Facility from "../../models/Facility";
 import * as Abridgers from "../../util/Abridgers";
 import logger from "../../util/ClientLogger";

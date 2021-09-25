@@ -23,8 +23,8 @@ import TemplatesView from "./components/templates/TemplatesView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 import UsersView from "./components/users/UsersView";
-import {FacilityContextProvider} from "./contexts/FacilityContext";
-import {LoginContextProvider} from "./contexts/LoginContext";
+import {FacilityContextProvider} from "./components/contexts/FacilityContext";
+import {LoginContextProvider} from "./components/contexts/LoginContext";
 
 // Component Details ---------------------------------------------------------
 

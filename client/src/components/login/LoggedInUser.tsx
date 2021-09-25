@@ -12,9 +12,9 @@ import {useHistory} from "react-router-dom";
 
 // Internal Modules ----------------------------------------------------------
 
-import OAuth from "../../clients/OAuth";
-import LoginContext from "../../contexts/LoginContext";
 import LoginForm from "./LoginForm";
+import LoginContext from "../contexts/LoginContext";
+import OAuth from "../../clients/OAuth";
 import Credentials from "../../models/Credentials";
 import PasswordTokenRequest from "../../models/PasswordTokenRequest";
 import TokenResponse from "../../models/TokenResponse";

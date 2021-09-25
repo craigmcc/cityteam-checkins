@@ -14,9 +14,9 @@ import Row from "react-bootstrap/Row";
 
 import FacilityForm from "./FacilityForm";
 import FacilitiesList from "./FacilitiesList";
+import FacilityContext from "../contexts/FacilityContext";
+import LoginContext from "../contexts/LoginContext";
 import {HandleFacility, OnAction, Scope} from "../../types";
-import FacilityContext from "../../contexts/FacilityContext";
-import LoginContext from "../../contexts/LoginContext";
 import useMutateFacility from "../../hooks/useMutateFacility";
 import Facility from "../../models/Facility";
 import logger from "../../util/ClientLogger";

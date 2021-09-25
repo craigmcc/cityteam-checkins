@@ -2,13 +2,13 @@
 
 // A Guest who has ever checked in at a CityTeam Facility.
 
-// Public Objects ------------------------------------------------------------
-
 // Internal Modules ----------------------------------------------------------
 
 import Facility from "./Facility";
 import Model from "./Model";
 import {toFacility} from "../util/ToModelTypes";
+
+// Public Objects ------------------------------------------------------------
 
 export const GUESTS_BASE = "/guests";
 
@@ -25,7 +25,7 @@ class Guest extends Model {
         this.firstName = data.firstName ? data.firstName : null;
         this.lastName = data.lastName ? data.lastName : null;
 
-        this.facility = data.facility ? toFacility(data.facility) : undefined;
+        this.facility = data.facility ? toFacility(data.facility) : null;
 
     }
 
@@ -36,7 +36,7 @@ class Guest extends Model {
     firstName!: string;
     lastName!: string;
 
-    facility?: Facility;
+    facility: Facility | null;
 
 }
 

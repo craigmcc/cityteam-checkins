@@ -4,6 +4,7 @@
 
 // Internal Modules ----------------------------------------------------------
 
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
 import Model from "../models/Model";
@@ -13,13 +14,37 @@ import User from "../models/User";
 // Public Objects ------------------------------------------------------------
 
 export const ANY = (model: Model): object => {
-    if (model instanceof Facility) {
+    if (model instanceof Checkin) {
+        return CHECKIN(model);
+    } else if (model instanceof Facility) {
         return FACILITY(model);
+    } else if (model instanceof Guest) {
+        return GUEST(model);
+    } else if (model instanceof Template) {
+        return TEMPLATE(model);
     } else if (model instanceof User) {
         return USER(model);
     } else {
         return model;
     }
+}
+
+export const CHECKIN = (checkin: Checkin): object => {
+    return {
+        id: checkin.id,
+        checkinDate: checkin.checkinDate,
+        facilityId: checkin.facilityId,
+        guestId: checkin.guestId,
+        matNumber: checkin.matNumber,
+    };
+}
+
+export const CHECKINS = (checkins: Checkin[]): object[] => {
+    const results: object[] = [];
+    checkins.forEach(checkin => {
+        results.push(CHECKIN(checkin));
+    });
+    return results;
 }
 
 export const FACILITIES = (facilities: Facility[]): object[] => {

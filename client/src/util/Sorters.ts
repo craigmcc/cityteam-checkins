@@ -5,6 +5,7 @@
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
@@ -23,6 +24,24 @@ export const ACCESS_TOKENS = (accessTokens: AccessToken[]): AccessToken[] => {
             return 0;
         }
     })
+}
+
+export const CHECKINS = (checkins: Checkin[]): Checkin[] => {
+    return checkins.sort(function (a, b) {
+        if (a.checkinDate > b.checkinDate) {
+            return 1;
+        } else if (a.checkinDate < b.checkinDate) {
+            return -1;
+        } else {
+            if (a.matNumber > b.matNumber) {
+                return 1;
+            } else if (a.matNumber < b.matNumber) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    });
 }
 
 export const FACILITIES = (facilities: Facility[]): Facility[] => {

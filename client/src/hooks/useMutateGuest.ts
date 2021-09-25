@@ -1,4 +1,4 @@
-// useMutateGuest ---------------------------------------------------------
+// useMutateGuest ------------------------------------------------------------
 
 // Custom hook to encapsulate mutation operations on a Guest.
 

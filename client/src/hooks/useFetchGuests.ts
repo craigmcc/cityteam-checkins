@@ -18,7 +18,7 @@ import {queryParameters} from "../util/QueryParameters";
 // Incoming Properties and Outgoing State ------------------------------------
 
 export interface Props {
-    active?: boolean;                   // Select only active Templates? [false]
+    active?: boolean;                   // Select only active Guests? [false]
     currentPage?: number;               // One-relative current page number [1]
     facility: Facility;                 // Parent Facility
     pageSize?: number;                  // Number of entries per page [25]

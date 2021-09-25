@@ -28,7 +28,7 @@ class Template extends Model {
         this.socketMats = data.socketMats ? data.socketMats : null;
         this.workMats = data.workMats ? data.workMats : null;
 
-        this.facility = data.facility ? toFacility(data.facility) : undefined;
+        this.facility = data.facility ? toFacility(data.facility) : null;
 
     }
 
@@ -41,7 +41,7 @@ class Template extends Model {
     socketMats?: string;
     workMats?: string;
 
-    facility?: Facility;
+    facility: Facility | null;
 
 }
 

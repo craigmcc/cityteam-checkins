@@ -5,6 +5,7 @@
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
@@ -21,6 +22,18 @@ export const toAccessTokens = (values: object[]): AccessToken[] => {
     const results: AccessToken[] = [];
     values.forEach(value => {
         results.push(new AccessToken(value));
+    });
+    return results;
+}
+
+export const toCheckin = (value: object): Checkin => {
+    return new Checkin(value);
+}
+
+export const toCheckins = (values: object[]): Checkin[] => {
+    const results: Checkin[] = [];
+    values.forEach(value => {
+        results.push(new Checkin(value));
     });
     return results;
 }

@@ -15,6 +15,7 @@
 // Internal Modules ----------------------------------------------------------
 
 import Api from "../clients/Api";
+import Checkin, {CHECKINS_BASE} from "../models/Checkin";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
 import Guest, {GUESTS_BASE} from "../models/Guest";
 import Template, {TEMPLATES_BASE} from "../models/Template";
@@ -29,6 +30,24 @@ export const validateFacilityNameUnique = async (facility: Facility): Promise<bo
             return (result.id === facility.id);
         } catch (error) {
             return true; // Definitely unique
+        }
+    } else {
+        return true;
+    }
+}
+
+export const validateCheckinGuestUnique = async (checkin: Checkin): Promise<boolean> => {
+    if (checkin && checkin.guestId) {
+        const parameters = {
+            date: checkin.checkinDate,
+            guestId: checkin.guestId,
+        }
+        const results = (await Api.get(CHECKINS_BASE
+            + `/${checkin.facilityId}` + `${queryParameters(parameters)}`)).data;
+        if (results.length === 0) {
+            return true;
+        } else {
+            return (results[0].id === checkin.id);
         }
     } else {
         return true;

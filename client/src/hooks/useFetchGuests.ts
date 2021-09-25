@@ -49,7 +49,7 @@ const useFetchGuests = (props: Props): State => {
             let theGuests: Guest[] = [];
 
             try {
-                if (props.name) { // Too many Guests for a useful non-filtered fetch
+                if ((props.facility.id > 0) && props.name) { // Too many Guests for a useful non-filtered fetch
                     const limit = props.pageSize ? props.pageSize : 25;
                     const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
                     const parameters = {

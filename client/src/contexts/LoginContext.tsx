@@ -22,6 +22,7 @@ export interface Data {
     accessToken: string | null;         // Current access token (if logged in)
     expires: Date | null;               // Absolute expiration time
     loggedIn: boolean;                  // Is a user currently logged in?
+    refreshToken: string | null;        // Current refresh token (if logged in and returned)
     scope: string | null;               // Allowed scope(s) (if logged in)
     username: string | null;            // Logged in username (if logged in)
 }
@@ -42,6 +43,7 @@ export const LoginContext = createContext<State>({
         accessToken: null,
         expires: null,
         loggedIn: false,
+        refreshToken: null,
         scope: null,
         username: null,
     },
@@ -58,6 +60,7 @@ export let LOGIN_DATA: Data = {
     accessToken: null,
     expires: null,
     loggedIn: false,
+    refreshToken: null,
     scope: null,
     username: null,
 };
@@ -73,6 +76,7 @@ export const LoginContextProvider = (props: any) => {
         accessToken: null,
         expires: null,
         loggedIn: false,
+        refreshToken: null,
         scope: null,
         username: null,
     });
@@ -81,7 +85,7 @@ export const LoginContextProvider = (props: any) => {
 
         logger.info({
             context: "LoginContext.handleLogin",
-            tokenResponse: tokenResponse,
+            scope: tokenResponse.scope,
             username: username,
         });
 
@@ -108,6 +112,7 @@ export const LoginContextProvider = (props: any) => {
             accessToken: tokenResponse.access_token,
             expires: new Date((new Date()).getTime() + (tokenResponse.expires_in * 1000)),
             loggedIn: true,
+            refreshToken: tokenResponse.refresh_token ? tokenResponse.refresh_token : null,
             scope: tokenResponse.scope,
             username: username,
         }
@@ -129,6 +134,7 @@ export const LoginContextProvider = (props: any) => {
             accessToken: null,
             expires: null,
             loggedIn: false,
+            refreshToken: null,
             scope: null,
             username: null,
         };

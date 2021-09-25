@@ -108,7 +108,7 @@ OAuthTokenRouter.post("/",
             const output: any = {
                 ...tokenResponse
             }
-            logger.info({
+            logger.debug({
                 context: "OAuthTokenRouter.token",
                 input: input,
                 output: output

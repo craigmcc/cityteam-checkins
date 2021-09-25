@@ -61,7 +61,7 @@ export const FacilityContextProvider = (props: any) => {
                 }
             });
         }
-        logger.info({
+        logger.debug({
             context: "FacilityContext.useEffect",
             availables: Abridgers.FACILITIES(theAvailables),
         });
@@ -69,7 +69,7 @@ export const FacilityContextProvider = (props: any) => {
 
         // Select or reselect the appropriate Facility
         if (theAvailables.length === 1) {
-            logger.info({
+            logger.debug({
                 context: "FacilityContext.useEffect",
                 msg: "Autoselect the only available facility",
                 facility: Abridgers.FACILITY(theAvailables[0]),
@@ -82,7 +82,7 @@ export const FacilityContextProvider = (props: any) => {
                     found = option;
                 }
             });
-            logger.info({
+            logger.debug({
                 context: "FacilityContext.useEffect",
                 msg: "Reset to currently selected Facility",
                 facility: Abridgers.FACILITY(found),
@@ -94,7 +94,7 @@ export const FacilityContextProvider = (props: any) => {
             loginContext, loginContext.data.loggedIn]);
 
     const handleRefresh: HandleAction = () => {
-        logger.info({
+        logger.debug({
             context: "FacilityContext.handleRefresh",
         });
         setActive(false); // Trigger useFetchFacilities to fetch again
@@ -102,7 +102,7 @@ export const FacilityContextProvider = (props: any) => {
     }
 
     const handleSelect: HandleFacility = (theFacility) => {
-        logger.info({
+        logger.debug({
             context: "FacilityContext.handleSelect",
             facility: Abridgers.FACILITY(theFacility),
         })

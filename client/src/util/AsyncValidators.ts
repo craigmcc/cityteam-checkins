@@ -37,7 +37,7 @@ export const validateFacilityNameUnique = async (facility: Facility): Promise<bo
 }
 
 export const validateCheckinGuestUnique = async (checkin: Checkin): Promise<boolean> => {
-    if (checkin && checkin.guestId) {
+    if (checkin.guestId) {
         const parameters = {
             date: checkin.checkinDate,
             guestId: checkin.guestId,

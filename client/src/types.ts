@@ -9,6 +9,7 @@ import React from "react";
 // Internal Modules ----------------------------------------------------------
 
 import Assign from "./models/Assign";
+import Checkin from"./models/Checkin";
 import Facility from "./models/Facility";
 import Guest from "./models/Guest";
 import Template from "./models/Template";
@@ -53,6 +54,8 @@ export type HandleValue = (newValue: string) => void;
 // Model Object Handlers -----------------------------------------------------
 
 export type HandleAssign = (assign: Assign) => void;
+export type HandleCheckin = (checkin: Checkin) => void;
+export type HandleDate = (date: string) => void;
 export type HandleFacility = (facility: Facility) => void;
 export type HandleGuest = (guest: Guest) => void;
 export type HandleTemplate = (template: Template) => void;

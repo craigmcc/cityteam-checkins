@@ -15,6 +15,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Internal Modules ----------------------------------------------------------
 
+import CheckinsView from "./components/checkins/CheckinsView";
 import FacilitySelector from "./components/facilities/FacilitySelector";
 import FacilitiesView from "./components/facilities/FacilitiesView";
 import GuestsView from "./components/guests/GuestsView";
@@ -59,6 +60,9 @@ function App() {
               <LinkContainer to="/">
                 <NavItem className="nav-link">Home</NavItem>
               </LinkContainer>
+              <LinkContainer to="/checkins">
+                <NavItem className="nav-link">Checkins</NavItem>
+              </LinkContainer>
               <LinkContainer to="/facilities">
                 <NavItem className="nav-link">Facilities</NavItem>
               </LinkContainer>
@@ -86,6 +90,9 @@ function App() {
         <Switch>
           <Route exact path="/open-api">
             <OpenApiView/>
+          </Route>
+          <Route exact path="/checkins">
+            <CheckinsView/>
           </Route>
           <Route exact path="/facilities">
             <FacilitiesView/>

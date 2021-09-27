@@ -8,6 +8,7 @@ import {useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
+import {HandleAction} from "../types";
 import Api from "../clients/Api";
 import Facility from "../models/Facility";
 import Checkin, {CHECKINS_BASE} from "../models/Checkin";
@@ -29,9 +30,10 @@ export interface Props {
 }
 
 export interface State {
-    checkins: Checkin[];                    // Fetched Checkins
+    checkins: Checkin[];                // Fetched Checkins
     error: Error | null;                // I/O error (if any)
     loading: boolean;                   // Are we currently loading?
+    refresh: HandleAction;              // Trigger a refresh with current selection properties
 }
 
 // Hook Details --------------------------------------------------------------
@@ -41,6 +43,7 @@ const useFetchCheckins = (props: Props): State => {
     const [checkins, setCheckins] = useState<Checkin[]>([]);
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [refetch, setRefetch] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -90,18 +93,24 @@ const useFetchCheckins = (props: Props): State => {
 
             setLoading(false);
             setCheckins(theCheckins);
+            setRefetch(false);
 
         }
 
         fetchCheckins();
 
-    }, [props.available, props.currentPage, props.date, props.facility,
+    }, [refetch, props.available, props.currentPage, props.date, props.facility,
         props.guestId, props.pageSize, props.withFacility, props.withGuest]);
+
+    const refresh = () => {
+        setRefetch(true);
+    }
 
     return {
         checkins: checkins,
         error: error ? error : null,
         loading: loading,
+        refresh: refresh,
     }
 
 }

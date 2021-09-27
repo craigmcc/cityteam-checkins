@@ -47,7 +47,8 @@ const CheckinsView = () => {
             facility: Abridgers.FACILITY(facilityContext.facility),
         });
 
-        setCanProcess(loginContext.validateFacility(facilityContext.facility, Scope.REGULAR));
+        setCanProcess(loginContext.validateFacility(facilityContext.facility, Scope.REGULAR)
+            || loginContext.validateFacility(facilityContext.facility, Scope.ADMIN));
 
     }, [facilityContext.facility, loginContext]);
 
@@ -60,7 +61,7 @@ const CheckinsView = () => {
     }
 
     const handleCheckin: HandleCheckin = (theCheckin) => {
-        logger.info({
+        logger.debug({
             context: "CheckinsView.handleCheckin",
             checkin: Abridgers.CHECKIN(theCheckin),
         });
@@ -71,6 +72,10 @@ const CheckinsView = () => {
     }
 
     const handleCheckinDate: HandleDate = (theCheckinDate) => {
+        logger.trace({
+            context: "CheckinsView.handleCheckinDate",
+            checkinDate: theCheckinDate,
+        });
         setCheckinDate(theCheckinDate);
         handleStage(Stage.List);
     }
@@ -96,7 +101,7 @@ const CheckinsView = () => {
                     <span><strong>Manage Checkins for Facility&nbsp;</strong></span>
                     <span className="text-info"><strong>{facilityContext.facility.name}</strong></span>
                 </Col>
-                <Col className="text-right">
+                <span className="text-right">
                     <DateSelector
                         autoFocus
                         handleDate={handleCheckinDate}
@@ -104,7 +109,7 @@ const CheckinsView = () => {
                         required
                         value={checkinDate}
                     />
-                </Col>
+                </span>
             </Row>
 
             {/* Selected Subview by stage */}

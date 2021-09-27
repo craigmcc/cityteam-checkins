@@ -14,9 +14,9 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ----------------------------------------------------------
 
-import SummaryHeader from "../summaries/SummaryHeader";
-import SummaryRow from "../summaries/SummaryRow";
+import CheckinsTable from "./CheckinsTable";
 import FacilityContext from "../contexts/FacilityContext";
+import SummariesTable from "../summaries/SummariesTable";
 import TemplateSelector from "../templates/TemplateSelector";
 import {HandleCheckin, HandleTemplate} from "../../types";
 import useFetchCheckins from "../../hooks/useFetchCheckins";
@@ -41,6 +41,7 @@ const CheckinsListSubview = (props: Props) => {
 
     const facilityContext = useContext(FacilityContext);
 
+    const [checkin] = useState<Checkin>(new Checkin());
     const [summary, setSummary] = useState<Summary>(new Summary());
     const [template, setTemplate] = useState<Template>(new Template());
 
@@ -53,14 +54,13 @@ const CheckinsListSubview = (props: Props) => {
     });
 
     const mutateCheckin = useMutateCheckin({
-        checkin: new Checkin(),
+        checkin: checkin,
     });
 
     useEffect(() => {
 
         logger.info({
             context: "CheckinsListSubview.useEffect",
-            checkins: fetchCheckins.checkins,
         });
 
         // Calculate and store the summary totals to be displayed
@@ -68,10 +68,9 @@ const CheckinsListSubview = (props: Props) => {
         fetchCheckins.checkins.forEach(checkin => {
             theSummary.includeCheckin(checkin);
         });
-        setSummary(summary);
+        setSummary(theSummary);
 
-    }, [props.checkinDate, summary,
-        facilityContext.facility.id, fetchCheckins.checkins]);
+    }, [facilityContext.facility.id, props.checkinDate, fetchCheckins.checkins]);
 
     const handleGenerate = async () => {
         logger.debug({
@@ -80,7 +79,7 @@ const CheckinsListSubview = (props: Props) => {
             template: Abridgers.TEMPLATE(template),
         });
         /* const checkins = */await mutateCheckin.generate(props.checkinDate, template);
-        // TODO - trigger refresh somehow?
+        fetchCheckins.refresh();
     }
 
     const handleTemplate: HandleTemplate = (theTemplate) => {
@@ -119,78 +118,17 @@ const CheckinsListSubview = (props: Props) => {
             ) : null}
 
             <Row className="mb-3">
-                <Table
-                    bordered={true}
-                    hover={true}
-                    size="sm"
-                    striped={true}
-                >
-
-                <thead>
-                <tr className="table-secondary">
-                    <th scope="col">Mat</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">$$</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Shower</th>
-                    <th scope="col">Wakeup</th>
-                    <th scope="col">Comments</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {fetchCheckins.checkins.map((checkin, rowIndex) => (
-                    <tr
-                        className="table-default"
-                        key={1000 + (rowIndex * 100)}
-                        onClick={() => props.handleCheckin(checkin)}
-                    >
-                        <td key={1000 + (rowIndex * 100) + 1}>
-                            {checkin.matNumber} {/* TODO matNumberAndFeatures screws up the rendering */}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 2}>
-                            {checkin.guest ? checkin.guest.firstName : ""}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 3}>
-                            {checkin.guest ? checkin.guest.lastName : ""}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 4}>
-                            {checkin.paymentType}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 5}>
-                            {checkin.paymentAmount}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 6}>
-                            {checkin.showerTime}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 7}>
-                            {checkin.wakeupTime}
-                        </td>
-                        <td key={1000 + (rowIndex * 100) + 8}>
-                            {checkin.comments}
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-
-                </Table>
+                <CheckinsTable
+                    checkins={fetchCheckins.checkins}
+                    handleCheckin={props.handleCheckin}
+                />
             </Row>
 
-            {/* TODO - table layout is messed up */}
             <Row>
-                <Table
-                    bordered={true}
-                    size="sm"
-                    striped={true}
-                >
-                    <thead>
-                        <SummaryHeader withCheckinDate={false}/>
-                    </thead>
-                    <tbody>
-                        <SummaryRow keyBase={2000} rowIndex={0} summary={summary}/>
-                    </tbody>
-                </Table>
+                <SummariesTable
+                    summaries={[summary]}
+                    withCheckinDate
+                />
             </Row>
 
         </Container>

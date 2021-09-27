@@ -18,7 +18,6 @@ import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
 import {HandleBoolean, HandleGuest, HandleValue, OnAction} from "../../types";
-import Facility from "../../models/Facility";
 import useFetchGuests from "../../hooks/useFetchGuests";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
@@ -29,7 +28,6 @@ export interface Props {
     canInsert: boolean;                 // Can this user add Guests?
     canRemove: boolean;                 // Can this user remove Guests?
     canUpdate: boolean;                 // Can this user update Guests?
-    facility: Facility;                 // Parent Facility
     handleAdd: OnAction;                // Handle request to add a Guest
     handleSelect: HandleGuest;          // Handle request to select a Guest
 }
@@ -46,7 +44,6 @@ const GuestsList = (props: Props) => {
     const fetchGuests = useFetchGuests({
         active: active,
         currentPage: currentPage,
-        facility: props.facility,
         name: (searchText.length > 0) ? searchText : undefined,
         pageSize: pageSize,
     });

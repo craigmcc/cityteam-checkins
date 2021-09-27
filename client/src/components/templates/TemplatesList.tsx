@@ -18,7 +18,6 @@ import CheckBox from "../CheckBox";
 import Pagination from "../Pagination";
 import SearchBar from "../SearchBar";
 import {HandleBoolean, HandleTemplate, HandleValue, OnAction} from "../../types";
-import Facility from "../../models/Facility";
 import useFetchTemplates from "../../hooks/useFetchTemplates";
 import logger from "../../util/ClientLogger";
 import {listValue} from "../../util/Transformations";
@@ -29,7 +28,6 @@ export interface Props {
     canInsert: boolean;                 // Can this user add Templates?
     canRemove: boolean;                 // Can this user remove Templates?
     canUpdate: boolean;                 // Can this user update Templates?
-    facility: Facility;                 // Parent Facility
     handleAdd: OnAction;                // Handle request to add a Template
     handleSelect: HandleTemplate;       // Handle request to select a Template
 }
@@ -46,7 +44,6 @@ const TemplatesList = (props: Props) => {
     const fetchTemplates = useFetchTemplates({
         active: active,
         currentPage: currentPage,
-        facility: props.facility,
         name: (searchText.length > 0) ? searchText : undefined,
         pageSize: pageSize,
     });

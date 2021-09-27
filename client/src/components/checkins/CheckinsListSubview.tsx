@@ -108,11 +108,9 @@ const CheckinsListSubview = (props: Props) => {
                             variant="primary"
                         >Generate</Button>
                     </span>
-                    {(template.id < 0) ? (
-                        <span>
-                            (Select an active Template to generate mats for Checkins)
-                        </span>
-                    ) : null}
+                    <span>
+                        (Select an active Template to generate mats for Checkins)
+                    </span>
                 </Row>
             ) : null}
 

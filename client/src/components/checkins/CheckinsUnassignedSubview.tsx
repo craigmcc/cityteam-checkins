@@ -191,7 +191,6 @@ const CheckinsUnassignedSubview = (props: Props) => {
                                 canInsert={true}
                                 canRemove={false}
                                 canUpdate={true}
-                                facility={facilityContext.facility}
                                 handleAdd={handleNewGuest}
                                 handleSelect={handleSelectedGuest}
                             />

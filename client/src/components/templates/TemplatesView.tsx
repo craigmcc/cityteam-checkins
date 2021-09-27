@@ -99,7 +99,6 @@ const TemplatesView = () => {
                             canInsert={canInsert}
                             canRemove={canRemove}
                             canUpdate={canUpdate}
-                            facility={facilityContext.facility}
                             handleAdd={handleAdd}
                             handleSelect={handleSelect}
                         />

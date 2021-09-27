@@ -4,12 +4,12 @@
 
 // External Modules ----------------------------------------------------------
 
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
 import Api from "../clients/Api";
-import Facility from "../models/Facility";
+import FacilityContext from "../components/contexts/FacilityContext";
 import Guest, {GUESTS_BASE} from "../models/Guest";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
@@ -20,7 +20,6 @@ import {queryParameters} from "../util/QueryParameters";
 export interface Props {
     active?: boolean;                   // Select only active Guests? [false]
     currentPage?: number;               // One-relative current page number [1]
-    facility: Facility;                 // Parent Facility
     pageSize?: number;                  // Number of entries per page [25]
     name?: string;                      // Select Guests matching pattern [none]
     withFacility?: boolean;             // Include parent Facility? [false]
@@ -36,6 +35,8 @@ export interface State {
 
 const useFetchGuests = (props: Props): State => {
 
+    const facilityContext = useContext(FacilityContext);
+
     const [error, setError] = useState<Error | null>(null);
     const [guests, setGuests] = useState<Guest[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -49,7 +50,7 @@ const useFetchGuests = (props: Props): State => {
             let theGuests: Guest[] = [];
 
             try {
-                if ((props.facility.id > 0) && props.name) { // Too many Guests for a useful non-filtered fetch
+                if ((facilityContext.facility.id > 0) && props.name) { // Too many Guests for a useful non-filtered fetch
                     const limit = props.pageSize ? props.pageSize : 25;
                     const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
                     const parameters = {
@@ -60,10 +61,10 @@ const useFetchGuests = (props: Props): State => {
                         withFacility: props.withFacility ? "" : undefined,
                     }
                     theGuests = (await Api.get(GUESTS_BASE
-                        + `/${props.facility.id}${queryParameters(parameters)}`)).data;
+                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`)).data;
                     logger.debug({
                         context: "useFetchGuests.fetchGuests",
-                        facility: Abridgers.FACILITY(props.facility),
+                        facility: Abridgers.FACILITY(facilityContext.facility),
                         active: props.active ? props.active : undefined,
                         currentPage: props.currentPage ? props.currentPage : undefined,
                         name: props.name ? props.name : undefined,
@@ -73,7 +74,7 @@ const useFetchGuests = (props: Props): State => {
             } catch (error) {
                 logger.error({
                     context: "useFetchGuests.fetchGuests",
-                    facility: Abridgers.FACILITY(props.facility),
+                    facility: Abridgers.FACILITY(facilityContext.facility),
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
                     name: props.name ? props.name : undefined,
@@ -89,7 +90,7 @@ const useFetchGuests = (props: Props): State => {
 
         fetchGuests();
 
-    }, [props.active, props.currentPage, props.facility,
+    }, [props.active, props.currentPage, facilityContext.facility,
         props.pageSize, props.name, props.withFacility]);
 
     return {

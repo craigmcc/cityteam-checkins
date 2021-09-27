@@ -41,7 +41,6 @@ const TemplateSelector = (props: Props) => {
     const fetchTemplates = useFetchTemplates({
         active: props.active,
         currentPage: 1,
-        facility: facilityContext.facility,
         pageSize: 100,
     });
 

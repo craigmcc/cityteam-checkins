@@ -4,23 +4,22 @@
 
 // External Modules ----------------------------------------------------------
 
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
 import Api from "../clients/Api";
-import Facility from "../models/Facility";
 import Template, {TEMPLATES_BASE} from "../models/Template";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import FacilityContext from "../components/contexts/FacilityContext";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
 export interface Props {
     active?: boolean;                   // Select only active Templates? [false]
     currentPage?: number;               // One-relative current page number [1]
-    facility: Facility;                 // Parent Facility
     pageSize?: number;                  // Number of entries per page [25]
     name?: string;                      // Select Templates matching pattern [none]
     withFacility?: boolean;             // Include parent Facility? [false]
@@ -36,6 +35,8 @@ export interface State {
 
 const useFetchTemplates = (props: Props): State => {
 
+    const facilityContext = useContext(FacilityContext);
+
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [templates, setTemplates] = useState<Template[]>([]);
@@ -49,7 +50,7 @@ const useFetchTemplates = (props: Props): State => {
             let theTemplates: Template[] = [];
 
             try {
-                if (props.facility.id > 0) {
+                if (facilityContext.facility.id > 0) {
                     const limit = props.pageSize ? props.pageSize : 25;
                     const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
                     const parameters = {
@@ -60,10 +61,10 @@ const useFetchTemplates = (props: Props): State => {
                         withFacility: props.withFacility ? "" : undefined,
                     }
                     theTemplates = (await Api.get(TEMPLATES_BASE
-                        + `/${props.facility.id}${queryParameters(parameters)}`)).data;
+                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`)).data;
                     logger.debug({
                         context: "useFetchTemplates.fetchTemplates",
-                        facility: Abridgers.FACILITY(props.facility),
+                        facility: Abridgers.FACILITY(facilityContext.facility),
                         active: props.active ? props.active : undefined,
                         currentPage: props.currentPage ? props.currentPage : undefined,
                         name: props.name ? props.name : undefined,
@@ -73,7 +74,7 @@ const useFetchTemplates = (props: Props): State => {
             } catch (error) {
                 logger.error({
                     context: "useFetchTemplates.fetchTemplates",
-                    facility: Abridgers.FACILITY(props.facility),
+                    facility: Abridgers.FACILITY(facilityContext.facility),
                     active: props.active ? props.active : undefined,
                     currentPage: props.currentPage ? props.currentPage : undefined,
                     name: props.name ? props.name : undefined,
@@ -89,7 +90,7 @@ const useFetchTemplates = (props: Props): State => {
 
         fetchTemplates();
 
-    }, [props.active, props.currentPage, props.facility,
+    }, [props.active, props.currentPage, facilityContext.facility,
             props.pageSize, props.name, props.withFacility]);
 
 

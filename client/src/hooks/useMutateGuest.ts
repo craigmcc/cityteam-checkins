@@ -12,6 +12,7 @@ import {HandleGuest} from "../types";
 import Api from "../clients/Api";
 import Guest, {GUESTS_BASE} from "../models/Guest";
 import logger from "../util/ClientLogger";
+import {toGuest} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -41,13 +42,13 @@ const useMutateGuest = (props: Props): State => {
 
     const insert: HandleGuest = async (theGuest): Promise<Guest> => {
 
-        let inserted = new Guest();
+        let inserted: Guest = new Guest();
         setError(null);
         setExecuting(true);
 
         try {
-            inserted = (await Api.post(GUESTS_BASE
-                + `/${theGuest.facilityId}`, theGuest)).data;
+            inserted = toGuest((await Api.post(GUESTS_BASE
+                + `/${theGuest.facilityId}`, theGuest)).data);
             logger.debug({
                 context: "useMutateGuest.insert",
                 guest: inserted,

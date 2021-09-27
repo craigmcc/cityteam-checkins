@@ -27,6 +27,17 @@ export enum Level {
     FATAL = "fatal",
 }
 
+export enum PaymentType {
+    $$ = "$$-Cash",
+    AG = "AG-Agency",
+    CT = "CT-CityTeam",
+    FM = "FM-Free Mat",
+    MM = "MM-Medical Mat",
+    SW = "SW-Severe Weather",
+    UK = "UK-Unknown",
+    WB = "WB-Work Bed",
+}
+
 export enum Scope {
     ADMIN = "admin",
     ANY = "any",

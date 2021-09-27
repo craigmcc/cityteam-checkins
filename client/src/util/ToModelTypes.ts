@@ -5,6 +5,7 @@
 // Internal Modules ----------------------------------------------------------
 
 import AccessToken from "../models/AccessToken";
+import Assign from "../models/Assign";
 import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
@@ -22,6 +23,18 @@ export const toAccessTokens = (values: object[]): AccessToken[] => {
     const results: AccessToken[] = [];
     values.forEach(value => {
         results.push(new AccessToken(value));
+    });
+    return results;
+}
+
+export const toAssign = (value: object): Assign => {
+    return new Assign(value);
+}
+
+export const toAssigns = (values: object[]): Assign[] => {
+    const results: Assign[] = [];
+    values.forEach(value => {
+        results.push(new Assign(value));
     });
     return results;
 }

@@ -12,6 +12,7 @@ import Row from "react-bootstrap/Row";
 // Internal Modules ---------------------------------------------------------
 
 import CheckinsListSubview from "./CheckinsListSubview";
+import CheckinsUnassignedSubview from "./CheckinsUnassignedSubview";
 import DateSelector from "../DateSelector";
 import FacilityContext from "../contexts/FacilityContext";
 import LoginContext from "../contexts/LoginContext";
@@ -88,10 +89,6 @@ const CheckinsView = () => {
         setStage(theStage);
     }
 
-    const onBack = () => {
-        setStage(Stage.List);
-    }
-
     return (
         <Container fluid id="CheckinsView">
 
@@ -123,7 +120,11 @@ const CheckinsView = () => {
                 />
             ) : null}
             {(stage === Stage.Unassigned) ? (
-                <span>Stage.Unassigned</span>
+                <CheckinsUnassignedSubview
+                    checkin={checkin ? checkin : new Checkin()}
+                    handleCheckin={handleAssigned}
+                    onBack={() => setStage(Stage.List)}
+                />
             ) : null}
 
         </Container>

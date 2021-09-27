@@ -26,7 +26,6 @@ import Summary from "../../models/Summary";
 import Template from "../../models/Template";
 import * as Abridgers from"../../util/Abridgers";
 import logger from "../../util/ClientLogger";
-import Table from "react-bootstrap/Table";
 
 // Incoming Properties ------------------------------------------------------
 

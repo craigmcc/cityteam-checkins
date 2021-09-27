@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ---------------------------------------------------------
 
+import CheckinsListSubview from "./CheckinsListSubview";
 import DateSelector from "../DateSelector";
 import FacilityContext from "../contexts/FacilityContext";
 import LoginContext from "../contexts/LoginContext";
@@ -35,7 +36,7 @@ const CheckinsView = () => {
     const loginContext = useContext(LoginContext);
 
     const [canProcess, setCanProcess] = useState<boolean>(false);
-    const [checkin, setCheckin] = useState<Checkin | null>(null); // TODO: checkin
+    const [checkin, setCheckin] = useState<Checkin | null>(null);
     const [checkinDate, setCheckinDate] = useState<string>(todayDate());
     const [stage, setStage] = useState<Stage>(Stage.None);
 
@@ -58,20 +59,20 @@ const CheckinsView = () => {
         handleStage(Stage.List);
     }
 
-    const handleCheckinDate: HandleDate = (theCheckinDate) => {
-        setCheckinDate(theCheckinDate);
-        handleStage(Stage.List);
-    }
-
-    const handleSelected: HandleCheckin = (theCheckin) => {
+    const handleCheckin: HandleCheckin = (theCheckin) => {
         logger.info({
-            context: "CheckinsView.handleSelected",
+            context: "CheckinsView.handleCheckin",
             checkin: Abridgers.CHECKIN(theCheckin),
         });
         if (canProcess) {
             setCheckin(theCheckin);
             handleStage(theCheckin.guestId ? Stage.Assigned : Stage.Unassigned);
         }
+    }
+
+    const handleCheckinDate: HandleDate = (theCheckinDate) => {
+        setCheckinDate(theCheckinDate);
+        handleStage(Stage.List);
     }
 
     const handleStage = (theStage: Stage): void => {
@@ -111,7 +112,10 @@ const CheckinsView = () => {
                 <span>Stage.Assigned</span>
             ) : null}
             {(stage === Stage.List) ? (
-                <span>Stage.List</span>
+                <CheckinsListSubview
+                    checkinDate={checkinDate}
+                    handleCheckin={handleCheckin}
+                />
             ) : null}
             {(stage === Stage.Unassigned) ? (
                 <span>Stage.Unassigned</span>

@@ -24,6 +24,7 @@ export interface Props {
     disabled?: boolean;                 // Should element be disabled? [false]
     handleFacility?: HandleFacility;    // Handle Facility selection [No handler]
     label?: string;                     // Element label [Facility:]
+    name?: string;                      // Input control name [facilitySelector]
 }
 
 // Component Details ---------------------------------------------------------
@@ -33,6 +34,8 @@ export const FacilitySelector = (props: Props) => {
     const facilityContext = useContext(FacilityContext);
 
     const [index, setIndex] = useState<number>(0);
+    const [label] = useState<string>(props.label ? props.label : "Facility:");
+    const [name] = useState<string>(props.name ? props.name : "facilitySelector");
     const [options, setOptions] = useState<Facility[]>([]);
 
     useEffect(() => {
@@ -68,13 +71,13 @@ export const FacilitySelector = (props: Props) => {
     return (
         <Form id="FacilitySelector" inline>
             <Form.Label className="mr-2" htmlFor="facilitySelector">
-                {props.label ? props.label : "Facility:"}
+                {label}
             </Form.Label>
             <Form.Control
                 as="select"
                 autoFocus={props.autoFocus ? props.autoFocus : undefined}
                 disabled={props.disabled ? props.disabled : undefined}
-                id="facilitySelector"
+                id={name}
                 onChange={onChange}
                 size="sm"
                 value={index}

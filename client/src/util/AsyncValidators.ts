@@ -43,7 +43,7 @@ export const validateCheckinGuestUnique = async (checkin: Checkin): Promise<bool
             guestId: checkin.guestId,
         }
         const results = (await Api.get(CHECKINS_BASE
-            + `/${checkin.facilityId}` + `${queryParameters(parameters)}`)).data;
+            + `/${checkin.facilityId}${queryParameters(parameters)}`)).data;
         if (results.length === 0) {
             return true;
         } else {

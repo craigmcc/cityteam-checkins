@@ -13,9 +13,13 @@ import {HandleAssign} from "../types";
 import Api from "../clients/Api";
 import Assign from "../models/Assign";
 import Checkin, {CHECKINS_BASE} from "../models/Checkin";
+import Template from "../models/Template";
+import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 
 // Incoming Properties and Outgoing State ------------------------------------
+
+type HandleGenerate = (checkinDate: string, template: Template) => Promise<Checkin[]>;
 
 export interface Props {
     checkin: Checkin;                   // The Checkin being managed
@@ -26,6 +30,7 @@ export interface State {
     executing: boolean;                 // Are we currently executing?
     assign: HandleAssign;               // Handle Checkin assignment
     deassign: HandleAssign;             // Handle Checkin deassignment
+    generate: HandleGenerate;           // Handle generating Checkins from a Template
     reassign: HandleAssign;             // Handle Checkin reassignment
 }
 
@@ -97,6 +102,36 @@ const useMutateCheckin = (props: Props): State => {
 
     }
 
+    const generate: HandleGenerate = async (checkinDate, template) => {
+
+        let checkins: Checkin[] = [];
+        setError(null);
+        setExecuting(true);
+
+        try {
+            checkins = (await Api.post(CHECKINS_BASE
+                + `/${template.facilityId}/generate/${checkinDate}/${template.id}`)).data;
+            logger.info({
+                context: "useMutateCheckin.generate",
+                checkinDate: checkinDate,
+                template: Abridgers.TEMPLATE(template),
+                checkins: Abridgers.CHECKINS(checkins),
+            });
+        } catch (error) {
+            logger.error({
+                context: "useMutateCheckin.generate",
+                checkinDate: checkinDate,
+                template: Abridgers.TEMPLATE(template),
+                error: error,
+            });
+            setError(error as Error);
+        }
+
+        setExecuting(false);
+        return checkins;
+
+    }
+
     const reassign: HandleAssign = async (theAssign: Assign): Promise<Checkin> => {
 
         let reassigned = new Checkin();
@@ -129,6 +164,7 @@ const useMutateCheckin = (props: Props): State => {
         executing: executing,
         assign: assign,
         deassign: deassign,
+        generate: generate,
         reassign: reassign,
     }
 

@@ -26,7 +26,6 @@ export interface Props {
     handleTemplate?: HandleTemplate;    // Handle Template selection [No handler]
     label?: string;                     // Element label [Template:]
     name?: string;                      // Input control name [templateSelector]
-    required?: boolean;                 // Is entry required? [false]
 }
 
 // Component Details ---------------------------------------------------------
@@ -35,9 +34,9 @@ const TemplateSelector = (props: Props) => {
 
     const facilityContext = useContext(FacilityContext);
 
+    const [index, setIndex] = useState<number>(-1); // Template index if >= 0
     const [label] = useState<string>(props.label ? props.label : "Template:");
     const [name] = useState<string>(props.name ? props.name : "templateSelector");
-    const [value, setValue] = useState<number>(-1); // Template index if >= 0
 
     const fetchTemplates = useFetchTemplates({
         active: props.active,
@@ -47,7 +46,7 @@ const TemplateSelector = (props: Props) => {
     });
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "TemplateSelector.useEffect",
             facility: Abridgers.FACILITY(facilityContext.facility),
             templates: Abridgers.TEMPLATES(fetchTemplates.templates),
@@ -57,12 +56,12 @@ const TemplateSelector = (props: Props) => {
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);
         const theTemplate = (theIndex >= 0) ? fetchTemplates.templates[theIndex] : new Template();
-        logger.info({
+        logger.debug({
             context: "TemplateSelector.onChange",
             index: theIndex,
             template: Abridgers.TEMPLATE(theTemplate),
         });
-        setValue(theIndex);
+        setIndex(theIndex);
         if ((theIndex >= 0) && props.handleTemplate) {
             props.handleTemplate(theTemplate);
         }
@@ -80,7 +79,7 @@ const TemplateSelector = (props: Props) => {
                 id={name}
                 onChange={onChange}
                 size="sm"
-                value={value}
+                value={index}
             >
                 <option key="-1" value="-1">(Select Template)</option>
                 {fetchTemplates.templates.map((template, index) => (

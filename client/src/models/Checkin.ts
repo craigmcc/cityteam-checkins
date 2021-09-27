@@ -32,6 +32,8 @@ class Checkin extends Model {
         this.showerTime = data.showerTime ? data.showerTime : null;
         this.wakeupTime = data.wakeupTime ? data.wakeupTime : null;
 
+        this.matNumberAndFeatures = this.calculateMatNumberAndFeatures();
+
         this.facility = data.facility ? toFacility(data.facility) : null;
         this.guest = data.guest ? toGuest(data.guest) : null;
 
@@ -43,6 +45,7 @@ class Checkin extends Model {
     features?: string;
     guestId?: number;
     matNumber!: number;
+    matNumberAndFeatures?: string;
     paymentAmount?: number;
     paymentType?: string;
     showerTime?: string;
@@ -51,8 +54,8 @@ class Checkin extends Model {
     facility: Facility | null;
     guest: Guest | null;
 
-    get matNumberAndFeatures() {
-        let result = "" + this.matNumber;
+    private calculateMatNumberAndFeatures() {
+        let result = "" + (this.matNumber ? this.matNumber : "*");
         if (this.features) {
             result += this.features;
         }

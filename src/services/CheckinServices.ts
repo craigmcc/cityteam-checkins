@@ -320,9 +320,9 @@ class CheckinServices extends AbstractChildServices<Checkin> {
 
         // Set up parameters we will need for features generation
         const allMats = new MatsList(template.allMats);
-        const handicapMats = new MatsList(template.handicapMats);
-        const socketMats = new MatsList(template.socketMats);
-        const workMats = new MatsList(template.workMats);
+        const handicapMats = new MatsList(template.handicapMats ? template.handicapMats : "9999");
+        const socketMats = new MatsList(template.socketMats ? template.socketMats : "9999");
+        const workMats = new MatsList(template.workMats ? template.workMats : "9999");
 
         // Accumulate the requested (unassigned) Checkins to be created.
         const inputs: Partial<Checkin>[] = [];

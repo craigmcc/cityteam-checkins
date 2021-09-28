@@ -14,6 +14,7 @@ import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
 import FacilityContext from "../components/contexts/FacilityContext";
+import {toTemplates} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -60,8 +61,9 @@ const useFetchTemplates = (props: Props): State => {
                         name: props.name ? props.name : undefined,
                         withFacility: props.withFacility ? "" : undefined,
                     }
-                    theTemplates = (await Api.get(TEMPLATES_BASE
-                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`)).data;
+                    theTemplates = toTemplates((await Api.get(TEMPLATES_BASE
+                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`))
+                        .data);
                     logger.debug({
                         context: "useFetchTemplates.fetchTemplates",
                         facility: Abridgers.FACILITY(facilityContext.facility),

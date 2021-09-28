@@ -49,8 +49,8 @@ const TemplateSelector = (props: Props) => {
             context: "TemplateSelector.useEffect",
             facility: Abridgers.FACILITY(facilityContext.facility),
             templates: Abridgers.TEMPLATES(fetchTemplates.templates),
-        }, [facilityContext.facility, fetchTemplates.templates]);
-    })
+        });
+    }, [facilityContext.facility, fetchTemplates.templates]);
 
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);

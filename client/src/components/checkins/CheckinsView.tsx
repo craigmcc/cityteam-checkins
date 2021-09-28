@@ -54,7 +54,7 @@ const CheckinsView = () => {
     }, [facilityContext.facility, loginContext]);
 
     const handleAssigned: HandleCheckin = (theAssigned) => {
-        logger.info({
+        logger.debug({
             context: "CheckinsView.handleAssigned",
             checkin: Abridgers.CHECKIN(theAssigned),
         });
@@ -122,7 +122,7 @@ const CheckinsView = () => {
             {(stage === Stage.Unassigned) ? (
                 <CheckinsUnassignedSubview
                     checkin={checkin ? checkin : new Checkin()}
-                    handleCheckin={handleAssigned}
+                    handleAssigned={handleAssigned}
                     onBack={() => setStage(Stage.List)}
                 />
             ) : null}

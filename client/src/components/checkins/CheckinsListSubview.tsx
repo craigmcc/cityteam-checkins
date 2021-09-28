@@ -47,7 +47,6 @@ const CheckinsListSubview = (props: Props) => {
     const fetchCheckins = useFetchCheckins({
         currentPage: 1,
         date: props.checkinDate,
-        facility: facilityContext.facility,
         pageSize: 100,
         withGuest: true,
     });
@@ -58,7 +57,7 @@ const CheckinsListSubview = (props: Props) => {
 
     useEffect(() => {
 
-        logger.info({
+        logger.debug({
             context: "CheckinsListSubview.useEffect",
         });
 
@@ -77,7 +76,7 @@ const CheckinsListSubview = (props: Props) => {
             checkinDate: props.checkinDate,
             template: Abridgers.TEMPLATE(template),
         });
-        /* const checkins = */await mutateCheckin.generate(props.checkinDate, template);
+        await mutateCheckin.generate(props.checkinDate, template);
         fetchCheckins.refresh();
     }
 

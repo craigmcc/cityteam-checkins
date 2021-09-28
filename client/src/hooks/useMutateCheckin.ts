@@ -9,17 +9,18 @@ import {useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
-import {HandleAssign} from "../types";
+import {HandleAssignPromise} from "../types";
 import Api from "../clients/Api";
 import Assign from "../models/Assign";
 import Checkin, {CHECKINS_BASE} from "../models/Checkin";
 import Template from "../models/Template";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import {toCheckin, toCheckins} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
-type HandleGenerate = (checkinDate: string, template: Template) => Promise<Checkin[]>;
+type HandleGenerate = (checkinDate: string, template: Template) => void;
 
 export interface Props {
     checkin: Checkin;                   // The Checkin being managed
@@ -28,10 +29,10 @@ export interface Props {
 export interface State {
     error: Error | null;                // I/O error (if any)
     executing: boolean;                 // Are we currently executing?
-    assign: HandleAssign;               // Handle Checkin assignment
-    deassign: HandleAssign;             // Handle Checkin deassignment
+    assign: HandleAssignPromise;        // Handle Checkin assignment
+    deassign: HandleAssignPromise;      // Handle Checkin deassignment
     generate: HandleGenerate;           // Handle generating Checkins from a Template
-    reassign: HandleAssign;             // Handle Checkin reassignment
+    reassign: HandleAssignPromise;      // Handle Checkin reassignment
 }
 
 // Component Details ---------------------------------------------------------
@@ -42,22 +43,23 @@ const useMutateCheckin = (props: Props): State => {
     const [executing, setExecuting] = useState<boolean>(false);
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "useMutateCheckin.useEffect",
             checkin: props.checkin,
         });
     }, [props.checkin]);
 
-    const assign: HandleAssign = async (theAssign: Assign): Promise<Checkin> => {
+    const assign: HandleAssignPromise = async (theAssign: Assign): Promise<Checkin> => {
 
-        let assigned = new Checkin();
+        let assigned: Checkin = new Checkin();
         setError(null);
         setExecuting(true);
 
         try {
-            assigned = (await Api.post(CHECKINS_BASE
-                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`, theAssign)).data;
-            logger.info({
+            assigned = toCheckin((await Api.post(CHECKINS_BASE
+                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`, theAssign))
+                .data);
+            logger.debug({
                 context: "useMutateCheckin.assign",
                 checkin: assigned,
             });
@@ -75,16 +77,17 @@ const useMutateCheckin = (props: Props): State => {
 
     }
 
-    const deassign: HandleAssign = async (theAssign: Assign): Promise<Checkin> => {
+    const deassign: HandleAssignPromise = async (theAssign: Assign): Promise<Checkin> => {
 
-        let deassigned = new Checkin();
+        let deassigned: Checkin = new Checkin();
         setError(null);
         setExecuting(true);
 
         try {
-            deassigned = (await Api.delete(CHECKINS_BASE
-                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`)).data;
-            logger.info({
+            deassigned = toCheckin((await Api.delete(CHECKINS_BASE
+                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`))
+                .data);
+            logger.debug({
                 context: "useMutateCheckin.deassign",
                 checkin: deassigned,
             });
@@ -109,9 +112,10 @@ const useMutateCheckin = (props: Props): State => {
         setExecuting(true);
 
         try {
-            checkins = (await Api.post(CHECKINS_BASE
-                + `/${template.facilityId}/generate/${checkinDate}/${template.id}`)).data;
-            logger.info({
+            checkins = toCheckins((await Api.post(CHECKINS_BASE
+                + `/${template.facilityId}/generate/${checkinDate}/${template.id}`))
+                .data);
+            logger.debug({
                 context: "useMutateCheckin.generate",
                 checkinDate: checkinDate,
                 template: Abridgers.TEMPLATE(template),
@@ -128,20 +132,20 @@ const useMutateCheckin = (props: Props): State => {
         }
 
         setExecuting(false);
-        return checkins;
 
     }
 
-    const reassign: HandleAssign = async (theAssign: Assign): Promise<Checkin> => {
+    const reassign: HandleAssignPromise = async (theAssign: Assign): Promise<Checkin> => {
 
-        let reassigned = new Checkin();
+        let reassigned: Checkin = new Checkin();
         setError(null);
         setExecuting(true);
 
         try {
-            reassigned = (await Api.put(CHECKINS_BASE
-                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`, theAssign)).data;
-            logger.info({
+            reassigned = toCheckin((await Api.put(CHECKINS_BASE
+                + `/${props.checkin.facilityId}/${props.checkin.id}/assignment`, theAssign))
+                .data);
+            logger.debug({
                 context: "useMutateCheckin.reassign",
                 checkin: reassigned,
             });

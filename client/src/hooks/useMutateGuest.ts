@@ -4,12 +4,13 @@
 
 // External Modules ----------------------------------------------------------
 
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
-import {HandleGuest} from "../types";
+import {HandleGuestPromise} from "../types";
 import Api from "../clients/Api";
+import FacilityContext from "../components/contexts/FacilityContext";
 import Guest, {GUESTS_BASE} from "../models/Guest";
 import logger from "../util/ClientLogger";
 import {toGuest} from "../util/ToModelTypes";
@@ -22,14 +23,16 @@ export interface Props {
 export interface State {
     error: Error | null;                // I/O error (if any)
     executing: boolean;                 // Are we currently executing?
-    insert: HandleGuest;                // Function to insert a new Guest
-    remove: HandleGuest;                // Function to remove an existing Guest
-    update: HandleGuest;                // Function to update an existing Guest
+    insert: HandleGuestPromise;         // Function to insert a new Guest
+    remove: HandleGuestPromise;         // Function to remove an existing Guest
+    update: HandleGuestPromise;         // Function to update an existing Guest
 }
 
 // Component Details ---------------------------------------------------------
 
 const useMutateGuest = (props: Props): State => {
+
+    const facilityContext = useContext(FacilityContext);
 
     const [error, setError] = useState<Error | null>(null);
     const [executing, setExecuting] = useState<boolean>(false);
@@ -40,7 +43,7 @@ const useMutateGuest = (props: Props): State => {
         });
     });
 
-    const insert: HandleGuest = async (theGuest): Promise<Guest> => {
+    const insert: HandleGuestPromise = async (theGuest): Promise<Guest> => {
 
         let inserted: Guest = new Guest();
         setError(null);
@@ -48,7 +51,7 @@ const useMutateGuest = (props: Props): State => {
 
         try {
             inserted = toGuest((await Api.post(GUESTS_BASE
-                + `/${theGuest.facilityId}`, theGuest)).data);
+                + `/${facilityContext.facility.id}`, theGuest)).data);
             logger.debug({
                 context: "useMutateGuest.insert",
                 guest: inserted,
@@ -67,15 +70,16 @@ const useMutateGuest = (props: Props): State => {
 
     }
 
-    const remove: HandleGuest = async (theGuest): Promise<Guest> => {
+    const remove: HandleGuestPromise = async (theGuest): Promise<Guest> => {
 
-        let removed = new Guest();
+        let removed: Guest = new Guest();
         setError(null);
         setExecuting(true);
 
         try {
-            removed = (await Api.delete(GUESTS_BASE
-                + `/${theGuest.facilityId}/${theGuest.id}`)).data;
+            removed = toGuest((await Api.delete(GUESTS_BASE
+                + `/${theGuest.facilityId}/${theGuest.id}`))
+                .data);
             logger.debug({
                 context: "useMutateGuest.remove",
                 guest: removed,
@@ -94,16 +98,17 @@ const useMutateGuest = (props: Props): State => {
 
     }
 
-    const update: HandleGuest = async (theGuest): Promise<Guest> => {
+    const update: HandleGuestPromise = async (theGuest): Promise<Guest> => {
 
-        let updated = new Guest();
+        let updated: Guest = new Guest();
         setError(null);
         setExecuting(true);
 
         try {
-            updated = (await Api.put(GUESTS_BASE
-                + `/${theGuest.facilityId}/${theGuest.id}`, theGuest)).data;
-            logger.trace({
+            updated = toGuest((await Api.put(GUESTS_BASE
+                + `/${theGuest.facilityId}/${theGuest.id}`, theGuest))
+                .data);
+            logger.debug({
                 context: "useMutateGuest.update",
                 input: theGuest,
                 guest: updated,

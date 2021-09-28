@@ -14,6 +14,7 @@ import Guest, {GUESTS_BASE} from "../models/Guest";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import {toGuests} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -60,8 +61,9 @@ const useFetchGuests = (props: Props): State => {
                         name: props.name ? props.name : undefined,
                         withFacility: props.withFacility ? "" : undefined,
                     }
-                    theGuests = (await Api.get(GUESTS_BASE
-                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`)).data;
+                    theGuests = toGuests((await Api.get(GUESTS_BASE
+                        + `/${facilityContext.facility.id}${queryParameters(parameters)}`))
+                        .data);
                     logger.debug({
                         context: "useFetchGuests.fetchGuests",
                         facility: Abridgers.FACILITY(facilityContext.facility),

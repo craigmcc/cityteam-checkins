@@ -30,6 +30,7 @@ export interface Props {
     canUpdate: boolean;                 // Can this user update Guests?
     handleAdd: OnAction;                // Handle request to add a Guest
     handleSelect: HandleGuest;          // Handle request to select a Guest
+    withActive?: boolean;               // Offer "Active Guests Only?" filter [true]
 }
 
 // Component Details ---------------------------------------------------------
@@ -40,6 +41,8 @@ const GuestsList = (props: Props) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize] = useState<number>(25);
     const [searchText, setSearchText] = useState<string>("");
+    const [withActive] =
+        useState<boolean>(props.withActive !== undefined ? props.withActive : true);
 
     const fetchGuests = useFetchGuests({
         active: active,
@@ -84,14 +87,16 @@ const GuestsList = (props: Props) => {
                         placeholder="Search by all or part of either name"
                     />
                 </Col>
-                <Col>
-                    <CheckBox
-                        handleChange={handleActive}
-                        id="activeOnly"
-                        initialValue={active}
-                        label="Active Guests Only?"
-                    />
-                </Col>
+                {withActive ? (
+                    <Col>
+                        <CheckBox
+                            handleChange={handleActive}
+                            id="activeOnly"
+                            initialValue={active}
+                            label="Active Guests Only?"
+                        />
+                    </Col>
+                ) : null}
                 <Col className="text-right">
                     <Pagination
                         currentPage={currentPage}

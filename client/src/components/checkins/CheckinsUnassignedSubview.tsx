@@ -7,7 +7,7 @@
 
 // External Modules -----------------------------------------------------------
 
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -17,7 +17,6 @@ import Row from "react-bootstrap/Row";
 
 import {HandleAssign, HandleCheckin, HandleGuest, OnAction} from "../../types";
 import AssignForm from "../assigns/AssignForm";
-import FacilityContext from "../contexts/FacilityContext";
 import GuestForm from "../guests/GuestForm";
 import GuestsList from "../guests/GuestsList";
 import useMutateCheckin from "../../hooks/useMutateCheckin";
@@ -32,7 +31,7 @@ import logger from "../../util/ClientLogger";
 
 export interface Props {
     checkin: Checkin;                   // The (unassigned) Checkin to process
-    handleCheckin: HandleCheckin;       // Handle checkin after completion
+    handleAssigned: HandleCheckin;      // Handle Checkin after assignment
     onBack: OnAction;                   // Handle back button click
 }
 
@@ -40,10 +39,8 @@ export interface Props {
 
 const CheckinsUnassignedSubview = (props: Props) => {
 
-    const facilityContext = useContext(FacilityContext);
-
     const [adding, setAdding] = useState<boolean>(false);
-    const [assigned, setAssigned] = useState<Assign | null>(null);
+    const [assign, setAssign] = useState<Assign | null>(null);
     const [guest, setGuest] = useState<Guest | null>(null);
 
     const mutateCheckin = useMutateCheckin({
@@ -54,45 +51,43 @@ const CheckinsUnassignedSubview = (props: Props) => {
     });
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "CheckinsUnassignedSubview.useEffect",
+            checkin: Abridgers.CHECKIN(props.checkin),
+            guest: (guest) ? Abridgers.GUEST(guest) : undefined,
         });
-    }, [adding, guest]);
+    }, [adding, guest, props.checkin]);
 
     const configureAssign = (theGuest: Guest): Assign => {
-        const assign = new Assign({
+        return new Assign({
             guestId: theGuest.id,
             paymentAmount: 5.00,
             paymentType: "$$"
         });
-        return assign;
     }
 
     const handleAssignedGuest: HandleAssign = async (theAssign) => {
-        // @ts-ignore    TODO - ?????
         const assigned: Checkin = await mutateCheckin.assign(theAssign);
-        logger.info({
+        logger.debug({
             context: "CheckinsUnassignedSubview.handleAssignedGuest",
             checkin: Abridgers.CHECKIN(assigned),
         });
-        props.handleCheckin(assigned);
+        props.handleAssigned(assigned);
     }
 
     const handleInsertedGuest: HandleGuest = async (theGuest) => {
-        // @ts-ignore    TODO - ?????
         const inserted: Guest = await mutateGuest.insert(theGuest);
-        logger.info({
+        logger.debug({
             context: "CheckinsUnassignedSubview.handleInsertedGuest",
             guest: Abridgers.GUEST(inserted),
         });
-        setAssigned(configureAssign(inserted));
+        setAdding(false);
+        setAssign(configureAssign(inserted));
         setGuest(inserted);
     }
 
     const handleNewGuest: OnAction = () => {
-        setGuest(new Guest({
-            facilityId: facilityContext.facility.id,
-        }))
+        setAdding(true);
     }
 
     const handleRemovedGuest: HandleGuest = async (theGuest) => {
@@ -104,12 +99,12 @@ const CheckinsUnassignedSubview = (props: Props) => {
     }
 
     const handleSelectedGuest: HandleGuest = (theGuest) => {
-        logger.info({
+        logger.debug({
             context: "CheckinsUnassignedSubview.handleSelectedGuest",
             guest: Abridgers.GUEST(theGuest),
         });
+        setAssign(configureAssign(theGuest));
         setGuest(theGuest);
-        setAssigned(configureAssign(theGuest));
     }
 
     const handleUpdatedGuest: HandleGuest = async (theGuest) => {
@@ -125,23 +120,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
 
             {/* Overall Header and Back Link */}
             <Row className="mb-3">
-                <Col className="col-11">
-                    <Row className="text-center">
-                        <span>Mat Number:&nbsp;</span>
-                        <span className="text-info">
-                            {props.checkin.matNumber}{props.checkin.features}
-                        </span>
-                        {(props.checkin.guest) ? (
-                            <>
-                                <span>&nbsp;&nbsp;&nbsp;Guest:&nbsp;</span>
-                                <span className="text-info">
-                                    {props.checkin.guest.firstName}&nbsp;
-                                    {props.checkin.guest.lastName}
-                                </span>
-                            </>
-                        ) : null }
-                    </Row>
-                </Col>
+                <Col/>
                 <Col className="text-right">
                     <Button
                         onClick={props.onBack}
@@ -163,6 +142,12 @@ const CheckinsUnassignedSubview = (props: Props) => {
                         Step 1: Select or Add A Guest To Assign
                     </h6>
                     <hr/>
+                    <h6 className={"text-center"}>
+                        Mat Number:&nbsp;
+                        <span className="text-info">
+                            {props.checkin.matNumber}{props.checkin.features}
+                        </span>
+                    </h6>
 
                     {(adding) ? (
                         <>
@@ -193,6 +178,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
                                 canUpdate={true}
                                 handleAdd={handleNewGuest}
                                 handleSelect={handleSelectedGuest}
+                                withActive={false}
                             />
                             <Row className="ml-4 mb-3">
                                 <Button
@@ -222,9 +208,9 @@ const CheckinsUnassignedSubview = (props: Props) => {
                             </span>
                         </h6>
                     ) : null }
-                    {(assigned) ? (
+                    {(assign) ? (
                         <AssignForm
-                            assign={assigned}
+                            assign={assign}
                             handleAssign={handleAssignedGuest}
                         />
                     ) : null }

@@ -11,6 +11,7 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ---------------------------------------------------------
 
+import CheckinsAssignedSubview from "./CheckinsAssignedSubview";
 import CheckinsListSubview from "./CheckinsListSubview";
 import CheckinsUnassignedSubview from "./CheckinsUnassignedSubview";
 import DateSelector from "../DateSelector";
@@ -53,14 +54,6 @@ const CheckinsView = () => {
 
     }, [facilityContext.facility, loginContext]);
 
-    const handleAssigned: HandleCheckin = (theAssigned) => {
-        logger.debug({
-            context: "CheckinsView.handleAssigned",
-            checkin: Abridgers.CHECKIN(theAssigned),
-        });
-        handleStage(Stage.List);
-    }
-
     const handleCheckin: HandleCheckin = (theCheckin) => {
         logger.debug({
             context: "CheckinsView.handleCheckin",
@@ -78,6 +71,14 @@ const CheckinsView = () => {
             checkinDate: theCheckinDate,
         });
         setCheckinDate(theCheckinDate);
+        handleStage(Stage.List);
+    }
+
+    const handleCompleted: HandleCheckin = (theCompleted) => {
+        logger.debug({
+            context: "CheckinsView.handleCompletion",
+            checkin: Abridgers.CHECKIN(theCompleted),
+        });
         handleStage(Stage.List);
     }
 
@@ -111,7 +112,10 @@ const CheckinsView = () => {
 
             {/* Selected Subview by stage */}
             {(stage === Stage.Assigned) ? (
-                <span>Stage.Assigned</span>
+                <CheckinsAssignedSubview
+                    checkin={checkin ? checkin : new Checkin()}
+                    handleCompleted={handleCompleted}
+                />
             ) : null}
             {(stage === Stage.List) ? (
                 <CheckinsListSubview
@@ -122,8 +126,7 @@ const CheckinsView = () => {
             {(stage === Stage.Unassigned) ? (
                 <CheckinsUnassignedSubview
                     checkin={checkin ? checkin : new Checkin()}
-                    handleAssigned={handleAssigned}
-                    onBack={() => setStage(Stage.List)}
+                    handleCompleted={handleCompleted}
                 />
             ) : null}
 

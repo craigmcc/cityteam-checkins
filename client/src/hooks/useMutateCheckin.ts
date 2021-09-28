@@ -9,7 +9,7 @@ import {useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
-import {HandleAssignPromise} from "../types";
+import {HandleAssignPromise, HandleCheckinPromise} from "../types";
 import Api from "../clients/Api";
 import Assign from "../models/Assign";
 import Checkin, {CHECKINS_BASE} from "../models/Checkin";
@@ -30,9 +30,10 @@ export interface State {
     error: Error | null;                // I/O error (if any)
     executing: boolean;                 // Are we currently executing?
     assign: HandleAssignPromise;        // Handle Checkin assignment
-    deassign: HandleAssignPromise;      // Handle Checkin deassignment
+    deassign: HandleCheckinPromise;     // Handle Checkin deassignment
     generate: HandleGenerate;           // Handle generating Checkins from a Template
     reassign: HandleAssignPromise;      // Handle Checkin reassignment
+    update: HandleCheckinPromise;       // Handle Checkin update
 }
 
 // Component Details ---------------------------------------------------------
@@ -77,7 +78,7 @@ const useMutateCheckin = (props: Props): State => {
 
     }
 
-    const deassign: HandleAssignPromise = async (theAssign: Assign): Promise<Checkin> => {
+    const deassign: HandleCheckinPromise = async (theCheckin: Checkin): Promise<Checkin> => {
 
         let deassigned: Checkin = new Checkin();
         setError(null);
@@ -94,7 +95,7 @@ const useMutateCheckin = (props: Props): State => {
         } catch (error) {
             logger.error({
                 context: "useMutateCheckin.deassign",
-                assign: theAssign,
+                checkin: theCheckin,
                 error: error,
             });
             setError(error as Error);
@@ -163,6 +164,35 @@ const useMutateCheckin = (props: Props): State => {
 
     }
 
+    const update: HandleCheckinPromise = async(theCheckin): Promise<Checkin> => {
+
+        let updated: Checkin = new Checkin();
+        setError(null);
+        setExecuting(true);
+
+        try {
+            updated = toCheckin((await Api.put(CHECKINS_BASE
+                + `/${theCheckin.facilityId}/${theCheckin.id}`, theCheckin))
+                .data);
+            logger.debug({
+                context: "useMutateCheckin.update",
+                input: theCheckin,
+                checkin: updated,
+            });
+        } catch (error) {
+            logger.error({
+                context: "useMutateCheckin.update",
+                checkin: theCheckin,
+                error: error,
+            });
+            setError(error as Error);
+        }
+
+        setExecuting(false);
+        return updated;
+
+    }
+
     return {
         error: error,
         executing: executing,
@@ -170,6 +200,7 @@ const useMutateCheckin = (props: Props): State => {
         deassign: deassign,
         generate: generate,
         reassign: reassign,
+        update: update,
     }
 
 }

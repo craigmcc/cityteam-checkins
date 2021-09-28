@@ -15,10 +15,10 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ----------------------------------------------------------
 
-import {HandleAssign, HandleCheckin, HandleGuest, OnAction} from "../../types";
 import AssignForm from "../assigns/AssignForm";
 import GuestForm from "../guests/GuestForm";
 import GuestsList from "../guests/GuestsList";
+import {HandleAssign, HandleCheckin, HandleGuest, OnAction} from "../../types";
 import useMutateCheckin from "../../hooks/useMutateCheckin";
 import useMutateGuest from "../../hooks/useMutateGuest";
 import Assign from "../../models/Assign";
@@ -31,8 +31,7 @@ import logger from "../../util/ClientLogger";
 
 export interface Props {
     checkin: Checkin;                   // The (unassigned) Checkin to process
-    handleAssigned: HandleCheckin;      // Handle Checkin after assignment
-    onBack: OnAction;                   // Handle back button click
+    handleCompleted: HandleCheckin;     // Handle Checkin after completion
 }
 
 // Component Details ---------------------------------------------------------
@@ -72,7 +71,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
             context: "CheckinsUnassignedSubview.handleAssignedGuest",
             checkin: Abridgers.CHECKIN(assigned),
         });
-        props.handleAssigned(assigned);
+        props.handleCompleted(assigned);
     }
 
     const handleInsertedGuest: HandleGuest = async (theGuest) => {
@@ -123,7 +122,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
                 <Col/>
                 <Col className="text-right">
                     <Button
-                        onClick={props.onBack}
+                        onClick={() => props.handleCompleted(props.checkin)}
                         size="sm"
                         type="button"
                         variant="secondary"

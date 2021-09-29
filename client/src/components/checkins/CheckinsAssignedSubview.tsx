@@ -16,6 +16,7 @@ import Row from "react-bootstrap/Row";
 
 // Internal Modules ----------------------------------------------------------
 
+import CheckinSelector from "./CheckinSelector";
 import AssignForm from "../assigns/AssignForm";
 import {HandleAction, HandleAssign, HandleCheckin, OnAction} from "../../types";
 import useFetchCheckins from "../../hooks/useFetchCheckins";
@@ -93,6 +94,10 @@ const CheckinsAssignedSubview = (props: Props) => {
     })
 
     const handleDestination: HandleCheckin = (theDestination) => {
+        logger.debug({
+            context: "CheckinsAssignedSubview.handleDestination",
+            checkin: Abridgers.CHECKIN(theDestination),
+        })
         setDestination(theDestination);
     }
 
@@ -175,7 +180,7 @@ const CheckinsAssignedSubview = (props: Props) => {
             <Row className="mb-3">
 
                 {/* Option 1 --------------------------------------------- */}
-                <Col className="col-5">
+                <Col className="col-6">
                     <>
                         <h6 className="text-center">
                             Option 1: Edit Assignment Details
@@ -191,18 +196,33 @@ const CheckinsAssignedSubview = (props: Props) => {
                 </Col>
 
                 {/* Option 2 --------------------------------------------- */}
-                <Col className="col-4 bg-light">
+                <Col className="col-3 bg-light">
                     <>
                         <h6 className="text-center">
                             Option 2: Move Guest to a Different Mat
                         </h6>
                         <hr className="mb-3"/>
-                        <Row className="mb-3 ml-3 mr-3">
-                            Move this Guest (and transfer the related
+                        <Row className="text-center mb-3 ml-5 mr-5">
+                            Move this Guest (and related
                             assignment details) to a different mat.
                         </Row>
                         <Row className="text-center">
-                            TODO
+                            <Col>
+                                <CheckinSelector
+                                    checkins={fetchCheckins.checkins}
+                                    handleCheckin={handleDestination}
+                                    label="To Mat:"
+                                    placeholder="(Select Mat)"
+                                />
+                            </Col>
+                            <Col className="text-right">
+                                <Button
+                                    disabled={destination.id < 0}
+                                    onClick={handleReassign}
+                                    size="sm"
+                                    variant="success"
+                                >Move</Button>
+                            </Col>
                         </Row>
                     </>
                 </Col>
@@ -218,7 +238,6 @@ const CheckinsAssignedSubview = (props: Props) => {
                             Remove the current assignment, erasing any
                             of the details that were specified.
                         </Row>
-                        <Row className="mb-5"/>
                         <Row className="text-right">
                             <Col/>
                             <Button

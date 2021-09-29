@@ -80,7 +80,6 @@ const CheckinsUnassignedSubview = (props: Props) => {
             context: "CheckinsUnassignedSubview.handleInsertedGuest",
             guest: Abridgers.GUEST(inserted),
         });
-        setAdding(false);
         setAssign(configureAssign(inserted));
         setGuest(inserted);
     }
@@ -135,7 +134,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
             <Row className="mb-3">
 
                 {/* Step 1 ----------------------------------------------- */}
-                <Col className="col-7 bg-light mb-1">
+                <Col className="col-9 bg-light mb-1">
 
                     <h6 className="text-center">
                         Step 1: Select or Add A Guest To Assign
@@ -194,7 +193,7 @@ const CheckinsUnassignedSubview = (props: Props) => {
                 </Col>
 
                 {/* Step 2 ----------------------------------------------- */}
-                <Col className="col-5 mb-1">
+                <Col className="col-3 mb-1">
                     <h6 className={"text-center"}>
                         Step 2: Complete Assignment Details
                     </h6>

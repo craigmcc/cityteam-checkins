@@ -5,14 +5,12 @@
 
 // External Modules ----------------------------------------------------------
 
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Form from "react-bootstrap/Form";
 
 // Internal Modules ----------------------------------------------------------
 
-import FacilityContext from "../contexts/FacilityContext";
 import {HandleTemplate, OnChangeSelect} from "../../types";
-import useFetchTemplates from "../../hooks/useFetchTemplates";
 import Template from "../../models/Template";
 import * as Abridgers from "../../util/Abridgers";
 import logger from "../../util/ClientLogger";
@@ -20,42 +18,35 @@ import logger from "../../util/ClientLogger";
 // Incoming Properties -------------------------------------------------------
 
 export interface Props {
-    active?: boolean;                   // Offer only active Templates? [false]
     autoFocus?: boolean;                // Should element receive autoFocus? [false]
     disabled?: boolean;                 // Should element be disabled? [false]
     handleTemplate?: HandleTemplate;    // Handle Template selection [No handler]
     label?: string;                     // Element label [Template:]
     name?: string;                      // Input control name [templateSelector]
+    placeholder?: string;               // Placeholder option text [(Select Template)]
+    templates: Template[];              // Templates to be offered
 }
 
 // Component Details ---------------------------------------------------------
 
 const TemplateSelector = (props: Props) => {
 
-    const facilityContext = useContext(FacilityContext);
-
     const [index, setIndex] = useState<number>(-1); // Template index if >= 0
     const [label] = useState<string>(props.label ? props.label : "Template:");
     const [name] = useState<string>(props.name ? props.name : "templateSelector");
-
-    const fetchTemplates = useFetchTemplates({
-        active: props.active,
-        currentPage: 1,
-        pageSize: 100,
-    });
+    const [placeholder] = useState<string>(props.placeholder ? props.placeholder : "(Select Template)");
 
     useEffect(() => {
         logger.debug({
             context: "TemplateSelector.useEffect",
-            facility: Abridgers.FACILITY(facilityContext.facility),
-            templates: Abridgers.TEMPLATES(fetchTemplates.templates),
+            templates: Abridgers.TEMPLATES(props.templates),
         });
-    }, [facilityContext.facility, fetchTemplates.templates]);
+    }, [props.templates]);
 
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);
-        const theTemplate = (theIndex >= 0) ? fetchTemplates.templates[theIndex] : new Template();
-        logger.debug({
+        const theTemplate = (theIndex >= 0) ? props.templates[theIndex] : new Template();
+        logger.trace({
             context: "TemplateSelector.onChange",
             index: theIndex,
             template: Abridgers.TEMPLATE(theTemplate),
@@ -80,8 +71,8 @@ const TemplateSelector = (props: Props) => {
                 size="sm"
                 value={index}
             >
-                <option key="-1" value="-1">(Select Template)</option>
-                {fetchTemplates.templates.map((template, index) => (
+                <option key="-1" value="-1">{placeholder}</option>
+                {props.templates.map((template, index) => (
                     <option key={index} value={index}>
                         {template.name}
                     </option>

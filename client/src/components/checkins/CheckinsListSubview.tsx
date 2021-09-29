@@ -20,6 +20,7 @@ import SummariesTable from "../summaries/SummariesTable";
 import TemplateSelector from "../templates/TemplateSelector";
 import {HandleCheckin, HandleTemplate} from "../../types";
 import useFetchCheckins from "../../hooks/useFetchCheckins";
+import useFetchTemplates from "../../hooks/useFetchTemplates";
 import useMutateCheckin from "../../hooks/useMutateCheckin";
 import Checkin from "../../models/Checkin";
 import Summary from "../../models/Summary";
@@ -50,6 +51,12 @@ const CheckinsListSubview = (props: Props) => {
         pageSize: 100,
         withGuest: true,
     });
+
+    const fetchTemplates = useFetchTemplates({
+        active: true,
+        currentPage: 1,
+        pageSize: 100,
+    })
 
     const mutateCheckin = useMutateCheckin({
         checkin: checkin,
@@ -95,9 +102,9 @@ const CheckinsListSubview = (props: Props) => {
             {(facilityContext.facility.id > 0) && (fetchCheckins.checkins.length === 0) ? (
                 <Row className="mb-3 text-center">
                     <TemplateSelector
-                        active={true}
                         handleTemplate={handleTemplate}
                         label="Select Template:"
+                        templates={fetchTemplates.templates}
                     />
                     <span className="ml-2 mr-2">
                         <Button

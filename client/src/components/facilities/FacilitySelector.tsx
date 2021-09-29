@@ -25,6 +25,7 @@ export interface Props {
     handleFacility?: HandleFacility;    // Handle Facility selection [No handler]
     label?: string;                     // Element label [Facility:]
     name?: string;                      // Input control name [facilitySelector]
+    placeholder?: string;               // Placeholder option text [(Select Facility)]
 }
 
 // Component Details ---------------------------------------------------------
@@ -33,38 +34,30 @@ export const FacilitySelector = (props: Props) => {
 
     const facilityContext = useContext(FacilityContext);
 
-    const [index, setIndex] = useState<number>(0);
+    const [index, setIndex] = useState<number>(-1);
     const [label] = useState<string>(props.label ? props.label : "Facility:");
     const [name] = useState<string>(props.name ? props.name : "facilitySelector");
-    const [options, setOptions] = useState<Facility[]>([]);
+    const [placeholder] = useState<string>(props.placeholder ? props.placeholder : "(Select Facility)");
 
     useEffect(() => {
-        const theOptions: Facility[] = [];
-        theOptions.push(new Facility({id: -1, name: "(Please Select)"}));
-        setIndex(0);
-        facilityContext.facilities.forEach(facility => {
-            if (facility.id === facilityContext.facility.id) {
-                setIndex(theOptions.length);    // Set currently shown option
-            }
-            theOptions.push(facility);
-        });
-        setOptions(theOptions);
         logger.debug({
             context: "FacilitySelector.useEffect",
+            facilities: facilityContext.facilities,
         });
-    }, [facilityContext.facility, facilityContext.facilities]);
+    }, [facilityContext.facilities]);
 
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);
-        logger.debug({
+        const theFacility = (theIndex >= 0) ? facilityContext.facilities[theIndex] : new Facility();
+        logger.trace({
             context: "FacilitySelector.onChange",
             index: theIndex,
-            facility: Abridgers.FACILITY(options[theIndex]),
+            facility: Abridgers.FACILITY(theFacility),
         });
         setIndex(theIndex);
-        facilityContext.handleSelect(options[theIndex]);
+        facilityContext.handleSelect(theFacility);  // Special case for this selector
         if (props.handleFacility) {
-            props.handleFacility(options[theIndex]);
+            props.handleFacility(theFacility);
         }
     }
 
@@ -82,9 +75,10 @@ export const FacilitySelector = (props: Props) => {
                 size="sm"
                 value={index}
             >
-                {options.map((option, index) => (
+                <option key="-1" value="-1">{placeholder}</option>
+                {facilityContext.facilities.map((facility, index) => (
                     <option key={index} value={index}>
-                        {option.name}
+                        {facility.name}
                     </option>
                 ))}
             </Form.Control>

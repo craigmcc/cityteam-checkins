@@ -27,6 +27,7 @@ export interface Props {
     min?: string;                       // Minimum accepted value [no limit]
     name?: string;                      // Input control name [dateSelector]
     required?: boolean;                 // Is entry required? [false]
+    type?: string;                      // Control type (date,text) [date]
     value?: string;                     // Initially displayed value [""]
 }
 
@@ -36,6 +37,7 @@ const DateSelector = (props: Props) => {
 
     const [label] = useState<string>(props.label ? props.label : "Date:");
     const [name] = useState<string>(props.name ? props.name : "dateSelector");
+    const [type] = useState<string>(props.type ? props.type : "date");
     const [value, setValue] = useState<string>(props.value ? props.value : "");
 
     useEffect(() => {
@@ -101,7 +103,7 @@ const DateSelector = (props: Props) => {
                 onChange={onChange}
                 onKeyDown={onKeyDown}
                 size="sm"
-                type="date"
+                type={type}
                 value={value}
             />
         </Form>

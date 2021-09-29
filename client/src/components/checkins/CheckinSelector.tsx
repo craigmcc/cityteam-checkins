@@ -23,7 +23,7 @@ export interface Props {
     handleCheckin: HandleCheckin;       // Handle Checkin selection [no handler]
     label?: string;                     // Element label [Checkin:]
     name?: string;                      // Input control name [checkinSelector]
-    placeholder?: string;               // Placeholder option text [(Select Checkin)
+    placeholder?: string;               // Placeholder option text [(Select Checkin)]
 }
 
 // Component Details ---------------------------------------------------------
@@ -38,15 +38,14 @@ const CheckinSelector = (props: Props) => {
     useEffect(() => {
         logger.debug({
             context: "CheckinSelector.useEffect",
-            index: index,
             checkins: props.checkins,
         });
-    }, [props.checkins, index]);
+    }, [props.checkins]);
 
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);
         const theCheckin = (theIndex >= 0) ? props.checkins[theIndex] : new Checkin();
-        logger.debug({
+        logger.trace({
             context: "CheckinSelector.onChange",
             index: theIndex,
             checkin: Abridgers.CHECKIN(theCheckin),

@@ -32,6 +32,16 @@ CheckinRouter.post("/:facilityId/generate/:checkinDate/:templateId",
         ));
     });
 
+CheckinRouter.get("/:facilityId/summaries/:checkinDateFrom/:checkinDateTo",
+    requireRegular,
+    async (req: Request, res: Response) => {
+        res.send(await CheckinServices.summaries(
+            parseInt(req.params.facilityId, 10),
+            req.params.checkinDateFrom,
+            req.params.checkinDateTo
+        ));
+    });
+
 // Standard CRUD Routes ------------------------------------------------------
 
 CheckinRouter.get("/:facilityId",

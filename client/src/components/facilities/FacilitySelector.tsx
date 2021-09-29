@@ -44,7 +44,15 @@ export const FacilitySelector = (props: Props) => {
             context: "FacilitySelector.useEffect",
             facilities: facilityContext.facilities,
         });
-    }, [facilityContext.facilities]);
+        // Special case for this selector
+        let newIndex = -1;
+        facilityContext.facilities.forEach((facility, theIndex) => {
+            if (facility.id === facilityContext.facility.id) {
+                newIndex = theIndex;
+            }
+        });
+        setIndex(newIndex);
+    }, [facilityContext, facilityContext.facilities]);
 
     const onChange: OnChangeSelect = (event) => {
         const theIndex = parseInt(event.target.value, 10);

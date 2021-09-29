@@ -10,6 +10,7 @@ import Checkin from "../models/Checkin";
 import Facility from "../models/Facility";
 import Guest from "../models/Guest";
 import RefreshToken from "../models/RefreshToken";
+import Summary from "../models/Summary";
 import Template from "../models/Template";
 import User from "../models/User";
 
@@ -83,6 +84,18 @@ export const toRefreshTokens = (values: object[]): RefreshToken[] => {
     const results: RefreshToken[] = [];
     values.forEach(value => {
         results.push(new RefreshToken(value));
+    });
+    return results;
+}
+
+export const toSummary = (value: object): Summary => {
+    return Summary.clone(value);
+}
+
+export const toSummaries = (values: object[]): Summary[] => {
+    const results: Summary[] = [];
+    values.forEach(value => {
+        results.push(Summary.clone(value));
     });
     return results;
 }

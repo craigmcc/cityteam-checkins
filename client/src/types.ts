@@ -73,6 +73,7 @@ export type HandleDate = (date: string) => void;
 export type HandleFacility = (facility: Facility) => void;
 export type HandleGuest = (guest: Guest) => void;
 export type HandleGuestPromise = (guest: Guest) => Promise<Guest>;
+export type HandleMonth = (month: string) => void;
 export type HandleSummary = (summary: Summary) => void;
 export type HandleTemplate = (template: Template) => void;
 export type HandleUser = (user: User) => void;

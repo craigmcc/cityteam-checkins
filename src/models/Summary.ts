@@ -12,7 +12,7 @@ import Checkin from "./Checkin";
 
 export class Summary {
 
-    constructor(facilityId?: number, checkinDate?: string) {
+    constructor(facilityId?: number, checkinDate?: Date) {
         if (facilityId) {
             this.facilityId = facilityId;
         }
@@ -22,7 +22,7 @@ export class Summary {
     }
 
     // Primary key values
-    checkinDate: string = "2019-12-31";
+    checkinDate: Date = new Date("2019-12-31");
     facilityId: number = -1;
 
     // Total mat counts by payment type

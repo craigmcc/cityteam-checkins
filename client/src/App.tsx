@@ -7,7 +7,7 @@
 import React from 'react';
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-//import NavDropdown from "react-bootstrap/cjs/NavDropdown";
+import NavDropdown from "react-bootstrap/cjs/NavDropdown";
 import NavItem from "react-bootstrap/NavItem";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import {LinkContainer} from "react-router-bootstrap";
@@ -63,18 +63,23 @@ function App() {
               <LinkContainer to="/checkins">
                 <NavItem className="nav-link">Checkins</NavItem>
               </LinkContainer>
-              <LinkContainer to="/facilities">
-                <NavItem className="nav-link">Facilities</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/guests">
-                <NavItem className="nav-link">Guests</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/templates">
-                <NavItem className="nav-link">Templates</NavItem>
-              </LinkContainer>
-              <LinkContainer to="/users">
-                <NavItem className="nav-link">Users</NavItem>
-              </LinkContainer>
+              <NavDropdown id="reports" title="Reports">
+                {/* TODO */}
+              </NavDropdown>
+              <NavDropdown id="admin" title="Admin">
+                <LinkContainer to="/facilities">
+                  <NavDropdown.Item>Facilities</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/guests">
+                  <NavDropdown.Item>Guests</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/templates">
+                  <NavDropdown.Item>Templates</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/users">
+                  <NavDropdown.Item>Users</NavDropdown.Item>
+                </LinkContainer>
+              </NavDropdown>
               <LinkContainer to="/open-api">
                 <NavItem className="nav-link">OpenAPI Docs</NavItem>
               </LinkContainer>

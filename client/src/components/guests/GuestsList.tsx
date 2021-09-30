@@ -28,7 +28,7 @@ export interface Props {
     canInsert: boolean;                 // Can this user add Guests?
     canRemove: boolean;                 // Can this user remove Guests?
     canUpdate: boolean;                 // Can this user update Guests?
-    handleAdd: OnAction;                // Handle request to add a Guest
+    handleAdd?: OnAction;               // Handle request to add a Guest [no handler]
     handleSelect: HandleGuest;          // Handle request to select a Guest
     withActive?: boolean;               // Offer "Active Guests Only?" filter [true]
 }
@@ -107,14 +107,18 @@ const GuestsList = (props: Props) => {
                         variant="secondary"
                     />
                 </Col>
-                <Col className="text-right">
-                    <Button
-                        disabled={!props.canInsert}
-                        onClick={props.handleAdd}
-                        size="sm"
-                        variant="primary"
-                    >Add</Button>
-                </Col>
+                {props.handleAdd ? (
+                    <Col className="text-right">
+                        {props.handleAdd ? (
+                            <Button
+                                disabled={!props.canInsert}
+                                onClick={props.handleAdd}
+                                size="sm"
+                                variant="primary"
+                            >Add</Button>
+                        ) : null}
+                    </Col>
+                ) : null}
             </Row>
 
             <Row className="ml-1 mr-1">

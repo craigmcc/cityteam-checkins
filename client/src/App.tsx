@@ -20,6 +20,7 @@ import FacilitySelector from "./components/facilities/FacilitySelector";
 import FacilitiesView from "./components/facilities/FacilitiesView";
 import GuestsView from "./components/guests/GuestsView";
 import LoggedInUser from "./components/login/LoggedInUser";
+import GuestHistoryReport from "./components/reports/GuestHistoryReport";
 import MonthlySummaryReport from "./components/reports/MonthlySummaryReport";
 import TemplatesView from "./components/templates/TemplatesView";
 import HomeView from "./components/views/HomeView";
@@ -65,6 +66,9 @@ function App() {
                 <NavItem className="nav-link">Checkins</NavItem>
               </LinkContainer>
               <NavDropdown id="reports" title="Reports">
+                <LinkContainer to="/report-guest">
+                  <NavDropdown.Item>Guest History</NavDropdown.Item>
+                </LinkContainer>
                 <LinkContainer to="/report-month">
                   <NavDropdown.Item>Monthly Summary</NavDropdown.Item>
                 </LinkContainer>
@@ -107,6 +111,9 @@ function App() {
           </Route>
           <Route exact path="/guests">
             <GuestsView/>
+          </Route>
+          <Route exact path="/report-guest">
+            <GuestHistoryReport/>
           </Route>
           <Route exact path="/report-month">
             <MonthlySummaryReport/>

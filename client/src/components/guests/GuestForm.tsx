@@ -44,7 +44,7 @@ const GuestForm = (props: Props) => {
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "GuestForm.useEffect",
             guest: props.guest,
             values: initialValues,

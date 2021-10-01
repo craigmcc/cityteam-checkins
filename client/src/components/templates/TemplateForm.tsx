@@ -48,7 +48,7 @@ const TemplateForm = (props: Props) => {
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     useEffect(() => {
-        logger.info({
+        logger.debug({
             context: "TemplateForm.useEffect",
             template: props.template,
             values: initialValues,

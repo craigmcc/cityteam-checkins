@@ -44,7 +44,7 @@ const CheckinsView = () => {
 
     useEffect(() => {
 
-        logger.info({
+        logger.debug({
             context: "CheckinsView.useEffect",
             facility: Abridgers.FACILITY(facilityContext.facility),
         });

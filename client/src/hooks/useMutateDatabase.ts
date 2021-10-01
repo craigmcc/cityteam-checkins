@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import {HandleResults} from "../types";
 import Api from "../clients/Api";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -50,13 +51,8 @@ const useMutateDatabase = (props: Props): State => {
                 result: results,
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateDatabase.backup",
-                msg: "Unsuccessful database backup",
-                result: results,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateDtabase.backup", error);
         }
 
         setExecuting(false);

@@ -15,7 +15,16 @@ import logger from "./ClientLogger";
 
 // Public Objects ------------------------------------------------------------
 
-export const ReportError = (prefix: string, error: any) => {
+/**
+ * Parse the error, even if it is in a nested HTTP Response, forward an
+ * appropriate message via our ClientLogger, and show a JavaScript alert()
+ * with the parsed error message.
+ *
+ * @param context       Context in which this error occurred
+ * @param error         The object received by a "catch" block
+ * @param details       Details to include in the logger message
+ */
+export const ReportError = (context: string, error: any, details: object = {}) => {
     let outMessage: string = error.message;
     let outData: any | undefined = undefined;
     if (error.response) {
@@ -28,11 +37,13 @@ export const ReportError = (prefix: string, error: any) => {
         }
     }
     logger.error({
-        context: prefix,
+        context: context,
         msg: outMessage,
+        details: details,
         error: outData ? outData : null,
     });
-    alert(`Error: '${outMessage}'`);
+    // Give the logger a chance to forward before alert() stops everything
+    setTimeout(function() { alert(`Error: '${outMessage}'`); }, 100);
 }
 
 export default ReportError;

@@ -56,28 +56,36 @@ export const LoggedInUser = () => {
                 tokenResponse: JSON.stringify(tokenResponse),
             });
         } catch (error) {
-            ReportError("LoggedInUser.handleLogin", error);
+            ReportError("LoggedInUser.handleLogin", error, {
+                username: credentials.username,
+                password: "*REDACTED*",
+            });
         }
     }
 
     const handleLogout = async (): Promise<void> => {
+        const accessToken = loginContext.data.accessToken;
+        const username = loginContext.data.username;
         try {
             logger.info({
                 context: "LoggedInUser.handleLogout",
-                access_token: `${loginContext.data.accessToken}`,
-                username: `${loginContext.data.username}`,
+                username: username,
+                accessToken: accessToken,
             })
-            if (loginContext.data.loggedIn) {
+            await loginContext.handleLogout();
+            history.push("/");
+            if (accessToken) {
                 await OAuth.delete("/token", {
                     headers: {
-                        "Authorization": `Bearer ${loginContext.data.accessToken}`
+                        "Authorization": `Bearer ${accessToken}`
                     }
                 });
             }
-            await loginContext.handleLogout();
-            history.push("/");
         } catch (error) {
-            ReportError("LoggedInUser.handleLogout", error);
+            ReportError("LoggedInUser.handleLogout", error, {
+                username: username,
+                accessToken: accessToken,
+            });
         }
     }
 

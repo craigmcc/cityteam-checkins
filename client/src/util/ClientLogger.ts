@@ -26,10 +26,14 @@ LOG_LEVEL_MAP.set(Level.TRACE, 10);
 LOG_LEVEL_MAP.set(Level.WARN, 40);
 
 // Transmit the specified object so that it can be logged (if level is loggable)
-const write = (object: any, level: number): void => {
+const write = async (object: any, level: number): Promise<void> => {
     if (level >= LOG_LEVEL) {
         object.level = level;
-        LogClient.log(object);
+        try {
+            await LogClient.log(object);
+        } catch (error) {
+            console.error(`Error '${(error as Error).message}' logging client message`, object);
+        }
     }
 }
 // Public Objects ------------------------------------------------------------

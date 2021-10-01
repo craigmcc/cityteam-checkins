@@ -14,6 +14,7 @@ import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
 import FacilityContext from "../components/contexts/FacilityContext";
+import ReportError from "../util/ReportError";
 import {toTemplates} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -50,39 +51,34 @@ const useFetchTemplates = (props: Props): State => {
             setLoading(true);
             let theTemplates: Template[] = [];
 
+            const limit = props.pageSize ? props.pageSize : 25;
+            const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+            const parameters = {
+                active: props.active ? "" : undefined,
+                limit: limit,
+                offset: offset,
+                name: props.name ? props.name : undefined,
+                withFacility: props.withFacility ? "" : undefined,
+            }
+
             try {
                 if (facilityContext.facility.id > 0) {
-                    const limit = props.pageSize ? props.pageSize : 25;
-                    const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                    const parameters = {
-                        active: props.active ? "" : undefined,
-                        limit: limit,
-                        offset: offset,
-                        name: props.name ? props.name : undefined,
-                        withFacility: props.withFacility ? "" : undefined,
-                    }
                     theTemplates = toTemplates((await Api.get(TEMPLATES_BASE
                         + `/${facilityContext.facility.id}${queryParameters(parameters)}`))
                         .data);
                     logger.debug({
                         context: "useFetchTemplates.fetchTemplates",
                         facility: Abridgers.FACILITY(facilityContext.facility),
-                        active: props.active ? props.active : undefined,
-                        currentPage: props.currentPage ? props.currentPage : undefined,
-                        name: props.name ? props.name : undefined,
+                        parameters: parameters,
                         templates: Abridgers.TEMPLATES(theTemplates),
                     });
                 }
             } catch (error) {
-                logger.error({
-                    context: "useFetchTemplates.fetchTemplates",
-                    facility: Abridgers.FACILITY(facilityContext.facility),
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    name: props.name ? props.name : undefined,
-                    error: error,
-                });
                 setError(error as Error);
+                ReportError("useFetchTemplates.fetchTemplates", error, {
+                    facility: Abridgers.FACILITY(facilityContext.facility),
+                    ...parameters,
+                })
             }
 
             setLoading(false);

@@ -14,6 +14,7 @@ import Guest, {GUESTS_BASE} from "../models/Guest";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import ReportError from "../util/ReportError";
 import {toGuests} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -50,39 +51,35 @@ const useFetchGuests = (props: Props): State => {
             setLoading(true);
             let theGuests: Guest[] = [];
 
+            const limit = props.pageSize ? props.pageSize : 25;
+            const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+            const parameters = {
+                active: props.active ? "" : undefined,
+                limit: limit,
+                offset: offset,
+                name: props.name ? props.name : undefined,
+                withFacility: props.withFacility ? "" : undefined,
+            }
+
             try {
-                if ((facilityContext.facility.id > 0) && props.name) { // Too many Guests for a useful non-filtered fetch
-                    const limit = props.pageSize ? props.pageSize : 25;
-                    const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                    const parameters = {
-                        active: props.active ? "" : undefined,
-                        limit: limit,
-                        offset: offset,
-                        name: props.name ? props.name : undefined,
-                        withFacility: props.withFacility ? "" : undefined,
-                    }
+                // Too many Guests for a useful non-filtered fetch
+                if ((facilityContext.facility.id > 0) && props.name) {
                     theGuests = toGuests((await Api.get(GUESTS_BASE
                         + `/${facilityContext.facility.id}${queryParameters(parameters)}`))
                         .data);
                     logger.debug({
                         context: "useFetchGuests.fetchGuests",
                         facility: Abridgers.FACILITY(facilityContext.facility),
-                        active: props.active ? props.active : undefined,
-                        currentPage: props.currentPage ? props.currentPage : undefined,
-                        name: props.name ? props.name : undefined,
+                        parameters: parameters,
                         guests: Abridgers.GUESTS(theGuests),
                     });
                 }
             } catch (error) {
-                logger.error({
-                    context: "useFetchGuests.fetchGuests",
-                    facility: Abridgers.FACILITY(facilityContext.facility),
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    name: props.name ? props.name : undefined,
-                    error: error,
-                });
                 setError(error as Error);
+                ReportError("useFetchGuests.fetchGuests", error, {
+                    facility: Abridgers.FACILITY(facilityContext.facility),
+                    ...parameters,
+                });
             }
 
             setLoading(false);

@@ -70,7 +70,7 @@ export const LoggedInUser = () => {
             logger.info({
                 context: "LoggedInUser.handleLogout",
                 username: username,
-                accessToken: accessToken,
+//                accessToken: accessToken,
             })
             await loginContext.handleLogout();
             history.push("/");
@@ -84,7 +84,7 @@ export const LoggedInUser = () => {
         } catch (error) {
             ReportError("LoggedInUser.handleLogout", error, {
                 username: username,
-                accessToken: accessToken,
+//                accessToken: accessToken,
             });
         }
     }

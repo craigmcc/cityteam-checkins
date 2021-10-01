@@ -13,6 +13,7 @@ import Facility, {FACILITIES_BASE} from "../models/Facility";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import ReportError from "../util/ReportError";
 import * as Sorters from "../util/Sorters";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -49,20 +50,20 @@ const useFetchFacilities = (props: Props): State => {
             setLoading(true);
             let theFacilities: Facility[] = [];
 
+            const limit = props.pageSize ? props.pageSize : 25;
+            const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+            const parameters = {
+                active: props.active ? "" : undefined,
+                limit: limit,
+                offset: offset,
+                name: props.name ? props.name : undefined,
+                withCheckins: props.withCheckins ? "" : undefined,
+                withGuests: props.withGuests ? "" : undefined,
+                withTemplates: props.withTemplates ? "" : undefined,
+            };
+
+
             try {
-
-                const limit = props.pageSize ? props.pageSize : 25;
-                const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                const parameters = {
-                    active: props.active ? "" : undefined,
-                    limit: limit,
-                    offset: offset,
-                    name: props.name ? props.name : undefined,
-                    withCheckins: props.withCheckins ? "" : undefined,
-                    withGuests: props.withGuests ? "" : undefined,
-                    withTemplates: props.withTemplates ? "" : undefined,
-                };
-
                 theFacilities = (await Api.get(FACILITIES_BASE
                     + `${queryParameters(parameters)}`)).data;
                 theFacilities.forEach(theFacility => {
@@ -78,23 +79,17 @@ const useFetchFacilities = (props: Props): State => {
                         theFacility.templates = Sorters.TEMPLATES(theFacility.templates);
                     }
                 });
-                logger.debug({
+                logger.info({
                     context: "useFetchFacilities.fetchFacilities",
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    name: props.name ? props.name : undefined,
+                    parameters: parameters,
                     facilities: Abridgers.FACILITIES(theFacilities),
                 });
 
             } catch (error) {
-                logger.error({
-                    context: "useFetchFacilities.fetchFacilities",
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    name: props.name ? props.name : undefined,
-                    error: error,
-                });
                 setError(error as Error);
+                ReportError("useFetchFacilities.fetchFacilities", error, {
+                    parameters: parameters,
+                })
             }
 
             setLoading(false);

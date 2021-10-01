@@ -13,6 +13,7 @@ import User, {USERS_BASE} from "../models/User";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import ReportError from "../util/ReportError";
 import * as Sorters from "../util/Sorters";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -48,19 +49,18 @@ const useFetchUsers = (props: Props): State => {
             setLoading(true);
             let theUsers: User[] = [];
 
+            const limit = props.pageSize ? props.pageSize : 25;
+            const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+            const parameters = {
+                active: props.active ? "" : undefined,
+                limit: limit,
+                offset: offset,
+                username: props.username ? props.username : undefined,
+                withAccessTokens: props.withAccessTokens ? "" : undefined,
+                withRefreshTokens: props.withRefreshTokens ? "" : undefined,
+            };
+
             try {
-
-                const limit = props.pageSize ? props.pageSize : 25;
-                const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                const parameters = {
-                    active: props.active ? "" : undefined,
-                    limit: limit,
-                    offset: offset,
-                    username: props.username ? props.username : undefined,
-                    withAccessTokens: props.withAccessTokens ? "" : undefined,
-                    withRefreshTokens: props.withRefreshTokens ? "" : undefined,
-                };
-
                 theUsers = (await Api.get(USERS_BASE
                     + `${queryParameters(parameters)}`)).data;
                 theUsers.forEach(theUser => {
@@ -73,21 +73,15 @@ const useFetchUsers = (props: Props): State => {
                 });
                 logger.debug({
                     context: "useFetchUsers.fetchUsers",
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    username: props.username ? props.username : undefined,
+                    parameters: parameters,
                     users: Abridgers.USERS(theUsers),
                 });
 
             } catch (error) {
-                logger.error({
-                    context: "useFetchUsers.fetchUsers",
-                    active: props.active ? props.active : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    username: props.username ? props.username : undefined,
-                    error: error,
-                });
                 setError(error as Error);
+                ReportError("useFetchUsers.fetchUsers", error, {
+                    parameters: parameters,
+                });
             }
 
             setLoading(false);

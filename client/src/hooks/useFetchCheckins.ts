@@ -15,6 +15,7 @@ import Checkin, {CHECKINS_BASE} from "../models/Checkin";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
 import {queryParameters} from "../util/QueryParameters";
+import ReportError from "../util/ReportError";
 import {toCheckins} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -55,43 +56,37 @@ const useFetchCheckins = (props: Props): State => {
             setLoading(true);
             let theCheckins: Checkin[] = [];
 
+            const limit = props.pageSize ? props.pageSize : 100;
+            const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
+            const parameters = {
+                available: props.available ? "" : undefined,
+                date: props.date ? props.date : undefined,
+                guestId: props.guestId ? props.guestId : undefined,
+                limit: limit,
+                offset: offset,
+                withFacility: props.withFacility ? "" : undefined,
+                withGuest: props.withGuest ? "" : undefined,
+            }
+
             try {
-                if ((facilityContext.facility.id > 0) && (props.date || props.guestId)) { // Too many Checkins for a useful non-filtered fetch
-                    const limit = props.pageSize ? props.pageSize : 100;
-                    const offset = props.currentPage ? (limit * (props.currentPage - 1)) : 0;
-                    const parameters = {
-                        available: props.available ? "" : undefined,
-                        date: props.date ? props.date : undefined,
-                        guestId: props.guestId ? props.guestId : undefined,
-                        limit: limit,
-                        offset: offset,
-                        withFacility: props.withFacility ? "" : undefined,
-                        withGuest: props.withGuest ? "" : undefined,
-                    }
+                // Too many Checkins for a useful non-filtered fetch
+                if ((facilityContext.facility.id > 0) && (props.date || props.guestId)) {
                     theCheckins = toCheckins((await Api.get(CHECKINS_BASE
                         + `/${facilityContext.facility.id}${queryParameters(parameters)}`))
                         .data);
                     logger.debug({
                         context: "useFetchCheckins.fetchCheckins",
                         facility: Abridgers.FACILITY(facilityContext.facility),
-                        available: props.available ? props.available : undefined,
-                        currentPage: props.currentPage ? props.currentPage : undefined,
-                        date: props.date ? props.date : undefined,
-                        guestId: props.guestId ? props.guestId : undefined,
+                        parameters: parameters,
                         checkins: Abridgers.CHECKINS(theCheckins),
                     });
                 }
             } catch (error) {
-                logger.error({
-                    context: "useFetchCheckins.fetchCheckins",
-                    facility: Abridgers.FACILITY(facilityContext.facility),
-                    available: props.available ? props.available : undefined,
-                    currentPage: props.currentPage ? props.currentPage : undefined,
-                    date: props.date ? props.date : undefined,
-                    guestId: props.guestId ? props.guestId : undefined,
-                    error: error,
-                });
                 setError(error as Error);
+                ReportError("useFetchCheckins.fetchCheckins", error, {
+                    facility: Abridgers.FACILITY(facilityContext.facility),
+                    ...parameters,
+                });
             }
 
             setLoading(false);

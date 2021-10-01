@@ -19,7 +19,6 @@ const REFRESH_GRANT_TYPE = "refresh_token";
 import {requireAny} from "./OAuthMiddleware";
 import OAuthOrchestrator from "./OAuthOrchestrator";
 import {BadRequest, ServerError} from "../util/HttpErrors";
-import logger from "../util/ServerLogger";
 
 // Public Objects ------------------------------------------------------------
 
@@ -38,10 +37,6 @@ export const OAuthTokenRouter = Router({
 OAuthTokenRouter.delete("/",
     requireAny,
     async (req: Request, res: Response) => {
-        logger.info({
-            context: "OAuthTokenRouter.revoke",
-            token: res.locals.token
-        });
         // Successful authorization stored our token in res.locals.token
         const token: string = res.locals.token;
         if (token) {
@@ -54,20 +49,6 @@ OAuthTokenRouter.delete("/",
                 "revokeToken");
         }
     });
-
-// Return the user object for the (validated) access token
-// that was used to authorize this request.
-/*
-OAuthTokenRouter.get("/",
-    requireAny,
-    async (req: Request, res: Response) => {
-        logger.info({
-            context: "OAuthTokenRouter.me",
-            token: res.locals.token
-        });
-        res.send(await UserServices.me(res.locals.token));
-    })
-*/
 
 // Request access token and optional refresh token.
 OAuthTokenRouter.post("/",
@@ -108,18 +89,8 @@ OAuthTokenRouter.post("/",
             const output: any = {
                 ...tokenResponse
             }
-            logger.debug({
-                context: "OAuthTokenRouter.token",
-                input: input,
-                output: output
-            });
             res.send(tokenResponse);
         } catch (error) {
-            logger.info({
-                context: "OAuthTokenRouter.token",
-                input: input,
-                error: error,
-            });
             // Handle errors with standard middleware
             throw error;
         }

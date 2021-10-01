@@ -14,6 +14,7 @@ import {CHECKINS_BASE} from "../models/Checkin";
 import Summary from "../models/Summary";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 import {toSummaries} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -47,24 +48,28 @@ const useFetchSummaries = (props: Props): State => {
             setLoading(true);
             let theSummaries: Summary[] = [];
 
+            const parameters = {
+                checkinDateFrom: props.checkinDateFrom,
+                checkinDateTo: props.checkinDateTo,
+            }
+
             try {
-                theSummaries = toSummaries((await Api.get(CHECKINS_BASE
-                    + `/${facilityContext.facility.id}/summaries/${props.checkinDateFrom}/${props.checkinDateTo}`))
-                    .data);
-                logger.debug({
-                    context: "useFetchSummaries.fetchSummaries",
-                    facility: Abridgers.FACILITY(facilityContext.facility),
-                    checkinDateFrom: props.checkinDateFrom,
-                    checkinDateTo: props.checkinDateTo,
-                    count: theSummaries.length,
-                });
+                if (facilityContext.facility.id > 0) {
+                    theSummaries = toSummaries((await Api.get(CHECKINS_BASE
+                        + `/${facilityContext.facility.id}/summaries/${props.checkinDateFrom}/${props.checkinDateTo}`))
+                        .data);
+                    logger.debug({
+                        context: "useFetchSummaries.fetchSummaries",
+                        facility: Abridgers.FACILITY(facilityContext.facility),
+                        parameters: parameters,
+                        count: theSummaries.length,
+                    });
+                }
             } catch (error) {
-                logger.error({
-                    context: "useFetchSummaries.fetchSummaries",
+                setError(error as Error);
+                ReportError("useFetchSummaries.fetchSummaries", error, {
                     facility: Abridgers.FACILITY(facilityContext.facility),
-                    checkinDateFrom: props.checkinDateFrom,
-                    checkinDateTo: props.checkinDateTo,
-                    error: error,
+                    ...parameters,
                 });
             }
 

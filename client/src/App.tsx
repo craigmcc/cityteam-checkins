@@ -23,6 +23,7 @@ import LoggedInUser from "./components/login/LoggedInUser";
 import GuestHistoryReport from "./components/reports/GuestHistoryReport";
 import MonthlySummaryReport from "./components/reports/MonthlySummaryReport";
 import TemplatesView from "./components/templates/TemplatesView";
+import DatabaseView from "./components/views/DatabaseView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
 import UsersView from "./components/users/UsersView";
@@ -74,6 +75,9 @@ function App() {
                 </LinkContainer>
               </NavDropdown>
               <NavDropdown id="admin" title="Admin">
+                <LinkContainer to="/database">
+                  <NavDropdown.Item>Database Backup</NavDropdown.Item>
+                </LinkContainer>
                 <LinkContainer to="/facilities">
                   <NavDropdown.Item>Facilities</NavDropdown.Item>
                 </LinkContainer>
@@ -105,6 +109,9 @@ function App() {
           </Route>
           <Route exact path="/checkins">
             <CheckinsView/>
+          </Route>
+          <Route exact path="/database">
+            <DatabaseView/>
           </Route>
           <Route exact path="/facilities">
             <FacilitiesView/>

@@ -9,6 +9,7 @@ import {Router} from "express";
 // Internal Modules ----------------------------------------------------------
 
 import CheckinRouter from "../routers/CheckinRouter";
+import DatabaseRouter from "../routers/DatabaseRouter";
 import FacilityRouter from "../routers/FacilityRouter";
 import GuestRouter from "../routers/GuestRouter";
 import LogRouter from "../routers/LogRouter";
@@ -22,6 +23,7 @@ const ApiRouter = Router({
 });
 
 ApiRouter.use("/checkins", CheckinRouter);
+ApiRouter.use("/database", DatabaseRouter);
 ApiRouter.use("/facilities", FacilityRouter);
 ApiRouter.use("/guests", GuestRouter);
 ApiRouter.use("/logs", LogRouter);

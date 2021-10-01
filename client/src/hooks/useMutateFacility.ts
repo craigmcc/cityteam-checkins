@@ -11,7 +11,9 @@ import {useEffect, useState} from "react";
 import {HandleFacility} from "../types";
 import Api from "../clients/Api";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
+import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -49,15 +51,13 @@ const useMutateFacility = (props: Props): State => {
             inserted = (await Api.post(FACILITIES_BASE, theFacility)).data;
             logger.debug({
                 context: "useMutateFacility.insert",
-                facility: inserted,
+                facility: Abridgers.FACILITY(inserted),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateFacility.insert",
-                facility: theFacility,
-                error: error,
-            })
             setError(error as Error);
+            ReportError("useMutateFacility.insert", error, {
+                facility: theFacility,
+            });
         }
 
         setExecuting(false);
@@ -76,15 +76,13 @@ const useMutateFacility = (props: Props): State => {
                 + `/${theFacility.id}`)).data;
             logger.debug({
                 context: "useMutateFacility.remove",
-                facility: removed,
+                facility: Abridgers.FACILITY(removed),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateFacility.remove",
-                facility: theFacility,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateFcility.remove", error, {
+                facility: theFacility,
+            });
         }
 
         setExecuting(false);
@@ -103,15 +101,13 @@ const useMutateFacility = (props: Props): State => {
                 + `/${theFacility.id}`, theFacility)).data;
             logger.debug({
                 context: "useMutateFacility.update",
-                facility: updated,
+                facility: Abridgers.FACILITY(updated),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateFacility.update",
-                facility: theFacility,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateFacility.update", error, {
+                facility: theFacility,
+            });
         }
 
         setExecuting(false);

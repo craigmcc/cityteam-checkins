@@ -13,11 +13,11 @@ import Api from "../clients/Api";
 import User, {USERS_BASE} from "../models/User";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
 export interface Props {
-    user: User;                         // User on which to perform operations
 }
 
 export interface State {
@@ -38,9 +38,8 @@ const useMutateUser = (props: Props): State => {
     useEffect(() => {
         logger.debug({
             context: "useMutateUser.useEffect",
-            user: Abridgers.USER(props.user),
         });
-    }, [props.user]);
+    });
 
     const insert: HandleUser = async (theUser): Promise<User> => {
 
@@ -52,15 +51,16 @@ const useMutateUser = (props: Props): State => {
             inserted = (await Api.post(USERS_BASE, theUser)).data;
             logger.debug({
                 context: "useMutateUser.insert",
-                user: inserted,
+                user: Abridgers.USER(inserted),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateUser.insert",
-                user: props.user,
-                error: error,
-            })
             setError(error as Error);
+            ReportError("useMutateUser.insert", error, {
+                user: {
+                    ...theUser,
+                    password: "*REDACTED*",
+                }
+            });
         }
 
         setExecuting(false);
@@ -76,18 +76,19 @@ const useMutateUser = (props: Props): State => {
 
         try {
             removed = (await Api.delete(USERS_BASE
-                + `/${props.user.id}`)).data;
+                + `/${theUser.id}`)).data;
             logger.debug({
                 context: "useMutateUser.remove",
-                user: removed,
+                user: Abridgers.USER(removed),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateUser.update",
-                user: props.user,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateUser.remove", error, {
+                user: {
+                    ...theUser,
+                    password: theUser.password ? "*REDACTED*" : null,
+                }
+            });
         }
 
         setExecuting(false);
@@ -103,18 +104,19 @@ const useMutateUser = (props: Props): State => {
 
         try {
             updated = (await Api.put(USERS_BASE
-                + `/${props.user.id}`, theUser)).data;
+                + `/${theUser.id}`, theUser)).data;
             logger.debug({
                 context: "useMutateUser.update",
-                user: updated,
+                user: Abridgers.USER(updated),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateUser.update",
-                user: props.user,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateUser.update", error, {
+                user: {
+                    ...theUser,
+                    password: theUser.password ? "*REDACTED*" : null,
+                }
+            });
         }
 
         setExecuting(false);

@@ -4,14 +4,17 @@
 
 // External Modules ----------------------------------------------------------
 
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
 import {HandleTemplate} from "../types";
 import Api from "../clients/Api";
+import FacilityContext from "../components/contexts/FacilityContext";
 import Template, {TEMPLATES_BASE} from "../models/Template";
+import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 
 // Incoming Properties and Outgoing State ------------------------------------
 
@@ -30,6 +33,8 @@ export interface State {
 
 const useMutateTemplate = (props: Props): State => {
 
+    const facilityContext = useContext(FacilityContext);
+
     const [error, setError] = useState<Error | null>(null);
     const [executing, setExecuting] = useState<boolean>(false);
 
@@ -47,18 +52,18 @@ const useMutateTemplate = (props: Props): State => {
 
         try {
             inserted = (await Api.post(TEMPLATES_BASE
-                + `/${theTemplate.facilityId}`, theTemplate)).data;
+                + `/${facilityContext.facility.id}`, theTemplate)).data;
             logger.debug({
                 context: "useMutateTemplate.insert",
-                template: inserted,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: Abridgers.TEMPLATE(inserted),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateTemplate.insert",
-                template: theTemplate,
-                error: error,
-            })
             setError(error as Error);
+            ReportError("useMutateTemplate.insert", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: theTemplate,
+            });
         }
 
         setExecuting(false);
@@ -74,18 +79,18 @@ const useMutateTemplate = (props: Props): State => {
 
         try {
             removed = (await Api.delete(TEMPLATES_BASE
-                + `/${theTemplate.facilityId}/${theTemplate.id}`)).data;
+                + `/${facilityContext.facility.id}/${theTemplate.id}`)).data;
             logger.debug({
                 context: "useMutateTemplate.remove",
-                template: removed,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: Abridgers.TEMPLATE(removed),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateTemplate.remove",
-                template: theTemplate,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateTemplate.remove", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: theTemplate,
+            });
         }
 
         setExecuting(false);
@@ -101,19 +106,18 @@ const useMutateTemplate = (props: Props): State => {
 
         try {
             updated = (await Api.put(TEMPLATES_BASE
-                + `/${theTemplate.facilityId}/${theTemplate.id}`, theTemplate)).data;
-            logger.trace({
+                + `/${facilityContext.facility.id}/${theTemplate.id}`, theTemplate)).data;
+            logger.debug({
                 context: "useMutateTemplate.update",
-                input: theTemplate,
-                template: updated,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: Abridgers.TEMPLATE(updated),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateTemplate.update",
-                template: theTemplate,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateTemplate.update", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                template: theTemplate,
+            })
         }
 
         setExecuting(false);

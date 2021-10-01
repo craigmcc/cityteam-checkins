@@ -32,7 +32,6 @@ const UsersView = () => {
     const [user, setUser] = useState<User | null>(null);
 
     const mutateUser = useMutateUser({
-        user: user ? user : new User(),
     });
 
     useEffect(() => {

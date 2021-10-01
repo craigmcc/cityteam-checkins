@@ -12,7 +12,9 @@ import {HandleGuestPromise} from "../types";
 import Api from "../clients/Api";
 import FacilityContext from "../components/contexts/FacilityContext";
 import Guest, {GUESTS_BASE} from "../models/Guest";
+import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
+import ReportError from "../util/ReportError";
 import {toGuest} from "../util/ToModelTypes";
 
 // Incoming Properties and Outgoing State ------------------------------------
@@ -54,15 +56,15 @@ const useMutateGuest = (props: Props): State => {
                 + `/${facilityContext.facility.id}`, theGuest)).data);
             logger.debug({
                 context: "useMutateGuest.insert",
-                guest: inserted,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: Abridgers.GUEST(inserted),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateGuest.insert",
-                guest: theGuest,
-                error: error,
-            })
             setError(error as Error);
+            ReportError("useMutateGuest.insert", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: theGuest,
+            });
         }
 
         setExecuting(false);
@@ -78,19 +80,19 @@ const useMutateGuest = (props: Props): State => {
 
         try {
             removed = toGuest((await Api.delete(GUESTS_BASE
-                + `/${theGuest.facilityId}/${theGuest.id}`))
+                + `/${facilityContext.facility.id}/${theGuest.id}`))
                 .data);
             logger.debug({
                 context: "useMutateGuest.remove",
-                guest: removed,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: Abridgers.GUEST(removed),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateGuest.remove",
-                guest: theGuest,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateGuest.remove", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: theGuest,
+            });
         }
 
         setExecuting(false);
@@ -106,20 +108,19 @@ const useMutateGuest = (props: Props): State => {
 
         try {
             updated = toGuest((await Api.put(GUESTS_BASE
-                + `/${theGuest.facilityId}/${theGuest.id}`, theGuest))
+                + `/${facilityContext.facility.id}/${theGuest.id}`, theGuest))
                 .data);
             logger.debug({
                 context: "useMutateGuest.update",
-                input: theGuest,
-                guest: updated,
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: Abridgers.GUEST(updated),
             });
         } catch (error) {
-            logger.error({
-                context: "useMutateGuest.update",
-                guest: theGuest,
-                error: error,
-            });
             setError(error as Error);
+            ReportError("useMutateGuest.update", error, {
+                facility: Abridgers.FACILITY(facilityContext.facility),
+                guest: theGuest,
+            });
         }
 
         setExecuting(false);

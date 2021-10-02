@@ -10,6 +10,7 @@ const path = require("path");
 
 // Internal Modules ----------------------------------------------------------
 
+import logger from "../util/ServerLogger";
 import {nowDateTime} from "../util/Timestamps";
 
 // Public Objects ------------------------------------------------------------
@@ -33,20 +34,24 @@ class DatabaseServices {
         let output = "";
         try {
             output = execSync(COMMAND).toString();
-            return {
+            const result = {
                 context: "DatabaseServices.backup",
                 msg: "Successful database backup",
                 pathname: PATHNAME,
                 output: output,
             }
+            logger.info(result);
+            return result;
         } catch (error) {
-            return {
+            const result = {
                 context: "DatabaseServices.backup",
                 msg: "Error performing database backup",
                 pathname: PATHNAME,
                 output: output,
                 error: error
             }
+            logger.error(result);
+            return result;
         }
 
     }

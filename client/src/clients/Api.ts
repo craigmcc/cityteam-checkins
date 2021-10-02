@@ -24,6 +24,9 @@ Api.interceptors.request.use(function (config) {
     if (LOGIN_DATA.accessToken) {
         config.headers["Authorization"] = `Bearer ${LOGIN_DATA.accessToken}`;
     }
+    if (LOGIN_DATA.username) {
+        config.headers["X-CT-Username"] = LOGIN_DATA.username;
+    }
     return config;
 })
 

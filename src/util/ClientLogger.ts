@@ -29,6 +29,9 @@ const logger = (CLIENT_LOG === "stderr") || (CLIENT_LOG === "stdout")
         timestamp: function (): string {
             return ',"time":"' + nowLocalISO() + '"';
         }
-    }, rfs.createStream(CLIENT_LOG, { interval: "1d" }));
+    }, rfs.createStream(CLIENT_LOG, {
+        interval: "1d",
+        path: "log",
+    }));
 
 export default logger;

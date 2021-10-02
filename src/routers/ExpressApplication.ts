@@ -32,9 +32,18 @@ app.use(cors({
 
 // Configure access log management
 const ACCESS_LOG = process.env.ACCESS_LOG ? process.env.ACCESS_LOG : "stderr";
-morgan.token("timestamp", (req, res): string => {
+morgan.token("date", (req, res): string => {
     return toLocalISO(new Date());
 });
+const REMOTE_USER_HEADER = "x-ct-username";
+morgan.token("remote-user", (req, res): string => {
+    let username = "-";
+    const header: string | string[] | undefined = req.headers[REMOTE_USER_HEADER];
+    if (typeof header === "string") {
+        username = header;
+    }
+    return username;
+})
 if ((ACCESS_LOG === "stderr") || (ACCESS_LOG === "stdout")) {
     app.use(morgan("combined", {
         skip: function (req, res) {
@@ -47,7 +56,10 @@ if ((ACCESS_LOG === "stderr") || (ACCESS_LOG === "stdout")) {
         skip: function (req, res) {
             return req.path === "/clientLog";
         },
-        stream: rfs.createStream(ACCESS_LOG, { interval: "1d" }),
+        stream: rfs.createStream(ACCESS_LOG, {
+            interval: "1d",
+            path: "log",
+        }),
     }))
 }
 

@@ -31,23 +31,23 @@ app.use(cors({
 }));
 
 // Configure access log management
-const CLIENT_LOG = process.env.CLIENT_LOG ? process.env.CLIENT_LOG : "stderr";
+const ACCESS_LOG = process.env.ACCESS_LOG ? process.env.ACCESS_LOG : "stderr";
 morgan.token("timestamp", (req, res): string => {
     return toLocalISO(new Date());
 });
-if ((CLIENT_LOG === "stderr") || (CLIENT_LOG === "stdout")) {
+if ((ACCESS_LOG === "stderr") || (ACCESS_LOG === "stdout")) {
     app.use(morgan("combined", {
         skip: function (req, res) {
             return req.path === "/clientLog";
         },
-        stream: (CLIENT_LOG === "stderr") ? process.stderr : process.stdout,
+        stream: (ACCESS_LOG === "stderr") ? process.stderr : process.stdout,
     }));
 } else {
     app.use(morgan("combined", {
         skip: function (req, res) {
             return req.path === "/clientLog";
         },
-        stream: rfs.createStream(CLIENT_LOG, { interval: "1d" }),
+        stream: rfs.createStream(ACCESS_LOG, { interval: "1d" }),
     }))
 }
 

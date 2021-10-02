@@ -63,6 +63,8 @@ export const FacilityContextProvider = (props: any) => {
         }
         logger.debug({
             context: "FacilityContext.useEffect",
+            loggedIn: loginContext.data.loggedIn,
+            facilities: Abridgers.FACILITIES(fetchFacilities.facilities),
             availables: Abridgers.FACILITIES(theAvailables),
         });
         setAvailables(theAvailables);

@@ -85,8 +85,8 @@ export const LoginContextProvider = (props: any) => {
 
         logger.info({
             context: "LoginContext.handleLogin",
-            scope: tokenResponse.scope,
             username: username,
+            scope: tokenResponse.scope,
         });
 
         // Save allowed scope(s) and set logging level
@@ -119,6 +119,11 @@ export const LoginContextProvider = (props: any) => {
         LOGIN_DATA = {    // No corrupting real internal state allowed
             ...theData,
         }
+        logger.trace({
+            context: "LoginContext.handleLogin",
+            msg: "Setting context data after login",
+            data: theData,
+        });
         setData(theData);
 
     }
@@ -141,6 +146,11 @@ export const LoginContextProvider = (props: any) => {
         LOGIN_DATA = {    // No corrupting real internal state allowed
             ...theData
         };
+        logger.trace({
+            context: "LoginContext.handleLogout",
+            msg: "Setting context data after logout",
+            data: theData,
+        });
         setData(theData);
 
         setLevel(LOG_DEFAULT);

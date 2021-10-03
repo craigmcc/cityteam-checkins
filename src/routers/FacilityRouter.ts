@@ -9,6 +9,7 @@ import {Request, Response, Router} from "express";
 // Internal Modules ----------------------------------------------------------
 
 import {
+//    dumpRequestDetails,
     requireAdmin,
     requireAny,
     requireNone,
@@ -70,6 +71,7 @@ FacilityRouter.get("/:facilityId",
     });
 
 FacilityRouter.put("/:facilityId",
+//    dumpRequestDetails,
     requireAdmin,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.update(

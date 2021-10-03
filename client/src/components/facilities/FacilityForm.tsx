@@ -27,6 +27,7 @@ import {toFacility} from "../../util/ToModelTypes";
 import {toEmptyStrings, toNullValues} from "../../util/Transformations";
 import {
     validateEmail,
+    validateFacilityScope,
     validatePhone,
     validateState,
     validateZipCode
@@ -109,10 +110,15 @@ const FacilityForm = (props: Props) => {
                     }),
             scope: Yup.string()
                 .required("Scope is required")
+                .test("valid-scope",
+                    "Only alphanumeric (a-z, A-Z, 0-9) characters are allowed",
+                    function(value) {
+                        return validateFacilityScope(value);
+                    })
                 .test("unique-scope",
                     "That scope is already in use",
-                    function(value) {
-                        return validateFacilityScopeUnique(toFacility(this.parent));
+                    async function(value) {
+                        return await validateFacilityScopeUnique(toFacility(this.parent));
                     }),
             state: Yup.string()
                 .test("valid-state",
@@ -197,7 +203,7 @@ const FacilityForm = (props: Props) => {
                                         value={values.scope}
                                     />
                                     <Form.Control.Feedback type="valid">
-                                        Scope required and to access this Facility.
+                                        Scope required to access this Facility (must be alphanumeric and unique).
                                     </Form.Control.Feedback>
                                     <Form.Control.Feedback type="invalid">
                                         {errors.scope}

@@ -79,7 +79,7 @@ const useFetchFacilities = (props: Props): State => {
                         theFacility.templates = Sorters.TEMPLATES(theFacility.templates);
                     }
                 });
-                logger.info({
+                logger.debug({
                     context: "useFetchFacilities.fetchFacilities",
                     parameters: parameters,
                     facilities: Abridgers.FACILITIES(theFacilities),

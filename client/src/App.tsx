@@ -23,10 +23,11 @@ import LoggedInUser from "./components/login/LoggedInUser";
 import GuestHistoryReport from "./components/reports/GuestHistoryReport";
 import MonthlySummaryReport from "./components/reports/MonthlySummaryReport";
 import TemplatesView from "./components/templates/TemplatesView";
+import UsersView from "./components/users/UsersView";
 import DatabaseView from "./components/views/DatabaseView";
+import HelpView from "./components/views/HelpView";
 import HomeView from "./components/views/HomeView";
 import OpenApiView from "./components/views/OpenApiView";
-import UsersView from "./components/users/UsersView";
 import {FacilityContextProvider} from "./components/contexts/FacilityContext";
 import {LoginContextProvider} from "./components/contexts/LoginContext";
 
@@ -94,6 +95,14 @@ function App() {
               <LinkContainer to="/open-api">
                 <NavItem className="nav-link">OpenAPI Docs</NavItem>
               </LinkContainer>
+              <NavDropdown id="help" title="Help">
+                <LinkContainer to="/help/regular-user.md">
+                  <NavDropdown.Item>Regular User</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/help/admin-user.md">
+                  <NavDropdown.Item>Administrative User</NavDropdown.Item>
+                </LinkContainer>
+              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
 
@@ -130,6 +139,9 @@ function App() {
           </Route>
           <Route exact path="/users">
             <UsersView/>
+          </Route>
+          <Route path="/help/:resource">
+            <HelpView/>
           </Route>
           <Route path="/">
             <HomeView/>

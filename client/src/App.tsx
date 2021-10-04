@@ -53,7 +53,7 @@ function App() {
             <img
                 alt="CityTeam Logo"
                 height={66}
-                src="./CityTeamDarkBlue.png"
+                src="/CityTeamDarkBlue.png"
                 width={160}
             />
           </Navbar.Brand>

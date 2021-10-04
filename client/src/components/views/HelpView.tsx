@@ -5,7 +5,7 @@
 // External Modules ----------------------------------------------------------
 
 import React, {useEffect, useState} from "react";
-//import Col from "react-bootstrap/Col";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import ReactMarkdown from "react-markdown";
@@ -54,10 +54,12 @@ const HelpView = () => {
     return (
         <Container fluid id="HelpView">
             <Row className="ml-1 mr-1">
-                <ReactMarkdown
-                    children={markdown}
-                    remarkPlugins={[remarkGfm]}
-                />
+                <Col>
+                    <ReactMarkdown
+                        children={markdown}
+                        remarkPlugins={[remarkGfm]}
+                    />
+                </Col>
             </Row>
         </Container>
     )

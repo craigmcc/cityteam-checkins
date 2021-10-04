@@ -1,3 +1,3 @@
-This is the **regular-user** file.
+This is the **regular-user.md** file.
 
-The admin user stuff is [here](admin-user.md).
+The admin user stuff is [here](/help/admin-user.md).

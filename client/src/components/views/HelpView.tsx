@@ -8,7 +8,9 @@ import React, {useEffect, useState} from "react";
 //import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import ReactMarkdown from "react-markdown";
 import {useParams} from "react-router-dom";
+import remarkGfm from "remark-gfm";
 
 // Internal Modules ----------------------------------------------------------
 
@@ -20,7 +22,7 @@ import ReportError from "../../util/ReportError";
 const HelpView = () => {
 
     const params: any = useParams();
-    const [data, setData] = useState<string>("");
+    const [markdown, setMarkdown] = useState<string>("");
 
     useEffect(() => {
 
@@ -30,14 +32,11 @@ const HelpView = () => {
 
                 const response = await fetch(theUrl);
                 const data = await response.text();
-
-                // TODO - apply markdown and setData() with that.
-                setData(data);
+                setMarkdown(data);
 
                 logger.info({
                     context: "HelpView.fetchResource",
                     url: theUrl,
-                    data: data,
                 });
 
             } catch (error) {
@@ -54,18 +53,11 @@ const HelpView = () => {
 
     return (
         <Container fluid id="HelpView">
-{/*
-            <Row className="mb-3 ml-1 mr-1">
-                <Col className="text-left">
-                    <span><strong>{params.resource}</strong></span>
-                </Col>
-            </Row>
             <Row className="ml-1 mr-1">
-                <hr/>
-            </Row>
-*/}
-            <Row className="ml-1 mr-1">
-                {data}
+                <ReactMarkdown
+                    children={markdown}
+                    remarkPlugins={[remarkGfm]}
+                />
             </Row>
         </Container>
     )

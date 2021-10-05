@@ -1,10 +1,36 @@
-This is the **regular-user.md** file.
+Welcome to the regular user documentation for the CityTeam Guests Checkin
+Application!  It is people like you who make the whole process work smoothly,
+so thank you for being involved!
 
-The admin user stuff is [here](/help/admin-user.md).
+This is the first of several pages of helpful information, organized in the
+order these steps are usually taken.  You'll see a cheat sheet like the one
+just below, to give you quick access to a particular step, at the top of each
+page.
 
-The regular user login screen:
+TODO - TOC type list
 
-![Initial Screen](/helptext/both-initial.png)
+If you are interested in the additional information related to an
+administrative user (who can manage additional features related to
+the CityTeam Facility you have access to), click on the
+Help --> Administrative User navigation link , or just click
+[here](/help/admin-user.md).
+
+<table>
+
+<tr>
+
+<td> When you first start the application, you will see the following banner </td>
+
+<td> ![Initial Screen](/helptext/both-initial.png) </td>
+
+</tr>
+
+</table>
+
+| Instructions | Screenshot |
+| ------------ | ---------- |
+| When you first start the application, you will see the following banner: | ![Initial Screen](/helptext/both-initial.png) |
+| To log in, click the ![Login Button Top](/helptext/button-login-top.png) button, and enter your username and password. |  ![Login Dialog Start](/helptext/regular-login-start.png) |
 
 To log in, click the ![Login Button Top](/helptext/button-login-top.png)
 button, and enter your username and password.

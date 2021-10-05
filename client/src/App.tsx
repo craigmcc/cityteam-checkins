@@ -96,8 +96,11 @@ function App() {
                 <NavItem className="nav-link">OpenAPI Docs</NavItem>
               </LinkContainer>
               <NavDropdown id="help" title="Help">
+                <LinkContainer to="/help/regular-user.html">
+                  <NavDropdown.Item>Regular User (HTML)</NavDropdown.Item>
+                </LinkContainer>
                 <LinkContainer to="/help/regular-user.md">
-                  <NavDropdown.Item>Regular User</NavDropdown.Item>
+                  <NavDropdown.Item>Regular User (MD)</NavDropdown.Item>
                 </LinkContainer>
                 <LinkContainer to="/help/admin-user.md">
                   <NavDropdown.Item>Administrative User</NavDropdown.Item>

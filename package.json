@@ -54,7 +54,7 @@
     "pg-hstore": "^2.3.4",
     "pino": "^6.13.1",
     "pluralize": "^8.0.0",
-    "rotating-file-stream": "^2.1.5",
+    "rotating-file-stream": "^2.1.6",
     "sequelize": "^6.6.5",
     "sequelize-typescript": "^2.1.0"
   },

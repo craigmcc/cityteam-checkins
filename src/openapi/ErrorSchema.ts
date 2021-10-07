@@ -16,14 +16,14 @@ import {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty("context", new ob.SchemaObjectBuilder("string",
+        .property("context", new ob.SchemaObjectBuilder("string",
             "Error source location").build())
-        .addProperty("inner", new ob.SchemaObjectBuilder("object",
+        .property("inner", new ob.SchemaObjectBuilder("object",
             "Nested error we are wrapping (if any)").build())
-        .addProperty("message", new ob.SchemaObjectBuilder("string",
+        .property("message", new ob.SchemaObjectBuilder("string",
             "Error message summary").build())
-        .addProperty("status", new ob.SchemaObjectBuilder("integer",
+        .property("status", new ob.SchemaObjectBuilder("integer",
             "HTTP status code").build())
-        .addType("object")
+        .type("object")
         .build();
 }

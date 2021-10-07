@@ -42,14 +42,14 @@ let ASSEMBLY = "";
 export function assembly(): string {
     if (ASSEMBLY === "") {
         const builder = new ob.OpenApiObjectBuilder(info())
-            .addComponents(components())
-            .addPathItems(Checkin.paths())
-            .addPathItems(Facility.paths())
-            .addPathItems(Guest.paths())
-            .addPathItems(Template.paths())
-            .addPathItems(User.paths())
+            .components(components())
+            .pathItems(Checkin.paths())
+            .pathItems(Facility.paths())
+            .pathItems(Guest.paths())
+            .pathItems(Template.paths())
+            .pathItems(User.paths())
         ;
-        addTags(builder);
+        tags(builder);
         ASSEMBLY = builder.asJson();
     }
     return ASSEMBLY;
@@ -57,48 +57,48 @@ export function assembly(): string {
 
 // Private Objects ----------------------------------------------------------
 
-function addTags(builder: OpenApiObjectBuilder): void {
+function tags(builder: OpenApiObjectBuilder): void {
 
     // Permission constraints on operations
-    builder.addTag(new TagObjectBuilder(REQUIRE_ADMIN)
-        .addDescription("Requires 'admin' permission on the associated Facility")
+    builder.tag(new TagObjectBuilder(REQUIRE_ADMIN)
+        .description("Requires 'admin' permission on the associated Facility")
         .build())
-    builder.addTag(new TagObjectBuilder(REQUIRE_REGULAR)
-        .addDescription("Requires 'regular' permission on the associated Facility")
+    builder.tag(new TagObjectBuilder(REQUIRE_REGULAR)
+        .description("Requires 'regular' permission on the associated Facility")
         .build())
-    builder.addTag(new TagObjectBuilder(REQUIRE_SUPERUSER)
-        .addDescription("Requires 'superuser' permission")
+    builder.tag(new TagObjectBuilder(REQUIRE_SUPERUSER)
+        .description("Requires 'superuser' permission")
         .build());
 
 }
 
 function components(): ob.ComponentsObject {
     return new ob.ComponentsObjectBuilder()
-        .addParameters(parameters())
-        .addRequestBodies(requestBodies())
-        .addResponses(responses())
-        .addSchemas(schemas())
+        .parameters(parameters())
+        .requestBodies(requestBodies())
+        .responses(responses())
+        .schemas(schemas())
         .build();
 }
 
 function contact(): ob.ContactObject {
     return new ob.ContactObjectBuilder()
-        .addEmail("craigmcc@gmail.com")
-        .addName("Craig McClanahan")
+        .email("craigmcc@gmail.com")
+        .name("Craig McClanahan")
         .build();
 }
 
 function info(): ob.InfoObject {
     return new ob.InfoObjectBuilder("CityTeam Guests Checkin Application", "2.0.0")
-        .addContact(contact())
-        .addDescription("Manage overnight Guest checkins at a CityTeam Facility")
-        .addLicense(license())
+        .contact(contact())
+        .description("Manage overnight Guest checkins at a CityTeam Facility")
+        .license(license())
         .build();
 }
 
 function license(): ob.LicenseObject {
     return new ob.LicenseObjectBuilder("Apache-2.0")
-        .addUrl("https://apache.org/licenses/LICENSE-2.0")
+        .url("https://apache.org/licenses/LICENSE-2.0")
         .build();
 }
 

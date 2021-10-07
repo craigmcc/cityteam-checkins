@@ -37,23 +37,23 @@ export function all(): ob.OperationObject {
 
 export function assign(): ob.OperationObject {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription("Assign the specified Guest to the specified Checkin")
-        .addRequestBody(requestBodyRef(ASSIGN))
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary("The updated (now assigned) Checkin")
-        .addTag(REQUIRE_REGULAR)
+        .description("Assign the specified Guest to the specified Checkin")
+        .requestBody(requestBodyRef(ASSIGN))
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary("The updated (now assigned) Checkin")
+        .tag(REQUIRE_REGULAR)
     ;
     return builder.build();
 }
 
 export function deassign(): ob.OperationObject {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription("Deassign the specified Guest from the specified Checkin")
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary("The updated (now unassigned) Checkin")
-        .addTag(REQUIRE_REGULAR)
+        .description("Deassign the specified Guest from the specified Checkin")
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary("The updated (now unassigned) Checkin")
+        .tag(REQUIRE_REGULAR)
     ;
     return builder.build();
 }
@@ -68,12 +68,12 @@ export function insert(): ob.OperationObject {
 
 export function reassign(): ob.OperationObject {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription("Reassign the specified Guest for an existing Checkin to different Checkin")
-        .addRequestBody(requestBodyRef(ASSIGN))
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary("The updated (now assigned) destination Checkin")
-        .addTag(REQUIRE_REGULAR)
+        .description("Reassign the specified Guest for an existing Checkin to different Checkin")
+        .requestBody(requestBodyRef(ASSIGN))
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary("The updated (now assigned) destination Checkin")
+        .tag(REQUIRE_REGULAR)
     ;
     return builder.build();
 }
@@ -126,37 +126,37 @@ export function paths(): ob.PathsObject {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty(ID, idSchema(CHECKIN))
-        .addProperty(CHECKIN_DATE, new ob.SchemaObjectBuilder(
+        .property(ID, idSchema(CHECKIN))
+        .property(CHECKIN_DATE, new ob.SchemaObjectBuilder(
             "string",
             "Checkin date for which this mat is avalable or assigned (YYYY-MM-DD)",
             true).build())
-        .addProperty(COMMENTS, commentsSchema(GUEST))
-        .addProperty(FACILITY.toLowerCase(), schemaRef(FACILITY))
-        .addProperty(FACILITY_ID, facilityIdSchema(FACILITY))
-        .addProperty(FEATURES, new ob.SchemaObjectBuilder(
+        .property(COMMENTS, commentsSchema(GUEST))
+        .property(FACILITY.toLowerCase(), schemaRef(FACILITY))
+        .property(FACILITY_ID, facilityIdSchema(FACILITY))
+        .property(FEATURES, new ob.SchemaObjectBuilder(
             "string",
             "Feature codes associated with this mat (if any)",
             true).build())
-        .addProperty(GUEST.toLowerCase(), schemaRef(GUEST))
-        .addProperty(GUEST_ID, guestIdSchema(GUEST))
-        .addProperty(MAT_NUMBER, new ob.SchemaObjectBuilder(
+        .property(GUEST.toLowerCase(), schemaRef(GUEST))
+        .property(GUEST_ID, guestIdSchema(GUEST))
+        .property(MAT_NUMBER, new ob.SchemaObjectBuilder(
             "number",
             "Mat number to be checked in to on this checkin date",
             false).build())
-        .addProperty(PAYMENT_AMOUNT, new ob.SchemaObjectBuilder(
+        .property(PAYMENT_AMOUNT, new ob.SchemaObjectBuilder(
             "number",
             "Amount paid (if any) for this mat, on this checkin date",
             true).build())
-        .addProperty(PAYMENT_TYPE, new ob.SchemaObjectBuilder(
+        .property(PAYMENT_TYPE, new ob.SchemaObjectBuilder(
             "string",
             "Payment type, if this mat was occupied on this checkin date",
             true).build())
-        .addProperty(SHOWER_TIME, new ob.SchemaObjectBuilder(
+        .property(SHOWER_TIME, new ob.SchemaObjectBuilder(
             "string",
             "Requested time this Guest wishes to shower (HH:MM)",
             true).build())
-        .addProperty(WAKEUP_TIME, new ob.SchemaObjectBuilder(
+        .property(WAKEUP_TIME, new ob.SchemaObjectBuilder(
             "string",
             "Requested time this Guest wishes to waken (HH:MM)",
             true).build())
@@ -165,9 +165,9 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addDescription("Checkins associated with this Facility")
-        .addItems(schemaRef(CHECKIN))
-        .addType("array")
+        .description("Checkins associated with this Facility")
+        .items(schemaRef(CHECKIN))
+        .type("array")
         .build();
 }
 
@@ -175,10 +175,10 @@ export function schemas(): ob.SchemaObject {
 
 function assignmentPath(): ob.PathItemObject {
     return new ob.PathItemObjectBuilder()
-        .addParameter(parameterRef(FACILITY_ID))
-        .addParameter(parameterRef(CHECKIN_ID))
-        .addPost(assign())
-        .addDelete(deassign())
-        .addPut(reassign())
+        .parameter(parameterRef(FACILITY_ID))
+        .parameter(parameterRef(CHECKIN_ID))
+        .post(assign())
+        .delete(deassign())
+        .put(reassign())
         .build();
 }

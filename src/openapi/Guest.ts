@@ -80,21 +80,21 @@ export function paths(): ob.PathsObject {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty(ID, idSchema(GUEST))
-        .addProperty(ACTIVE, activeSchema(GUEST))
-        .addProperty(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
-        .addProperty(COMMENTS, commentsSchema(GUEST))
-        .addProperty(FACILITY.toLowerCase(), schemaRef(FACILITY))
-        .addProperty(FACILITY_ID, facilityIdSchema(GUEST))
-        .addProperty(FAVORITE, new ob.SchemaObjectBuilder(
+        .property(ID, idSchema(GUEST))
+        .property(ACTIVE, activeSchema(GUEST))
+        .property(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
+        .property(COMMENTS, commentsSchema(GUEST))
+        .property(FACILITY.toLowerCase(), schemaRef(FACILITY))
+        .property(FACILITY_ID, facilityIdSchema(GUEST))
+        .property(FAVORITE, new ob.SchemaObjectBuilder(
             "string",
             "Favorite mat or location",
             true).build())
-        .addProperty(FIRST_NAME, new ob.SchemaObjectBuilder(
+        .property(FIRST_NAME, new ob.SchemaObjectBuilder(
             "string",
             "First Name of this Guest",
             false).build())
-        .addProperty(LAST_NAME, new ob.SchemaObjectBuilder(
+        .property(LAST_NAME, new ob.SchemaObjectBuilder(
             "string",
             "Last Name of this Guest",
             false).build())
@@ -103,9 +103,9 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addDescription("Guests associated with this Facility")
-        .addItems(schemaRef(GUEST))
-        .addType("array")
+        .description("Guests associated with this Facility")
+        .items(schemaRef(GUEST))
+        .type("array")
         .build();
 }
 

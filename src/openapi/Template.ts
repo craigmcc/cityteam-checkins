@@ -79,25 +79,25 @@ export function paths(): ob.PathsObject {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty(ID, idSchema(TEMPLATE))
-        .addProperty(ACTIVE, activeSchema(TEMPLATE))
-        .addProperty("allMats", new ob.SchemaObjectBuilder(
+        .property(ID, idSchema(TEMPLATE))
+        .property(ACTIVE, activeSchema(TEMPLATE))
+        .property("allMats", new ob.SchemaObjectBuilder(
             "string",
             "List of all mat numbers to be generated for this Template",
             false).build())
-        .addProperty(COMMENTS, commentsSchema(TEMPLATE))
-        .addProperty(FACILITY.toLowerCase(), schemaRef(FACILITY))
-        .addProperty(FACILITY_ID, facilityIdSchema(TEMPLATE))
-        .addProperty("handicapMats", new ob.SchemaObjectBuilder(
+        .property(COMMENTS, commentsSchema(TEMPLATE))
+        .property(FACILITY.toLowerCase(), schemaRef(FACILITY))
+        .property(FACILITY_ID, facilityIdSchema(TEMPLATE))
+        .property("handicapMats", new ob.SchemaObjectBuilder(
             "string",
             "List of mat numbers equipped for handicapped Guests",
             true).build())
-        .addProperty(NAME, nameSchema(TEMPLATE))
-        .addProperty("socketMats", new ob.SchemaObjectBuilder(
+        .property(NAME, nameSchema(TEMPLATE))
+        .property("socketMats", new ob.SchemaObjectBuilder(
             "string",
             "List of mat numbers near electrical sockets",
             true).build())
-        .addProperty("workMats", new ob.SchemaObjectBuilder(
+        .property("workMats", new ob.SchemaObjectBuilder(
             "string",
             "List of mat numbers reserved for work prospects",
             true).build())
@@ -106,9 +106,9 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addDescription("Templates associated with this Facility")
-        .addItems(schemaRef(TEMPLATE))
-        .addType("array")
+        .description("Templates associated with this Facility")
+        .items(schemaRef(TEMPLATE))
+        .type("array")
         .build();
 }
 

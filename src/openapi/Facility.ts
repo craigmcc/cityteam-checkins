@@ -108,41 +108,41 @@ export function paths(): ob.PathsObject {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty(ID, idSchema(FACILITY))
-        .addProperty(ACTIVE, activeSchema(FACILITY))
-        .addProperty("address1", new ob.SchemaObjectBuilder(
+        .property(ID, idSchema(FACILITY))
+        .property(ACTIVE, activeSchema(FACILITY))
+        .property("address1", new ob.SchemaObjectBuilder(
             "string",
             "First line of the Facility address",
             true).build())
-        .addProperty("address2", new ob.SchemaObjectBuilder(
+        .property("address2", new ob.SchemaObjectBuilder(
             "string",
             "Second line of Facility address",
             true).build())
-        .addProperty(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
-        .addProperty("city", new ob.SchemaObjectBuilder(
+        .property(pluralize(CHECKIN.toLowerCase()), schemaRef(pluralize(CHECKIN)))
+        .property("city", new ob.SchemaObjectBuilder(
             "string",
             "City of Facility address",
             true).build())
-        .addProperty("email", new ob.SchemaObjectBuilder(
+        .property("email", new ob.SchemaObjectBuilder(
             "string",
             "Email address of this Facility",
             true).build())
-        .addProperty(pluralize(GUEST.toLowerCase()), schemaRef(pluralize(GUEST)))
-        .addProperty(NAME, nameSchema(FACILITY))
-        .addProperty("phone", new ob.SchemaObjectBuilder(
+        .property(pluralize(GUEST.toLowerCase()), schemaRef(pluralize(GUEST)))
+        .property(NAME, nameSchema(FACILITY))
+        .property("phone", new ob.SchemaObjectBuilder(
             "string",
             "Phone number of this Facility",
             true).build())
-        .addProperty("scope", new ob.SchemaObjectBuilder(
+        .property("scope", new ob.SchemaObjectBuilder(
             "string",
             "OAuth Scope prefix for access to this Facility",
             false).build())
-        .addProperty("state", new ob.SchemaObjectBuilder(
+        .property("state", new ob.SchemaObjectBuilder(
             "string",
             "State abbreviation of this Facility",
             true).build())
-        .addProperty(pluralize(TEMPLATE.toLowerCase()), schemaRef(pluralize(TEMPLATE)))
-        .addProperty("zipCode", new ob.SchemaObjectBuilder(
+        .property(pluralize(TEMPLATE.toLowerCase()), schemaRef(pluralize(TEMPLATE)))
+        .property("zipCode", new ob.SchemaObjectBuilder(
             "string",
             "Zip code of this Facility",
             true).build())
@@ -151,7 +151,7 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addItems(schemaRef(FACILITY))
-        .addType("array")
+        .items(schemaRef(FACILITY))
+        .type("array")
         .build();
 }

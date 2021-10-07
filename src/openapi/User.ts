@@ -78,20 +78,20 @@ export function paths(): ob.PathsObject {
 
 export function schema(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addProperty(ID, idSchema(USER))
+        .property(ID, idSchema(USER))
         // accessTokens
-        .addProperty(ACTIVE, activeSchema(USER))
-        .addProperty(NAME, nameSchema(USER))
-        .addProperty("password", new ob.SchemaObjectBuilder(
+        .property(ACTIVE, activeSchema(USER))
+        .property(NAME, nameSchema(USER))
+        .property("password", new ob.SchemaObjectBuilder(
             "string",
             "Password for this User (required on insert)",
             true).build())
         // refreshTokens
-        .addProperty(SCOPE, new ob.SchemaObjectBuilder(
+        .property(SCOPE, new ob.SchemaObjectBuilder(
             "string",
             "OAuth Scope permissions for this User",
             false).build())
-        .addProperty("username", new ob.SchemaObjectBuilder(
+        .property("username", new ob.SchemaObjectBuilder(
             "string",
             "Canonical username for this User",
             false).build())
@@ -100,8 +100,8 @@ export function schema(): ob.SchemaObject {
 
 export function schemas(): ob.SchemaObject {
     return new ob.SchemaObjectBuilder()
-        .addItems(schemaRef(USER))
-        .addType("array")
+        .items(schemaRef(USER))
+        .type("array")
         .build();
 }
 

@@ -52,15 +52,15 @@ export function allOperation(
 {
     const models = pluralize(model);
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Return all matching ${models}`)
-        .addParameters(includes ? includes() : {})
-        .addParameters(matches ? matches() : {})
-        .addParameters(paginations())
-        .addResponse(OK, responseRef(models))
-        .addSummary(`The requested ${models}`)
+        .description(`Return all matching ${models}`)
+        .parameters(includes ? includes() : {})
+        .parameters(matches ? matches() : {})
+        .parameters(paginations())
+        .response(OK, responseRef(models))
+        .summary(`The requested ${models}`)
     ;
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -76,16 +76,16 @@ export function childrenOperation(
 {
     const children = pluralize(childModel);
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Return matching ${children} of this ${parentModel}`)
-        .addParameters(includes ? includes() : {})
-        .addParameters(matches ? matches() : {})
-        .addParameters(paginations())
-        .addResponse(OK, responseRef(children))
-        .addResponse(FORBIDDEN, responseRef(FORBIDDEN))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary(`The requested ${children}`);
+        .description(`Return matching ${children} of this ${parentModel}`)
+        .parameters(includes ? includes() : {})
+        .parameters(matches ? matches() : {})
+        .parameters(paginations())
+        .response(OK, responseRef(children))
+        .response(FORBIDDEN, responseRef(FORBIDDEN))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary(`The requested ${children}`);
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -98,15 +98,15 @@ export function findOperation(
 ): ob.OperationObject
 {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Return the specified ${model}`)
-        .addParameters(includes ? includes() : {})
-        .addResponse(OK, responseRef(model))
-        .addResponse(FORBIDDEN, responseRef(FORBIDDEN))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary(`The specified ${model}`)
+        .description(`Return the specified ${model}`)
+        .parameters(includes ? includes() : {})
+        .response(OK, responseRef(model))
+        .response(FORBIDDEN, responseRef(FORBIDDEN))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary(`The specified ${model}`)
     ;
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -118,15 +118,15 @@ export function insertOperation(
 ): ob.OperationObject
 {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Create and return the specified ${model}`)
-        .addRequestBody(requestBodyRef(model))
-        .addResponse(CREATED, responseRef(model))
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(FORBIDDEN, responseRef(FORBIDDEN))
-        .addSummary(`The created ${model}`)
+        .description(`Create and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .response(CREATED, responseRef(model))
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(FORBIDDEN, responseRef(FORBIDDEN))
+        .summary(`The created ${model}`)
     ;
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -138,15 +138,15 @@ export function removeOperation(
 ): ob.OperationObject
 {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Remove and return the specified ${model}`)
-        .addResponse(OK, responseRef(model))
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(FORBIDDEN, responseRef(FORBIDDEN))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary(`The removed ${model}`)
+        .description(`Remove and return the specified ${model}`)
+        .response(OK, responseRef(model))
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(FORBIDDEN, responseRef(FORBIDDEN))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary(`The removed ${model}`)
     ;
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -158,16 +158,16 @@ export function updateOperation(
 ): ob.OperationObject
 {
     const builder = new ob.OperationObjectBuilder()
-        .addDescription(`Update and return the specified ${model}`)
-        .addRequestBody(requestBodyRef(model))
-        .addResponse(OK, responseRef(model))
-        .addResponse(BAD_REQUEST, responseRef(BAD_REQUEST))
-        .addResponse(FORBIDDEN, responseRef(FORBIDDEN))
-        .addResponse(NOT_FOUND, responseRef(NOT_FOUND))
-        .addSummary(`The updated ${model}`)
+        .description(`Update and return the specified ${model}`)
+        .requestBody(requestBodyRef(model))
+        .response(OK, responseRef(model))
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(FORBIDDEN, responseRef(FORBIDDEN))
+        .response(NOT_FOUND, responseRef(NOT_FOUND))
+        .summary(`The updated ${model}`)
     ;
     if (tag) {
-        builder.addTag(tag);
+        builder.tag(tag);
     }
     return builder.build();
 }
@@ -176,19 +176,19 @@ export function updateOperation(
 
 export function pathParameter(name: string, description: string): ob.ParameterObject {
     const builder = new ob.ParameterObjectBuilder("path", name)
-        .addDescription(description)
-        .addRequired(true)
-        .addSchema(schemaRef(STRING))
+        .description(description)
+        .required(true)
+        .schema(schemaRef(STRING))
     ;
     return builder.build();
 }
 
 export function queryParameter(name: string, description: string, allowEmptyValue?: boolean): ob.ParameterObject {
     const builder = new ob.ParameterObjectBuilder("query", name)
-        .addAllowEmptyValue(allowEmptyValue ? true : false)
-        .addDescription(description)
-        .addRequired(false)
-        .addSchema(schemaRef(STRING))
+        .allowEmptyValue(allowEmptyValue ? true : false)
+        .description(description)
+        .required(false)
+        .schema(schemaRef(STRING))
     ;
     return builder.build();
 }
@@ -204,12 +204,12 @@ export function pathItemChildCollection(
 ): ob.PathItemObject
 {
     const builder = new PathItemObjectBuilder()
-        .addParameter(parameterRef(parentId));
+        .parameter(parameterRef(parentId));
     if (all) {
-        builder.addGet(all());
+        builder.get(all());
     }
     if (insert) {
-        builder.addPost(insert());
+        builder.post(insert());
     }
     return builder.build();
 }
@@ -224,16 +224,16 @@ export function pathItemChildDetail(
     update?: () => ob.OperationObject,
 ): ob.PathItemObject{
     const builder = new PathItemObjectBuilder()
-        .addParameter(parameterRef(parentId))
-        .addParameter(parameterRef(childId));
+        .parameter(parameterRef(parentId))
+        .parameter(parameterRef(childId));
     if (find) {
-        builder.addGet(find());
+        builder.get(find());
     }
     if (remove) {
-        builder.addDelete(remove());
+        builder.delete(remove());
     }
     if (update) {
-        builder.addPut(update());
+        builder.put(update());
     }
     return builder.build();
 }
@@ -246,8 +246,8 @@ export function pathItemParentChildren(
 ): ob.PathItemObject
 {
     const builder = new PathItemObjectBuilder()
-        .addParameter(parameterRef(parentId))
-        .addGet(children());
+        .parameter(parameterRef(parentId))
+        .get(children());
     return builder.build();
 }
 
@@ -260,10 +260,10 @@ export function pathItemParentCollection(
 {
     const builder = new PathItemObjectBuilder();
     if (all) {
-        builder.addGet(all());
+        builder.get(all());
     }
     if (insert) {
-        builder.addPost(insert());
+        builder.post(insert());
     }
     return builder.build();
 }
@@ -277,15 +277,15 @@ export function pathItemParentDetail(
     update?: () => ob.OperationObject,
 ): ob.PathItemObject{
     const builder = new PathItemObjectBuilder()
-        .addParameter(parameterRef(modelId));
+        .parameter(parameterRef(modelId));
     if (find) {
-        builder.addGet(find());
+        builder.get(find());
     }
     if (remove) {
-        builder.addDelete(remove());
+        builder.delete(remove());
     }
     if (update) {
-        builder.addPut(update());
+        builder.put(update());
     }
     return builder.build();
 }
@@ -309,10 +309,10 @@ export function paginations(): ob.ParametersObject {
 
 export function modelRequestBody(model: string): ob.RequestBodyObject {
     return new ob.RequestBodyObjectBuilder()
-        .addContent(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(model))
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(model))
             .build())
-        .addRequired(true)
+        .required(true)
         .build();
 }
 
@@ -320,8 +320,8 @@ export function modelRequestBody(model: string): ob.RequestBodyObject {
 
 export function errorResponse(description: string): ob.ResponseObject {
     return new ob.ResponseObjectBuilder(description)
-        .addContent(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(ERROR))
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(ERROR))
             .build())
         .build();
 }
@@ -329,18 +329,18 @@ export function errorResponse(description: string): ob.ResponseObject {
 
 export function modelResponse(model: string): ob.ResponseObject {
     return new ob.ResponseObjectBuilder(`The specified ${model}`)
-        .addContent(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
-            .addSchema(schemaRef(model))
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(schemaRef(model))
             .build())
         .build();
 }
 
 export function modelsResponse(model: string): ob.ResponseObject {
     return new ob.ResponseObjectBuilder(`The requested ${pluralize(model)}`)
-        .addContent(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
-            .addSchema(new ob.SchemaObjectBuilder()
-                .addItems(schemaRef(pluralize(model)))
-                .addType("array")
+        .content(APPLICATION_JSON, new ob.MediaTypeObjectBuilder()
+            .schema(new ob.SchemaObjectBuilder()
+                .items(schemaRef(pluralize(model)))
+                .type("array")
                 .build())
             .build())
         .build();

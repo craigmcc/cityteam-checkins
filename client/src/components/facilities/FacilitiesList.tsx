@@ -51,6 +51,7 @@ const FacilitiesList = (props: Props) => {
     const fetchFacilities = useFetchFacilities({
         active: active,
         currentPage: currentPage,
+        ignoreForbidden: true,
         name: (searchText.length > 0) ? searchText : undefined,
         pageSize: pageSize,
     });
@@ -69,6 +70,13 @@ const FacilitiesList = (props: Props) => {
         }
 
     }, [facilityContext.facilities, fetchFacilities.facilities, loginContext]);
+
+    useEffect(() => {
+        logger.info({
+            context: "FacilitiesList.useEffect2",
+            msg: "Triggering refresh after change in login state",
+        })
+    }, [loginContext.data.loggedIn]);
 
     const handleActive: HandleBoolean = (theActive) => {
         setActive(theActive);

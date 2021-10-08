@@ -21,6 +21,7 @@ import * as Sorters from "../util/Sorters";
 export interface Props {
     active?: boolean;                   // Select only active Facilities? [false]
     currentPage?: number;               // One-relative current page number [1]
+    ignoreForbidden?: boolean;          // Ignore 403 errors? [false]
     pageSize?: number;                  // Number of entries per page [25]
     name?: string;                      // Select Facilities matching pattern [none]
     withCheckins?: boolean;             // Include child Checkins? [false]
@@ -85,11 +86,22 @@ const useFetchFacilities = (props: Props): State => {
                     facilities: Abridgers.FACILITIES(theFacilities),
                 });
 
-            } catch (error) {
+            } catch (error: any) {
                 setError(error as Error);
-                ReportError("useFetchFacilities.fetchFacilities", error, {
-                    parameters: parameters,
-                })
+                let ignore: boolean = false;
+                if (props.ignoreForbidden && error.message && error.message.includes("403")) {
+                    ignore = true;
+                }
+                if (ignore) {
+                    logger.error({
+                        context: "useFetchFacilities.fetchFacilities",
+                        msg: "Ignoring 403 error as requested",
+                    });
+                } else {
+                    ReportError("useFetchFacilities.fetchFacilities", error, {
+                        parameters: parameters,
+                    })
+                }
             }
 
             setLoading(false);
@@ -99,7 +111,8 @@ const useFetchFacilities = (props: Props): State => {
 
         fetchFacilities();
 
-    }, [props.active, props.currentPage, props.pageSize, props.name,
+    }, [props.active, props.currentPage, props.ignoreForbidden,
+        props.pageSize, props.name,
         props.withCheckins, props.withGuests, props.withTemplates]);
 
     return {

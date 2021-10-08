@@ -100,6 +100,7 @@ export const SERVER_ERROR = "500";
 // ***** Tag Names *****
 
 export const REQUIRE_ADMIN = "requireAdmin";
+export const REQUIRE_ANY = "requireAny";
 export const REQUIRE_REGULAR = "requireRegular";
 export const REQUIRE_SUPERUSER = "requireSuperuser";
 

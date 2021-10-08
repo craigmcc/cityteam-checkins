@@ -21,7 +21,7 @@ import {
     ACTIVE, API_PREFIX, CHECKIN,
     FACILITY, FACILITY_ID, GUEST,
     ID, MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
-    NAME, REQUIRE_ADMIN, REQUIRE_REGULAR,
+    NAME, REQUIRE_ADMIN, REQUIRE_ANY, REQUIRE_REGULAR,
     REQUIRE_SUPERUSER, TEMPLATE,
     WITH_CHECKINS, WITH_GUESTS, WITH_TEMPLATES,
 } from "./Constants";
@@ -34,7 +34,7 @@ import * as Template from "./Template";
 // ***** Operations *****
 
 export function all(): ob.OperationObject {
-    return allOperation(FACILITY, null, includes, matches)
+    return allOperation(FACILITY, REQUIRE_ANY, includes, matches)
 }
 
 export function checkins(): ob.OperationObject {

@@ -47,6 +47,7 @@ export const FacilityContextProvider = (props: any) => {
     const fetchFacilities = useFetchFacilities({
         active: active,
         currentPage: 1,
+        ignoreForbidden: true,
         pageSize: 1000,
     })
 

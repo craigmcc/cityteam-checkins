@@ -38,7 +38,7 @@ FacilityRouter.get("/exact/:name",
 // Standard CRUD Routes ------------------------------------------------------
 
 FacilityRouter.get("/",
-    requireNone, // Avoid catch-22 on initial FacilityContext population
+    requireAny,
     async (req: Request, res: Response) => {
         res.send(await FacilityServices.all(
             req.query

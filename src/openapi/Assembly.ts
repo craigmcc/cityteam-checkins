@@ -22,7 +22,7 @@ import {
     GUEST, GUEST_ID, LIMIT,
     MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
     MODELS, NOT_FOUND, NOT_UNIQUE,
-    OFFSET, REQUIRE_ADMIN, REQUIRE_REGULAR,
+    OFFSET, REQUIRE_ADMIN, REQUIRE_ANY, REQUIRE_REGULAR,
     REQUIRE_SUPERUSER, SERVER_ERROR, STRING,
     TEMPLATE, TEMPLATE_ID, USER,
     USER_ID, WITH_CHECKINS, WITH_FACILITY,
@@ -62,6 +62,9 @@ function tags(builder: OpenApiObjectBuilder): void {
     // Permission constraints on operations
     builder.tag(new TagObjectBuilder(REQUIRE_ADMIN)
         .description("Requires 'admin' permission on the associated Facility")
+        .build())
+    builder.tag(new TagObjectBuilder(REQUIRE_ANY)
+        .description("Requres logged in user")
         .build())
     builder.tag(new TagObjectBuilder(REQUIRE_REGULAR)
         .description("Requires 'regular' permission on the associated Facility")

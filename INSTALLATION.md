@@ -10,6 +10,12 @@ These instructions are primarily oriented towards a Windows 10 environment, but 
 software was developed (and extensively tested) on Mac OSX, and should run fine on
 any Linux/Unix platform as well.
 
+NOTE:  During the installation process, you will be asked to choose and configure
+a number of values (such as passwords) that will be needed later.
+[This document](./CHEATSHEET.md), if printed out, provides a convenient way to
+record and save these values.  THIS DOCUMENT CONTAINS SENSITIVE INFORMATION, SO
+ACCESS TO IT SHOULD BE CLOSELY CONTROLLED.
+
 ## 1. PLANNING
 
 ### 1.1 Environments

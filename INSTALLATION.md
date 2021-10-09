@@ -12,11 +12,11 @@ any Linux/Unix platform as well.
 
 ## 1. PLANNING
 
-### 1.1 ENVIRONMENTS
+### 1.1 Environments
 
 The CityTeam Checkins application is composed of several components, which may be
 installed in a number of different combinations on the same or different computers.
-The components themselves are:
+The environments themselves are:
 
 1. End User - The end users of the application will use a standard web browser.
 2. Application - The application itself is written in Typescript (an enhanced version of JavaScript), and runs in a Node.JS based environment.
@@ -25,7 +25,7 @@ The components themselves are:
 In **ALL** cases, Internet connectivity will be required for the actual installation
 process, as well as for performing updates later.
 
-### 1.2 INSTALLATION SCENARIOS
+### 1.2 Installation Scenarios
 
 The various components can be installed in a variety of combinations, depending
 on requirements for each individual CityTeam Facility (or the entire set of
@@ -89,12 +89,13 @@ Considerations:
 
 ## 2.  DATABASE ENVIRONMENT
 
-### 2.1 INSTALL POSTGRESQL
+NOTE:  Installing this software requires a web browser and an Internet connection.
+
+### 2.1 Install PostgreSQL
 
 Download the latest release from [here](https://www.postgresql.org/download/).
 
-Install tutorials for Windows install are [here](https://www.postgresqltutorial.com/install-postgresql/)
-
+Install tutorials for Windows install are [here](https://www.postgresqltutorial.com/install-postgresql/).
 (There are similar tutorials for other platforms, if needed.)
 
 Installation Notes:
@@ -102,7 +103,7 @@ Installation Notes:
 * When you enter the password for the *database superuser*, **BE SURE TO WRITE IT DOWN**.  This will be required later.
 * Verify the installation as described in the tutorial.
 
-### 2.2 CREATE THE POSTGRES USER TO OWN THE APPLICATION DATABASE
+### 2.2 Create Postgres User
 
 In the following steps, {DBUSERNAME} and {DBPASSWORD} are placeholders for the
 selected username and password you have chosen.
@@ -116,7 +117,7 @@ createuser --pwprompt {DBUSERNAME}
 You will be prompted to enter the password you wish to use (this will become the
 {DBPASSWORD} value in later commands).
 
-### 2.3 CREATE THE APPLICATION DATABASE (AND ITS SHADOW)
+### 2.3 Create Application Database (and Shadow)
 
 In the following steps, {DBNAME} is the placeholder for the database name you created.
 If you do not have a specific database name in mind, use "**checkins**"".
@@ -143,58 +144,240 @@ You will be challenged to enter the corresponding password
 you a prompt (including the database name), at which you can enter **\q**
 to exit.
 
+You will want to make note of the following additional placeholder variables that
+depend on which installation environment you are using, and whether you
+changed the Postgres port number during installation:
+* {DBHOST} - Network name for the computer on which the Postgres database was installed.  For a standalone environment, use **localhost** as this value.
+* {DBPORT} - Network port on which the Postgres database was installed.  This will be **5432** unlesss you changed it during the installation process.
+* {PGUSERNAME} - Operating system username for the Postgres database.  This will be **postgres** unless you changed it during the install.
+* {PGPASSWORD} - This will be the "database superuser" password you set during the install.
+
 ## 3. APPLICATION ENVIRONMENT - REQUIRED DEPENDENCIES
 
-### 3.1 DATABASE COMMAND LINE TOOLS
+NOTE:  Installing this software requires a web browser and an Internet connection.
 
-<span color="red">
+### 3.1 Database Command Line Tools
+
 THIS IS ONLY REQUIRED IF THE APPLICATION COMPONENT IS ON A DIFFERENT COMPUTER
 THAN THE DATABASE COMPONENT.  IF THEY ARE THE SAME, THE COMMAND LINE TOOLS WILL
 ALREADY BE AVAILABLE.
-</span>
 
 Repeat the Postgres installation process, but select only the *Command Line Tools*
 component.  None of the rest is required on the Application Component computer.
 
-### 3.2 NODE.JS AND RELATED SOFTWARE
+### 3.2 Node.JS Application
 
-TODO - download and install Node.JS
+NOTE:  The install process for Node.JS will install about 3gb of Microsoft support
+software required to build it.  Be sure you have enough disk space.
 
-### 3.3 NODE.JS GLOBAL MODULES
+Node.JS is the runtime environment for the CityTeam Checkins application,
+which is written in TypeScript (a superset of JavaScript).
+
+* At the [download site](https://nodejs.org), click on the most recent LTS (long term support) link.
+* Click on the downloaded file to execute it.
+* The instructions will recommend a Windows restart at the end, which is a good idea.
+
+To verify the installation, open a command line window (if not already open) and type:
+```shell
+node --version
+```
+
+You should see the installed Node version number.
+
+### 3.3 Node.JS Global Modules
 
 The following Node.JS modules must be installed globally.  From
 a command line window:
 
 ```shell
 npm install -g graphile-migrate
+npm install -g pm2
+npm install -g pm2-windows-startup
 ```
 
-Verify successful installation of these extra modules, use the following
-commands (should show version information but no errors):
-
+To verify the installation, open a command line window (if not already open) and type:
 ```shell
 graphile-migrate --version
 ```
 
-### 3.4 GIT VERSION CONTROL SYSTEM
+### 3.4 Visual Studio Code
 
-TODO
+Visual Studio Code is a developer-oriented text editor.  It is not required to
+execute the CityTeam Checkins Application, but is extremely handy in case
+a developer or IT person needs to tweak anything.
 
-### 3.5 VISUAL STUDIO CODE
+* At the [download site](https://code.visualstudio.com) use the Download dropdown to pick the version for your operating system and download it.
+* Click on the downloaded file to execute it.
 
-TODO
+After successful installation, you should see *Visual Studio Code* as an
+available application in your system's Start menu (or equivalent).
 
-### 3.6 POSTMAN
+### 3.5 Git
 
-TODO
+Git is a source code management tool, which will be used to retrieve the
+initial download of the CityTeam Checkins Application, as well as any
+subsequent updates.
+
+* At the [download site](https://git-scm.com/downloads), pick the version for your operating system and download it.
+* Click on the downloaded file to execute it.
+* All of the default installation options should be fine, but changing one setting will make life easier for developers:
+  * For "Choosing the default editor used by Git", select "Use Visual Studio Code as Git's default editor".
+
+To verify the installation, open a command line window (if not already open) and type:
+```shell
+git --version
+```
+
+### 3.6 Postman
+
+Postman is a developer oriented tool that supports manually executing HTTP requests
+to the CityTeam Checkins Application (or any other accessible web application).  It
+will be required during application installation, and is very handy for debugging
+and other purposes later.
+
+* At the [download site](https://postman.com/downloads/) click the download link (it should know your operating system already).
+* Click the downloaded file to execute it.
+* You will be required to set up a free Postman account, which will optionally get you some spam email that can be ignored.
+
+After successful installation, you should see *Postman* as an
+available application in your system's Start menu (or equivalent).
 
 ## 4.  APPLICATION ENVIRONMENT - THE CITYTEAM CHECKINS APPLICATION
 
-TODO
+NOTE:  Installing this software requires a web browser and an Internet connection.
+
+### 4.1 Download and Build CityTeam Checkins Application
+
+Open a command line window (if not already open) and type:
+```shell
+git clone https://github.com/craigmcc/cityteam-checkins
+```
+
+This will download all of the source code for the application.  To build the
+executable version, type the following commands:
+```shell
+cd cityteam-checkins
+npm install
+npm run server:build
+cd client
+npm install
+npm run build
+cd ..
+```
+
+This will leave you in the *cityteam-checkins* directory, where the
+subsequent steps will be performed.
+
+### 4.2 Seed Database Structure and Initial Contents
+
+Next, we will execute "migration" utilities that change our empty database
+into one that contains the table structures required by this application.
+In order to do this, we must first set some environment variables.
+
+Open a command line window (if not already open), and make sure you are
+in the *cityteam-checkins* directory.  Now, type the following commands, but
+replace the placeholder names (such as {DBUSERNAME}) with the values from
+the previous steps.
+
+NOTE:  On a Unix, Linux, or Mac system, use the word "export" instead of "set".
+
+```shell
+set DATABASE_URL="postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}"
+set SHADOW_DATABASE_URL="postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}_shadow"
+set ROOT_DATABASE_URL="postgres://{PGUSERNAME}:{PGPASSWORD}@{DBHOST}:{DBPORT}/postgres"
+```
+
+Next, execute the following command to perform the required migrations:
+
+```shell
+graphile-migrate migrate
+```
+
+TODO:  seeding the superuser password.
+
+### 4.3 Set Up Configuration Files for Development and Production Use
+
+Two "environment" files must be set up, which contain configuration information based on
+your previous setup.  The first one, for developer use, turns off some security checks
+and causes all logged messages to be sent to the command line window.
+
+Use Visual Studio Code (or another text editor) to create a file **.env.development**
+(do not forget the leading period) in the *cityteam-checkins* directory:
+```dotenv
+ACCESS_LOG=stdout
+CLIENT_LOG=stdout
+DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{PGHOST}:{PGPORT}/{DBNAME}
+OAUTH_ENABLED=false
+PORT=8080
+SERVER_LOG=stdout
+SUPERUSER_SCOPE=superuser
+```
+
+Set up a similar file named **.env.production** (again, remember the leading period)
+in the same directory:
+```dotenv
+ACCESS_LOG=access.log
+CLIENT_LOG=client.log
+DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{PGHOST}:{PGPORT}/{DBNAME}
+OAUTH_ENABLED=true
+PORT=8080
+SERVER_LOG=server.log
+SUPERUSER_SCOPE=superuser
+```
+
+We will be using the production version for all normal use of the application.
+
+### 4.4 Start the Application and Configure It To Restart
+
+Open a command line window (if not already open), and make sure you are
+in the *cityteam-checkins* directory.
+
+```shell
+npm run start:prod
+```
+
+TODO: this just runs it temporarily -- work out and document how to start in pm2,
+then "pm2-startup install" (if not done already), then "pm2 save".
+
+### 4.5 Set Up Initial Users
+
+Open a browser and navigate to **http://{APPHOST}:8080** (where {APPHOST} is
+*localhost* if you are on the same machine, or your application host's network name).
+
+Log in with username **superuser** and the initial superuser password.
+
+Navigate to Admin -> Users.  Use the *Add* button to create each user that you need.
+For the **scope** field, you will enter {FACILITY_SCOPE}:regular for a regular user
+(this is all that is needed to perform checkin operations), or {FACILITY_SCOPE}:admin
+for users who should also be able to modify characteristics like setting up templates.
+
+What are the FACILITY_SCOPE values?  You can see them by navigating to Admin -> Facilities.
+You'll see that the initial set of values was based on the three-letter airport abbreviation
+for the closest major airport, but any combination of letters and numbers is legal (as long
+as they are unique for each facility).  So, for a Portland front desk person that performs
+checkins, **pdx:regular** would be the required scope value.
+
+If you want to grant permissions to a particular username for more than one Facility,
+simply add another scope (separated by spaces) in the user's "Scope" field.
+
+It is certainly possible to set up usernames for each individual person that might be
+operating the application, but it is also likely that there will be multiple people
+performing this operation, in the same facility, on the same evening.  It would be
+a hassle to require them to log off and on each time they switch who is operating the
+application, so a single username for the whole group that shares a single checkin
+location is probably the simplest approach.  (In Portland, we call this user
+"frontdesk" because that is where the checkins happen).
 
 ## 5.  END USER ENVIRONMENT
 
-This will be necessary on the computer for each checkin station at a Facility.
+This will be necessary on the computer for each checkin station at a Facility, if that
+checkstation is not the Application Environment server and therefore has a browser installed
+already.
+
+TODO: download links
+
+TODO: note on setting up bookmark and/or shortcut.
+
 
 The application's user interface has been tested with Chrome, Firefox, Safari,
 and Microsoft Edge.  If one of these is not available, you can use one of the

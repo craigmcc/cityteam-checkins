@@ -64,7 +64,7 @@ function tags(builder: OpenApiObjectBuilder): void {
         .description("Requires 'admin' permission on the associated Facility")
         .build())
     builder.tag(new TagObjectBuilder(REQUIRE_ANY)
-        .description("Requres logged in user")
+        .description("Requires logged in user")
         .build())
     builder.tag(new TagObjectBuilder(REQUIRE_REGULAR)
         .description("Requires 'regular' permission on the associated Facility")

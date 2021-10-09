@@ -13,6 +13,7 @@ import {
     requireRegular, requireSuperuser,
 } from "../oauth/OAuthMiddleware";
 import CheckinServices from "../services/CheckinServices";
+import {CREATED} from "../util/HttpErrors";
 
 // Public Objects ------------------------------------------------------------
 
@@ -25,7 +26,7 @@ const CheckinRouter = Router({
 CheckinRouter.post("/:facilityId/generate/:checkinDate/:templateId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await CheckinServices.generate(
+        res.status(CREATED).send(await CheckinServices.generate(
             parseInt(req.params.facilityId, 10),
             req.params.checkinDate,
             parseInt(req.params.templateId, 10)

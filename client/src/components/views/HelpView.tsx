@@ -23,7 +23,6 @@ import remarkGfm from "remark-gfm";
 
 import logger from "../../util/ClientLogger";
 import ReportError from "../../util/ReportError";
-import {ReactMarkdownOptions} from "react-markdown/lib/react-markdown";
 
 // Component Details ---------------------------------------------------------
 

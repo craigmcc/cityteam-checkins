@@ -13,6 +13,7 @@ import {
     requireRegular,
 } from "../oauth/OAuthMiddleware";
 import TemplateServices from "../services/TemplateServices";
+import {CREATED} from "../util/HttpErrors";
 
 // Public Objects ------------------------------------------------------------
 
@@ -46,7 +47,7 @@ TemplateRouter.get("/:facilityId",
 TemplateRouter.post("/:facilityId",
     requireAdmin,
     async (req: Request, res: Response) => {
-        res.send(await TemplateServices.insert(
+        res.status(CREATED).send(await TemplateServices.insert(
             parseInt(req.params.facilityId, 10),
             req.body
         ));

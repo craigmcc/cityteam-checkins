@@ -19,11 +19,11 @@ import {
 } from "./Common";
 import {
     API_PREFIX, ASSIGN, BAD_REQUEST, CHECKIN, CHECKIN_DATE, CHECKIN_ID,
-    COMMENTS, FACILITY, FACILITY_ID,
+    COMMENTS, CREATED, FACILITY, FACILITY_ID,
     FEATURES, GUEST, GUEST_ID, ID,
     MAT_NUMBER, MATCH_AVAILABLE, MATCH_DATE, MATCH_GUEST_ID, NOT_FOUND,
     PAYMENT_AMOUNT, PAYMENT_TYPE, REQUIRE_REGULAR,
-    REQUIRE_SUPERUSER, SHOWER_TIME, WAKEUP_TIME,
+    REQUIRE_SUPERUSER, SHOWER_TIME, TEMPLATE_ID, WAKEUP_TIME,
     WITH_FACILITY, WITH_GUEST
 } from "./Constants";
 
@@ -60,6 +60,16 @@ export function deassign(): ob.OperationObject {
 
 export function find(): ob.OperationObject {
     return findOperation(CHECKIN, REQUIRE_REGULAR, includes);
+}
+
+export function generate(): ob.OperationObject {
+    const builder = new ob.OperationObjectBuilder()
+        .description("Generate and return available checkins for the specified Checkin Date based on the specified Template")
+        .response(BAD_REQUEST, responseRef(BAD_REQUEST))
+        .response(CREATED, responseRef(pluralize(CHECKIN)))
+        .tag(REQUIRE_REGULAR)
+    ;
+    return builder.build();
 }
 
 export function insert(): ob.OperationObject {
@@ -119,6 +129,10 @@ export function paths(): ob.PathsObject {
     paths[API_PREFIX + "/" + pluralize(CHECKIN.toLowerCase())
     + "/" + pathParam(FACILITY_ID) + "/" + pathParam(CHECKIN_ID) + "/assignment"]
         = assignmentPath();
+    paths[API_PREFIX + "/" + pluralize(CHECKIN.toLowerCase())
+    + "/" + pathParam(FACILITY_ID) + "/generate"
+    + "/" + pathParam(CHECKIN_DATE) + "/" + pathParam(TEMPLATE_ID)]
+        = generatePath();
     return paths;
 }
 
@@ -129,7 +143,7 @@ export function schema(): ob.SchemaObject {
         .property(ID, idSchema(CHECKIN))
         .property(CHECKIN_DATE, new ob.SchemaObjectBuilder(
             "string",
-            "Checkin date for which this mat is avalable or assigned (YYYY-MM-DD)",
+            "Checkin date for which this mat is available or assigned (YYYY-MM-DD)",
             true).build())
         .property(COMMENTS, commentsSchema(GUEST))
         .property(FACILITY.toLowerCase(), schemaRef(FACILITY))
@@ -180,5 +194,14 @@ function assignmentPath(): ob.PathItemObject {
         .post(assign())
         .delete(deassign())
         .put(reassign())
+        .build();
+}
+
+function generatePath(): ob.PathItemObject {
+    return new ob.PathItemObjectBuilder()
+        .parameter(parameterRef(FACILITY_ID))
+        .parameter(parameterRef(CHECKIN_DATE))
+        .parameter(parameterRef(TEMPLATE_ID))
+        .post(generate())
         .build();
 }

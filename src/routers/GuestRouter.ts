@@ -13,6 +13,7 @@ import {
     requireSuperuser,
 } from "../oauth/OAuthMiddleware";
 import GuestServices from "../services/GuestServices";
+import {CREATED} from "../util/HttpErrors";
 
 // Public Objects ------------------------------------------------------------
 
@@ -47,7 +48,7 @@ GuestRouter.get("/:facilityId",
 GuestRouter.post("/:facilityId",
     requireRegular,
     async (req: Request, res: Response) => {
-        res.send(await GuestServices.insert(
+        res.status(CREATED).send(await GuestServices.insert(
             parseInt(req.params.facilityId, 10),
             req.body
         ));

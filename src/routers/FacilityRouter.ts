@@ -17,6 +17,7 @@ import {
     requireSuperuser
 } from "../oauth/OAuthMiddleware";
 import FacilityServices from "../services/FacilityServices";
+import {CREATED} from "../util/HttpErrors";
 
 // Public Objects ------------------------------------------------------------
 
@@ -48,7 +49,7 @@ FacilityRouter.get("/",
 FacilityRouter.post("/",
     requireSuperuser,
     async (req: Request, res: Response) => {
-        res.send(await FacilityServices.insert(
+        res.status(CREATED).send(await FacilityServices.insert(
             req.body
         ));
     });

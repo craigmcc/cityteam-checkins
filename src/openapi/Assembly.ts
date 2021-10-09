@@ -17,7 +17,7 @@ import * as Guest from "./Guest";
 import * as Template from "./Template";
 import * as User from "./User";
 import {
-    ASSIGN, BAD_REQUEST, CHECKIN, CHECKIN_ID,
+    ASSIGN, BAD_REQUEST, CHECKIN, CHECKIN_DATE, CHECKIN_ID,
     ERROR, FACILITY, FACILITY_ID, FORBIDDEN,
     GUEST, GUEST_ID, LIMIT,
     MATCH_ACTIVE, MATCH_NAME, MATCH_SCOPE,
@@ -109,6 +109,8 @@ function parameters(): ob.ParametersObject {
     const parameters: ob.ParametersObject = {};
 
     // Path Parameters
+    parameters[CHECKIN_DATE]
+        = pathParameter(CHECKIN_DATE, "Checkin Date for Checkins of interest");
     parameters[CHECKIN_ID]
         = pathParameter(CHECKIN_ID, "ID of the specified Checkin");
     parameters[FACILITY_ID]

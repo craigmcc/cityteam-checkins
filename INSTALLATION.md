@@ -293,13 +293,16 @@ Next, execute the following command to perform the required migrations:
 graphile-migrate migrate
 ```
 
-TODO:  seeding the superuser password.
-
 ### 4.3 Set Up Configuration Files for Development and Production Use
 
 Two "environment" files must be set up, which contain configuration information based on
 your previous setup.  The first one, for developer use, turns off some security checks
 and causes all logged messages to be sent to the command line window.
+
+In the configuration files and examples below, {APPHOST} is the network name of the
+computer hosting the Application Environment ("localhost" for a standalone install),
+and {APPPORT} is the network port (on the {APPHOST} system) for the application to
+listen on (use 8080 unless not allowed in your environment).
 
 Use Visual Studio Code (or another text editor) to create a file **.env.development**
 (do not forget the leading period) in the *cityteam-checkins* directory:
@@ -308,10 +311,14 @@ ACCESS_LOG=stdout
 CLIENT_LOG=stdout
 DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{PGHOST}:{PGPORT}/{DBNAME}
 OAUTH_ENABLED=false
-PORT=8080
+PORT={APPPORT}
 SERVER_LOG=stdout
 SUPERUSER_SCOPE=superuser
 ```
+
+With this setup, log files will be sent to the command line window (stdout), and
+OAuth authorization of network API calls will be disabled.  This configuration
+should ONLY be used as part of the initial setup, or by developers working on the system.
 
 Set up a similar file named **.env.production** (again, remember the leading period)
 in the same directory:
@@ -320,31 +327,73 @@ ACCESS_LOG=access.log
 CLIENT_LOG=client.log
 DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{PGHOST}:{PGPORT}/{DBNAME}
 OAUTH_ENABLED=true
-PORT=8080
+PORT={APPPORT}
 SERVER_LOG=server.log
 SUPERUSER_SCOPE=superuser
 ```
 
-We will be using the production version for all normal use of the application.
+With this setup, log files will be stored in a *log* subdirectory, with filenames
+that rotate each day.  In addition, normal OAuth authentication will be required
+on all network API calls (even those that do not come from this application).
+This configuration will be the one normally used to operate the system.
 
-### 4.4 Start the Application and Configure It To Restart
+### 4.4 Start the Application And Configure Initial Superuser
+
+As installed, the database contains no users, so no one can log in.  We need
+to set up an initial (temporary) user account, which we can then use to log in
+and set up all the actual accounts.
 
 Open a command line window (if not already open), and make sure you are
 in the *cityteam-checkins* directory.
 
 ```shell
-npm run start:prod
+npm run start:dev
 ```
 
-TODO: this just runs it temporarily -- work out and document how to start in pm2,
-then "pm2-startup install" (if not done already), then "pm2 save".
+As initially installed, the database has no users in it, so no one can log in.
+We need to create a user with superuser ("all powerful") permissions, in order
+to create the actual users, and ensure that Facility and Template configurations
+are set up to meet local requirements.
 
-### 4.5 Set Up Initial Users
+This can be performed by any tool that can issue HTTP requests (such as *curl* in
+a Mac or Unix/Linux world).  We will use Postman, which was installed earlier, and
+is tailor made for this kind of interactions.
 
-Open a browser and navigate to **http://{APPHOST}:8080** (where {APPHOST} is
-*localhost* if you are on the same machine, or your application host's network name).
+* Start up Postman from your application menu, logging on if necessary (one time step).
+* In the grey bar (left of the Send button), change the verb from GET to POST.
+* Set the URL for sending (with placeholder replacements): **http://{APPHOST}:{APPPORT}/api/users**
+* Just below, click the "Body" tab so we can define the details to be sent.
+* Below that, select "raw", then open the "Text" dropdown, and select "JSON".
 
-Log in with username **superuser** and the initial superuser password.
+In the body area, fill in a properly formatted JSON structure like this:
+
+```json
+{
+  "active": true,
+  "name": "Superuser User",
+  "password": "{SUPASSWORD}",
+  "scope": "superuser",
+  "username": "{SUUSERNAME}"
+}
+```
+
+NOTE:  The contents of the *name* and *username* fields do not matter - the key
+requirement is that the *scope* field be set to **"superuser"** to enable the
+appropriate permissions.
+
+Now, click the "Send" button.  If everything worked, you should get a response back
+with a response status of 201 (Created), with a JSON mirroring what you sent with the
+following changes:
+* An "id" field will be returned - this is assigned by the database as the primary key.
+* The "password" field will be blanked out, but it got recorded (in a hashed form that cannot be decoded) in the database.
+
+At this point, the username and password you used can be used to log in.
+
+### 4.5 Set Up Initial Users And Other Details
+
+Open a browser and navigate to **http://{APPHOST}:{APPPORT}**.
+
+TODO: login with assigned superuser credentials.
 
 Navigate to Admin -> Users.  Use the *Add* button to create each user that you need.
 For the **scope** field, you will enter {FACILITY_SCOPE}:regular for a regular user

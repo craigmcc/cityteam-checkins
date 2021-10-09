@@ -23,6 +23,7 @@ import remarkGfm from "remark-gfm";
 
 import logger from "../../util/ClientLogger";
 import ReportError from "../../util/ReportError";
+import {ReactMarkdownOptions} from "react-markdown/lib/react-markdown";
 
 // Component Details ---------------------------------------------------------
 
@@ -31,6 +32,16 @@ const HelpView = () => {
     const params: any = useParams();
     const [html, setHtml] = useState<string>("");
     const [markdown, setMarkdown] = useState<string>("");
+
+/*
+    const OPTIONS: ReactMarkdownOptions = {};
+
+    const RENDERERS: ReactMarkdown.Renderers = {
+        table: ({ children }) => (
+            <table style={{ backgroundColor: "red" }}>{children}</table>
+        )
+    }
+*/
 
     useEffect(() => {
 
@@ -41,11 +52,9 @@ const HelpView = () => {
                 const response = await fetch(theUrl);
                 const data = await response.text();
                 if (params.resource.endsWith(".html")) {
-                    console.log("It is HTML");
                     setHtml(data);
                     setMarkdown("");
                 } else {
-                    console.log("IT is not HTML");
                     setHtml("");
                     setMarkdown(data);
                 }

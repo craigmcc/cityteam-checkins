@@ -12,9 +12,11 @@ any Linux/Unix platform as well.
 
 NOTE:  During the installation process, you will be asked to choose and configure
 a number of values (such as passwords) that will be needed later.
-[This document](./CHEATSHEET.md), if printed out, provides a convenient way to
-record and save these values.  THIS DOCUMENT CONTAINS SENSITIVE INFORMATION, SO
-ACCESS TO IT SHOULD BE CLOSELY CONTROLLED.
+[This document](client/public/helptext/CHEATSHEET.html), if printed out, provides
+a convenient way to record and save these values.  It is also accessible from the
+Help menu when running the user application in a browser.
+
+THIS DOCUMENT CONTAINS SENSITIVE INFORMATION, SO ACCESS TO IT SHOULD BE CLOSELY CONTROLLED.
 
 ## 1. PLANNING
 

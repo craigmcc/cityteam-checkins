@@ -99,6 +99,9 @@ function App() {
                 <LinkContainer to="/help/regular-user.html">
                   <NavDropdown.Item>Regular User</NavDropdown.Item>
                 </LinkContainer>
+                <LinkContainer to="/help/CHEATSHEET.html">
+                  <NavDropdown.Item>Configuration Settings Page</NavDropdown.Item>
+                </LinkContainer>
 {/*
                 <LinkContainer to="/help/regular-user.md">
                   <NavDropdown.Item>Regular User (MD)</NavDropdown.Item>

@@ -4,11 +4,12 @@
 
 // External Modules ----------------------------------------------------------
 
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 
 // Internal Modules ----------------------------------------------------------
 
 import Api from "../clients/Api";
+import LoginContext from "../components/contexts/LoginContext";
 import Facility, {FACILITIES_BASE} from "../models/Facility";
 import * as Abridgers from "../util/Abridgers";
 import logger from "../util/ClientLogger";
@@ -21,7 +22,6 @@ import * as Sorters from "../util/Sorters";
 export interface Props {
     active?: boolean;                   // Select only active Facilities? [false]
     currentPage?: number;               // One-relative current page number [1]
-    ignoreForbidden?: boolean;          // Ignore 403 errors? [false]
     pageSize?: number;                  // Number of entries per page [25]
     name?: string;                      // Select Facilities matching pattern [none]
     withCheckins?: boolean;             // Include child Checkins? [false]
@@ -38,6 +38,8 @@ export interface State {
 // Hook Details --------------------------------------------------------------
 
 const useFetchFacilities = (props: Props): State => {
+
+    const loginContext = useContext(LoginContext);
 
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,43 +67,34 @@ const useFetchFacilities = (props: Props): State => {
 
 
             try {
-                theFacilities = (await Api.get(FACILITIES_BASE
-                    + `${queryParameters(parameters)}`)).data;
-                theFacilities.forEach(theFacility => {
+                if (loginContext.data.loggedIn) {
+                    theFacilities = (await Api.get(FACILITIES_BASE
+                        + `${queryParameters(parameters)}`)).data;
+                    theFacilities.forEach(theFacility => {
 /*
-                    if (theFacility.checkins && (theFacility.checkins.length > 0)) {
-                        theFacility.checkins = Sorters.CHECKINS(theFacility.checkins);
-                    }
+                        if (theFacility.checkins && (theFacility.checkins.length > 0)) {
+                            theFacility.checkins = Sorters.CHECKINS(theFacility.checkins);
+                        }
 */
-                    if (theFacility.guests && (theFacility.guests.length > 0)) {
-                        theFacility.guests = Sorters.GUESTS(theFacility.guests);
-                    }
-                    if (theFacility.templates && (theFacility.templates.length > 0)) {
-                        theFacility.templates = Sorters.TEMPLATES(theFacility.templates);
-                    }
-                });
+                        if (theFacility.guests && (theFacility.guests.length > 0)) {
+                            theFacility.guests = Sorters.GUESTS(theFacility.guests);
+                        }
+                        if (theFacility.templates && (theFacility.templates.length > 0)) {
+                            theFacility.templates = Sorters.TEMPLATES(theFacility.templates);
+                        }
+                    });
+                }
                 logger.debug({
                     context: "useFetchFacilities.fetchFacilities",
                     parameters: parameters,
                     facilities: Abridgers.FACILITIES(theFacilities),
                 });
 
-            } catch (error: any) {
+            } catch (error) {
                 setError(error as Error);
-                let ignore: boolean = false;
-                if (props.ignoreForbidden && error.message && error.message.includes("403")) {
-                    ignore = true;
-                }
-                if (ignore) {
-                    logger.error({
-                        context: "useFetchFacilities.fetchFacilities",
-                        msg: "Ignoring 403 error as requested",
-                    });
-                } else {
-                    ReportError("useFetchFacilities.fetchFacilities", error, {
-                        parameters: parameters,
-                    })
-                }
+                ReportError("useFetchFacilities.fetchFacilities", error, {
+                    parameters: parameters,
+                })
             }
 
             setLoading(false);
@@ -111,9 +104,9 @@ const useFetchFacilities = (props: Props): State => {
 
         fetchFacilities();
 
-    }, [props.active, props.currentPage, props.ignoreForbidden,
-        props.pageSize, props.name,
-        props.withCheckins, props.withGuests, props.withTemplates]);
+    }, [props.active, props.currentPage, props.pageSize, props.name,
+        props.withCheckins, props.withGuests, props.withTemplates,
+        loginContext.data.loggedIn]);
 
     return {
         error: error ? error : null,

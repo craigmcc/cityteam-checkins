@@ -97,8 +97,8 @@ export const LoginContextProvider = (props: any) => {
             theAlloweds.forEach(allowed => {
                 if (allowed.startsWith(LOG_PREFIX)) {
                     setLevel(allowed.substr(LOG_PREFIX.length));
+                    found = true;
                 }
-                found = true;
             })
         } else {
             setAlloweds([]);

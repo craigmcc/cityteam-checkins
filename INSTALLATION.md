@@ -489,4 +489,4 @@ You can find download links for the tested browsers here:
 
 After installing the browser of choice, it will be helpful to your users to save
 a bookmark (and perhaps a home page shortcut) to the URL for the application:
-**http://{APPHOST}:{APPPORT**
+**http://{APPHOST}:{APPPORT}**

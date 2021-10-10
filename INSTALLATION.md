@@ -41,7 +41,7 @@ Facilities).
 
 **STANDALONE**
 
-All three components are installed onto a single computer.  The combination will
+All three environments are installed onto a single computer.  The combination will
 all fit comfortably on pretty much any modern laptop with at least 8gb of main
 memory and 100gb of storage space.
 
@@ -56,9 +56,9 @@ Considerations:
 
 **LOCAL AREA NETWORK**
 
-The *Application* and *Database* components are installed in a shared
-environment (either on the same computer or separately, as desired), while
-checkin locations require only a web browser.
+The *Application* and *Database* environments are installed in a shared
+private data center (either on the same computer or separately, as desired),
+while checkin locations require only a web browser.
 
 Advantages:
 * Supports multiple checkin locations sharing the same database information.
@@ -76,11 +76,11 @@ Considerations:
 
 **CLOUD NETWORK**
 
-The *Application* and *Database* components are installed in a shared
-environment that is accessible via the Internet.  This environment could be
-a "private cloud" managed and operated solely for CityTeam, or a shared
-environment on a "public cloud" network.  Checkin locations require only
-a web browser.
+The *Application* and *Database* environments are installed in a shared
+service provider's system that is accessible via the Internet.  This
+environment could be a "private cloud" managed and operated solely
+for CityTeam, or a shared environment on a "public cloud" network.
+Checkin locations require only a web browser.
 
 Advantages:
 * Can support all CityTeam Facilities with a single installation.
@@ -276,7 +276,7 @@ cd ..
 This will leave you in the *cityteam-checkins* directory, where the
 subsequent steps will be performed.
 
-### 4.2 Seed Database Structure and Initial Contents
+### 4.2 Seed Database Structure
 
 Next, we will execute "migration" utilities that change our empty database
 into one that contains the table structures required by this application.
@@ -355,13 +355,12 @@ Open a command line window (if not already open), and make sure you are
 in the *cityteam-checkins* directory.
 
 ```shell
-npm run start:dev
+npm run run:dev
 ```
 
-As initially installed, the database has no users in it, so no one can log in.
-We need to create a user with superuser ("all powerful") permissions, in order
-to create the actual users, and ensure that Facility and Template configurations
-are set up to meet local requirements.
+Now, we need to create a user with superuser ("all powerful") permissions, in order
+to create the actual application users, and ensure that Facility and Template
+configurations are set up to meet local requirements.
 
 This can be performed by any tool that can issue HTTP requests (such as *curl* in
 a Mac or Unix/Linux world).  We will use Postman, which was installed earlier, and
@@ -372,6 +371,9 @@ is tailor made for this kind of interactions.
 * Set the URL for sending (with placeholder replacements): **http://{APPHOST}:{APPPORT}/api/users**
 * Just below, click the "Body" tab so we can define the details to be sent.
 * Below that, select "raw", then open the "Text" dropdown, and select "JSON".
+
+Pick values for the superuser username (I generally use "superuser" but it can be anything)
+and password.  Note these as the values for the {SUUSERNAME} and {SUPASSWORD} placeholders.
 
 In the body area, fill in a properly formatted JSON structure like this:
 
@@ -395,94 +397,96 @@ following changes:
 * An "id" field will be returned - this is assigned by the database as the primary key.
 * The "password" field will be blanked out, but it got recorded (in a hashed form that cannot be decoded) in the database.
 
-At this point, the username and password you used can be used to log in.
+At this point, the username and password you used can be used to log in.  Confirm that this
+works before proceeding.
 
 ### 4.5 Set Up Initial Users And Other Details
 
-Open a browser and navigate to **http://{APPHOST}:{APPPORT}**.
+We will run all subsequent operations in production mode, which is what will be used
+for normal operations.  First, kill the running server by typing **Ctrl+C** in the
+command line window where it is running.  You should be returned to a prompt.  Now,
+type the following command:
 
-TODO: login with assigned superuser credentials.
+```shell
+npm run run:prod
+```
 
-Navigate to Admin -> Users.  Use the *Add* button to create each user that you need.
-For the **scope** field, you will enter {FACILITY_SCOPE}:regular for a regular user
-(this is all that is needed to perform checkin operations), or {FACILITY_SCOPE}:admin
-for users who should also be able to modify characteristics like setting up templates.
+Now, from a browser, navigate to **http://${APHOST}:${APPPORT}** and you should see the
+welcome message.  Click **Log In** and login with the username ({SUUSERNAME}) and password
+({SUPASSWORD}) of the user you created earlier.  Verify that you have logged on
+successfully (the username field in the navigation bar shows your {SUUSERNAME} value,
+and no error popups occurred).
 
-What are the FACILITY_SCOPE values?  You can see them by navigating to Admin -> Facilities.
-You'll see that the initial set of values was based on the three-letter airport abbreviation
-for the closest major airport, but any combination of letters and numbers is legal (as long
-as they are unique for each facility).  So, for a Portland front desk person that performs
-checkins, **pdx:regular** would be the required scope value.
+Before setting up any users, you will need to know the "scope" value that is recorded
+for each Facility.  Navigate to *Admin -> Facilities* in the navigation bar, and you
+should see a list of the original five CityTeam Facilities, plus any test environments
+that have been created.  Note the value in the *scope* column for any Facility that you
+are going to create users(s) for.  (As a hint, they are based on the three-letter airport
+code for the nearest major airport).  Call this value {FACILITYSCOPE} for use in the
+later steps.
 
-If you want to grant permissions to a particular username for more than one Facility,
-simply add another scope (separated by spaces) in the user's "Scope" field.
+Is your Facility not in the list?  Click *Add* and add it.  You'll need to define
+a name, and a scope, that are completely unique.  Everything else is optional.
+Click *Save* when you are done.
 
-It is certainly possible to set up usernames for each individual person that might be
-operating the application, but it is also likely that there will be multiple people
-performing this operation, in the same facility, on the same evening.  It would be
-a hassle to require them to log off and on each time they switch who is operating the
-application, so a single username for the whole group that shares a single checkin
-location is probably the simplest approach.  (In Portland, we call this user
-"frontdesk" because that is where the checkins happen).
+Is your Facility there but the information is out of date?  Click on the row for
+that Facility, update whatever is needed, and click *Save* when you are done.
+
+Now, note the *scope* value for the Facility (or Facilities) for which you want to
+define user permissions for.  You'll need them for the next step.
+
+Now, navigate to *Admin -> Users*  in the navigation bar.  You should see the
+superuser user that you created earlier (with scope "superuser").  We will need to
+create additional users that only have access to a particular Facility, and have
+either "regular" or "admin" capabilities.
+
+When you click *Add* to create a new User, the *Username*, *Password*, and *Scope*
+values are required.
+* **Name** is required, and should contain an individual's full name or a role title.
+* **Username** must be unique, and will be used to log in.
+* **Password** is required when creating a new User.  When modifying a User, fill this in **only** if you want to change the current password for this User).
+* **Scope** is defined as described below.
+
+To calculate a scope value, take the {FACILITYSCOPE} value you found earlier, add
+a colon (":"), and one of the following words:
+* **regular** for regular user permissions (sufficient to perform Checkin operations).
+* **admin** for everything a regular user can do, plus the ability to modify information about the Facility or its Templates.
+
+Thus, to set up a user with regular permissions for the San Jose facility, the
+scope to be added would be **sjc:regular**, while an admin user's scope would be
+**sjc:admin**.
+
+Want to assign more than one permission to the same user?  Add each one to the *Scope*
+field, separated by a space.
+
+Click *Save* when you are done, and the application will go back to the User list,
+with your newly added user now showing up.
+
+OPERATIONAL NOTE:  It is certainly possible to create more than user with the same
+scope permission, and require users to log in as themselves when they are operating
+the application.  That is somewhat useful, in that the log files will show which person
+performed each action, but can be unwieldy when more than one person is sharing the
+same computer for checkin purposes.  In Portland, we elected to use a single password
+with username *frontdesk* (since that is where the checkin process occurs), and
+a shared password for all of them.
+
+TODO: Quick documentation on setting up at least one Template.
+
+### 4.6 Configure Application For Automatic Restart On Reboot
+
+TODO
 
 ## 5.  END USER ENVIRONMENT
 
 This will be necessary on the computer for each checkin station at a Facility, if that
-checkstation is not the Application Environment server and therefore has a browser installed
-already.
+checkin station is not the Application Environment server (and therefore has a browser
+installed already).
 
-TODO: download links
+You can find download links for the tested browsers here:
+* [Chrome](https://www.google.com/chrome/)
+* [Firefox](https://www.mozilla.org/en-US/firefox/new/)
+* [Microsoft Edge](https://www.microsoft.com/en-us/edge)
 
-TODO: note on setting up bookmark and/or shortcut.
-
-
-The application's user interface has been tested with Chrome, Firefox, Safari,
-and Microsoft Edge.  If one of these is not available, you can use one of the
-following download links to install whichever one you like.
-
-TODO - download links.
-
-TODO - hint on creating bookmark and/or shortcut to the application.  The link
-URL will be **http://{APPHOST}:{APPPORT}** unless encrypted communication is in
-use (Local Area Network or Cloud Network), when the first portion will be
-"https:" instead of "http:".
-
-====================================================
-
---- TODO - REFINE AND INTEGRATE REMAINING STUFF ---
-
-In order to execute the migration commands, you will need to set up
-***environment variables*** for the operating system to communicate
-the appropriate settings, and then initialize the migration system.
-How to do this depends on which OS you are using:
-
-#### X.2.1 Windows
-
-***TODO***
-
-#### X.2.2 MacOSX or Linux
-
-Create a file named ***.migraterc*** with the following contents:
-
-```bash
-export DATABASE_URL="postgres://{USERNAME}:{PASSWORD}@localhost/{DATABASE}"
-export SHADOW_DATABASE_URL="postgres://{USERNAME}:{PASSWORD}@localhost/{DATABASE}_shadow"
-export ROOT_DATABASE_URL="postgres://postgres:{POSTGRES_PASSWORD}@localhost/postgres"
-```
-
-(Note that this file contains sensitive information, so it should ***not*** be
-checked in to a Git repository.  For this reason, the name *.migraterc* is
-listed in *.gitignore* to instruct Git that this file should not be checked in.)
-
-Now, whenever you want to execute migration commands, type the following
-shell command first.  The values will last until you close this shell window.
-
-```bash
-. .migraterc
-```
-
-After you have run this, you can initialize the migration system:
-
-```bash
-graphile-migrate init
-```
+After installing the browser of choice, it will be helpful to your users to save
+a bookmark (and perhaps a home page shortcut) to the URL for the application:
+**http://{APPHOST}:{APPPORT**

@@ -1,4 +1,4 @@
-# INSTALLATION
+# CityTeam Checkins Application - Installation Notes
 
 Installing and operating the CityTeam Checkins Application requires installing a number
 of prerequisite software packages.  All of them are available at no cost, and

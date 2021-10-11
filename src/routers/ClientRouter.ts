@@ -8,18 +8,18 @@ import {Request, Response, Router} from "express";
 
 // Internal Modules ----------------------------------------------------------
 
-import LogServices from "../services/LogServices";
+import ClientServices from "../services/ClientServices";
 
 // Public Objects ------------------------------------------------------------
 
-export const LogRouter = Router({
+export const ClientRouter = Router({
     strict: true,
 });
 
-LogRouter.post("/clientLog",
+ClientRouter.post("/clientLog",
     async (req: Request, res: Response) => {
-        await LogServices.logClientRecord(req.body);
+        await ClientServices.log(req.body);
         res.sendStatus(204);
     })
 
-export default LogRouter;
+export default ClientRouter;

@@ -11,7 +11,7 @@
 
 // Internal Modules ----------------------------------------------------------
 
-import LogClient from "../clients/LogClient";
+import ClientClient from "../clients/ClientClient";
 import {Level} from "../types";
 
 // Private Objects -----------------------------------------------------------
@@ -30,7 +30,7 @@ const write = async (object: any, level: number): Promise<void> => {
     if (level >= LOG_LEVEL) {
         object.level = level;
         try {
-            await LogClient.log(object);
+            await ClientClient.log(object);
         } catch (error) {
             console.error(`Error '${(error as Error).message}' logging client message`, object);
         }
@@ -65,7 +65,7 @@ export const setLevel = (newName: string): void => {
         LOG_LEVEL = newLevel ? newLevel : 30;
     }
 }
-setLevel("debug"); // Set the default log level
+setLevel("info"); // Set the default log level
 
 export default logger;
 

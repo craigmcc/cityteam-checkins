@@ -1,6 +1,6 @@
-// LogServices ---------------------------------------------------------------
+// ClientServices ------------------------------------------------------------
 
-// Service methods for logging requests from clients.
+// Service methods for background requests from clients.
 
 // External Modules ----------------------------------------------------------
 
@@ -10,12 +10,12 @@ import logger from "../util/ClientLogger";
 
 // Public Objects ------------------------------------------------------------
 
-class LogServices {
+class ClientServices {
 
-    public async logClientRecord(record: any): Promise<void> {
+    public async log(record: any): Promise<void> {
         logger.info(record);
     }
 
 }
 
-export default new LogServices();
+export default new ClientServices();

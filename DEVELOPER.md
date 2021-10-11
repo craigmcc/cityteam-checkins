@@ -4,7 +4,7 @@ This document is designed for software developers who want to help maintain and 
 the CityTeam Checkins Application, or investigate issues with its execution.  All of the
 material here is in geek-speak, so not relevant for someone who just wants to use it.
 
-The code for this application itself is available in open source
+The source code for this application itself is available (in open source)
 [online](https://github.com/craigmcc/cityteam-checkins).  There is no sensitive
 information in the source code - all of that is done with local configuration.
 
@@ -12,9 +12,11 @@ information in the source code - all of that is done with local configuration.
 
 The CityTeam Checkins Application is designed to support CityTeam Facilities that offer
 overnight accommodations for individual Guests, with minimal overhead to the checkin process,
-but supporting accurate record keeping and reporting.  It relies on a variety of (mostly)
+but supporting accurate record keeping and reporting.  It relies on a variety of
 open source software components that are each very popular, so it should not be difficult
 to locate technical folks that can support or enhance it, if necessary.
+
+None of the supporting software components have any purchase costs associated with them.
 
 The overall system is comprised of three environments (database, application, and end user)
 as described in the [Installation](./INSTALLATION.md) documentation.  These pieces can be
@@ -23,8 +25,9 @@ platform.  Each of them will operate on any common operating system (Linux/Unix,
 The end user environment only requires a web browser, with network connectivity when
 not installed as a standalone environment.
 
-For the purposes of understanding the architecture, we will look at three different aspects:
-database, back end (application logic), and front end (user interface logic).
+For the purposes of understanding the architecture, we will look at the three different
+aspects, database, back end (application logic), and front end (user interface logic)
+separately.
 
 ## 2. DATABASE
 
@@ -40,9 +43,9 @@ back end and the front end, which correspond closely to the underlying database 
 [Graphile Migrate](https://github.com/graphile/migrate).  Tool for managing "migrations",
 including the initial setup of the necessary database tables, and subsequent modifications.
 
-[PostgreSQL](postgresql.org): One of the most commonly used database technologies.  While many
-databases were possible candidates, Postgres has two features that are relied upon by this
-application's implementation:
+[PostgreSQL](https://postgresql.org): One of the most commonly used database technologies.
+While many databases were possible candidates, Postgres has two features that are relied
+upon in particular by this application's implementation:
 * The ILIKE operator, which is used to support case-insensitive wildcard searches against nearly every table.
 * The RETURNING clause, which causes the database to return the result of an UPDATE operation, saving the need for a subseuqent SELECT.
 
@@ -77,9 +80,24 @@ designed to minimize the number of times a constraint violation will cause an er
 
 ### 2.4 Implementation Details
 
+TODO: Table definitions.
+
+TODO: How graphile-migrate things are done.
+
 ## 3. BACK END (APPLICATION LOGIC)
 
 ### 3.1 Introduction
+
+The back end portion of the CityTeam Checkins Application provides all of the
+business logic of the system.  It stores information persistently in the database,
+and provides all of its functionality via REST API calls.  All of the calls are
+protected by approriate authentication and authorization requirements via the
+OAuth 2.0 protocols.
+
+Documentation (in OpenAPI 3.0 format) for the REST APIs provided by the
+back end are accessible at **http://{APPHOST}:{APPPORT}/openapi.json** for the
+actual specification file, or via the **OpenAPI Docs** link in the user interface
+for a human readable version.
 
 ### 3.2 Technologies
 
@@ -109,7 +127,7 @@ the returned *scope* assigned to the logged in user.
 
 [OpenAPI Builders](https://github.com/craigmcc/openapi-builders).  Library (written by
 the primary author of this applciation) that supports programmatically creating API
-specifications that conform to the OpenAPI 3.0 Specification.  These are available in
+descriptions that conform to the OpenAPI 3.0 Specification.  These are available in
 the back end application at endpoint **/openapi.json**, and in a visual way by navigating
 to the "OpenAPI Docs" link.
 
@@ -137,6 +155,12 @@ anymore is subject to lots of bugs that could have been avoided.
 ## 4. FRONT END (END USER LOGIC)
 
 ### 4.1 Introduction
+
+The front end portion of the CityTeam Checkins Application is totally implemented in
+Javascript (although it is originally written in Typescript), and executes natively
+inside a modern web browser.  It uses REST API calls to interact with the Back End to
+perform actual business logic and data persistence.  It also supports login/logout
+in a way that conforms to the OAuth 2.0 protocol supported by the Back End.
 
 ### 4.2 Technologies
 

@@ -1,6 +1,6 @@
 {
   "name": "cityteam-checkins",
-  "version": "2.0.0-alpha1",
+  "version": "2.0.0",
   "description": "CityTeam Guests Checkin Application",
   "main": "dist/server.js",
   "scripts": {

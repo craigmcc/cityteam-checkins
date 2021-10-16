@@ -108,22 +108,25 @@ Install tutorials for Windows install are [here](https://www.postgresqltutorial.
 
 Installation Notes:
 * When choosing components to be installed, omit the Stack Builder.  Everything else is required.
-* When you enter the password for the *database superuser*, **BE SURE TO WRITE IT DOWN**.  This will be required later.
+* When you enter the password for the *database superuser*, **BE SURE TO WRITE IT DOWN**,
+  and note it as the value of the {PGPASSWORD} placeholder.  This will be required later.
 * Verify the installation as described in the tutorial.
+* Add the directory containing the Postgres command line tools to your environment variables.  On a Windows computer, it will be something like **C:\Program Files\PostgreSQL\14\bin** (where 14 is the major version number).
+* If you had a command line window open before the installation, you will need to close and reopen it to gain access to the newly installed command line utilities.
 
 ### 2.2 Create Postgres User
 
 In the following steps, {DBUSERNAME} and {DBPASSWORD} are placeholders for the
 selected username and password you have chosen.
 
-Open a shell command window for this (and the following) commands.
+Open a command line window for this (and the following) commands.
 
 ```bash
 createuser --pwprompt {DBUSERNAME}
 ```
 
 You will be prompted to enter the password you wish to use (this will become the
-{DBPASSWORD} value in later commands).
+{DBPASSWORD} value in later commands), and also the {PGPASSWORD} value you saved above.
 
 ### 2.3 Create Application Database (and Shadow)
 
@@ -184,6 +187,7 @@ which is written in TypeScript (a superset of JavaScript).
 * At the [download site](https://nodejs.org), click on the most recent LTS (long term support) link.
 * Click on the downloaded file to execute it.
 * The instructions will recommend a Windows restart at the end, which is a good idea.
+* You will need to restart your command line window to pick up the new command line applications.
 
 To verify the installation, open a command line window (if not already open) and type:
 ```shell
@@ -201,6 +205,7 @@ a command line window:
 npm install -g graphile-migrate
 npm install -g pm2
 npm install -g pm2-windows-startup
+pm2-startup install
 ```
 
 To verify the installation, open a command line window (if not already open) and type:
@@ -230,6 +235,7 @@ subsequent updates.
 * Click on the downloaded file to execute it.
 * All of the default installation options should be fine, but changing one setting will make life easier for developers:
   * For "Choosing the default editor used by Git", select "Use Visual Studio Code as Git's default editor".
+* You will need to restart your command line window to pick up the new command line applications.
 
 To verify the installation, open a command line window (if not already open) and type:
 ```shell
@@ -288,11 +294,13 @@ replace the placeholder names (such as {DBUSERNAME}) with the values from
 the previous steps.
 
 NOTE:  On a Unix, Linux, or Mac system, use the word "export" instead of "set".
+You should also surround the paths (after the equal sign) with double quotes,
+to avoid the shell misinterpreting the "@" character.
 
 ```shell
-set DATABASE_URL="postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}"
-set SHADOW_DATABASE_URL="postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}_shadow"
-set ROOT_DATABASE_URL="postgres://{PGUSERNAME}:{PGPASSWORD}@{DBHOST}:{DBPORT}/postgres"
+set DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}
+set SHADOW_DATABASE_URL=postgres://{DBUSERNAME}:{DBPASSWORD}@{DBHOST}:{DBPORT}/{DBNAME}_shadow
+set ROOT_DATABASE_URL=postgres://{PGUSERNAME}:{PGPASSWORD}@{DBHOST}:{DBPORT}/postgres
 ```
 
 Next, execute the following command to perform the required migrations:
@@ -338,6 +346,13 @@ OAUTH_ENABLED=true
 PORT={APPPORT}
 SERVER_LOG=server.log
 SUPERUSER_SCOPE=superuser
+```
+
+To keep the Windows "pm2" application happy (will run the server in a way that
+survives a reboot), copy the **.env.production** file to **.env** (again with
+the leading period) in the same directory:
+```shell
+copy .env.production .env
 ```
 
 With this setup, log files will be stored in a *log* subdirectory, with filenames
@@ -472,9 +487,43 @@ a shared password for all of them.
 
 TODO: Quick documentation on setting up at least one Template.
 
-### 4.6 Configure Application For Automatic Restart On Reboot
+### 4.6 Configure Application For Automatic Restart On Reboot (Windows Only)
 
-TODO
+If your **npm run run:prod** command is still running, kill it.
+
+Next, we are going to configure the *pm2* application, which we loaded earlier,
+to run the CityTeam Checkins Application as a background service, and ensure
+that it survives a Windows restart.
+
+Open a command line window (if needed), and make sure you are in the
+**cityteam-checkins** directory.  Now, type the following command:
+
+```shell
+pm2 start loadserver.js --name checkins --env production
+```
+
+After a moment, the pm2 utility will show a status report that looks like this:
+[PM2 STARTUP RESULTS](./PM2_START.png)
+
+The key thing we are looking for is that the status is reported as *online*.
+If that is not the case, you can issue this command to check the log files
+for the startup:
+
+```shell
+pm2 log checkins
+```
+
+(This is live watching the log files, so issue Ctrl-C when done).
+
+Next, we must ensure that the current state of all services started by *pm2* is saved.
+
+```shell
+pm2 save
+```
+
+Next, restart your Windows box, and open a command line window again.  Typing
+this command should show you that the *checkins* application was restarted.
+
 
 ## 5.  END USER ENVIRONMENT
 
